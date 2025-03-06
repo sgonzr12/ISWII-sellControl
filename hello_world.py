@@ -1,7 +1,10 @@
-import uvicorn
-from hello_world import create_app
+from fastapi import FastAPI
 
-app = create_app()
+app = FastAPI()
 
-if __name__ == "__main__":
-    uvicorn.run("hello_world:app", host="0.0.0.0", port=8000, reload=True)
+def create_app():
+    return app
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}
