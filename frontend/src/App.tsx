@@ -1,40 +1,20 @@
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import logo from './images/logo.png';
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import Landing from './pages/Landing';
+import Home from './pages/Home';
+
 
 
 function App() {
 
   return (
-    <Router>
-      <div className="App">
-        <nav className="navbar">
-          <div className="logo-container">
-            <img src={logo} alt="Logo" className="logo" />
-            <h2>SellControl</h2>
-          </div>
-          <ul className="nav-links">
-          </ul>
-          <button className="login-button">
-            Iniciar Sesión
-          </button>
-        </nav>
-
-        <main className="main-content">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <div className="home">
-                  <h1>Bienvenido a SellControl</h1>
-                  <p>Haga click en iniciar sesión.</p>
-                </div>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </HashRouter>
+    
   );
 }
 
