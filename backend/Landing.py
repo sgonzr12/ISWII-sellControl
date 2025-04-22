@@ -1,12 +1,14 @@
 # Import necessary libraries
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import FastAPI, Depends
 import requests
-import jwt
+
+# Initialize the OAuth2PasswordBearer instance
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Configuration values for Google OAuth2
-GOOGLE_CLIENT_ID = "your_google_client_id"
-GOOGLE_CLIENT_SECRET = "your_google_client_secret"
+# TODO: Store these values in a secure location (e.g., environment variables).
+with open("../ps.txt") as f:
+    GOOGLE_CLIENT_ID = f.readline().strip()
 GOOGLE_REDIRECT_URI = "http://localhost:8000/auth/google/callback"
 
 '''
@@ -32,7 +34,6 @@ async def auth_google(code: str):
     data = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
-        "client_secret": GOOGLE_CLIENT_SECRET,
         "redirect_uri": GOOGLE_REDIRECT_URI,
         "grant_type": "authorization_code",
     }
@@ -40,12 +41,3 @@ async def auth_google(code: str):
     access_token = response.json().get("access_token")
     user_info = requests.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {access_token}"})
     return user_info.json()
-
-'''
-    Route for Decoding JWT Token:
-    Decodes the JWT token received from Google after user authentication.
-    TODO: Change the redirect URI to the frontend URL when deploying.
-'''
-@app.get("../frontend/src/GoogleToken.tsx")
-async def get_token(token: str = Depends(oauth2_scheme)):
-    return jwt.decode(token, GOOGLE_CLIENT_SECRET, algorithms=["HS256"])
