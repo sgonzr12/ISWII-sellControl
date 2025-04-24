@@ -1,9 +1,11 @@
 # Import necessary libraries
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Cookie
 from authlib.integrations.starlette_client import OAuth
 from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta, timezone
+from jose import jwt, ExpiredSignatureError, JWTError
 
 # Start FastAPI app and configure session middleware
 app = FastAPI()
@@ -32,3 +34,23 @@ oauth.register(
 # JWT Configurations
 SECRET_KEY = os.getenv("JWT_SECRET_KEY") 
 ALGORITHM = "HS256" # Algorithm used for encoding/decoding JWT tokens
+
+# Encode Secret Key into a JWT token
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days = 1))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# Extracts token from Cookie and decodes it to get user information
+def get_current_user(token: str = Cookie(None)):
+    if not token:
+        raise HTTPException(status_code = 401, detail="Not authenticated")
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return {"user_id": payload.get("sub"), "email": payload.get("email")}
+    except ExpiredSignatureError:
+        raise HTTPException(status_code = 401, detail = "Token expired")
+    except JWTError:
+        raise HTTPException(status_code = 401, detail = "Invalid token")
