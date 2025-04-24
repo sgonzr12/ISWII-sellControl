@@ -1,19 +1,19 @@
 from datetime import date  
-from product import Product  
+from product import Product
 from typing import Optional, List, Tuple  
 
-class Ofert:
-    def __init__(self, ofertID: int, employeId: int, clientId: int, ofert_date: Optional[date] = None, 
+class order:
+    def __init__(self, orderID: int, employeId: int, clientId: int, orderDate: Optional[date] = None, 
                  totalPrize: Optional[float] = None, products: Optional[List[Tuple[Product, int]]] = None):
-        self.ofertID = ofertID
+        self.ofertID = orderID
         self.employeId = employeId
         self.clientId = clientId
-        self.date = ofert_date if ofert_date is not None else date.today()
+        self.date = orderDate if orderDate is not None else date.today()
         self.products = products if products is not None else []
         self.totalPrize = totalPrize if totalPrize is not None else self.calculatePrice(self.products)
 
     def __repr__(self):
-        return (f"Ofert(ofertID={self.ofertID}, employeId={self.employeId}, "
+        return (f"order(orderID={self.ofertID}, employeId={self.employeId}, "
                 f"clientId={self.clientId}, date={self.date}, totalPrize={self.totalPrize}, "
                 f"products={self.products})")
     
