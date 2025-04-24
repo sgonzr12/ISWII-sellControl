@@ -1,43 +1,34 @@
 # Import necessary libraries
-from fastapi.security import OAuth2PasswordBearer
-import requests
+from fastapi import FastAPI
+from authlib.integrations.starlette_client import OAuth
+from starlette.middleware.sessions import SessionMiddleware
+from dotenv import load_dotenv
+import os
 
-# Initialize the OAuth2PasswordBearer instance
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# Start FastAPI app and configure session middleware
+app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key = os.getenv("FASTAPI_SECRET_KEY"))
 
-# Configuration values for Google OAuth2
-# TODO: Store these values in a secure location (e.g., environment variables).
-with open("../ps.txt") as f:
-    GOOGLE_CLIENT_ID = f.readline().strip()
-GOOGLE_REDIRECT_URI = "http://localhost:8000/auth/google/callback"
+# Load environment variables
+load_dotenv(override=True)
 
-'''
-    Route for Google Login:
-    Returns a URL to redirect the user to Google's OAuth login page.
-    TODO: Change the redirect URI to the frontend URL when deploying.
-'''
-@app.get("../frontend/src/GoogleLogin.tsx")
-async def login_google():
-    return {
-        "url": f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={GOOGLE_CLIENT_ID}&redirect_uri={GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
-    }
+# OAuth Setup
+oauth = OAuth()
+oauth.register(
+    name = "google_oauth", # Unique name for the OAuth provider
+    client_id = config("GOOGLE_CLIENT_ID"), # Google Client ID
+    client_secret = config("GOOGLE_CLIENT_SECRET"), # Google Client Secret
+    authorize_url = "https://accounts.google.com/o/oauth2/auth", # Redirect URL for Google authorization
+    authorize_params = None, # Additional parameters for authorization above
+    access_token_url = "https://accounts.google.com/o/oauth2/token", # Redirect URL for Google token exchange (after granted permission)
+    access_token_params = None, # Additional parameters for token exchange above
+    refresh_token_url = None, # Token refresh endpoint
+    authorize_state = config("SECRET_KEY"), # (Optional) State parameter for CSRF protection
+    redirect_uri = "http://127.0.0.1:8000/auth", # Redirect URL after successful login
+    jwks_uri = "https://www.googleapis.com/oauth2/v3/certs", # JWKS URI for Google's public keys
+    client_kwargs = {"scope": "openid profile email"}, # Permissions requested from Google
+)
 
-'''
-    Route for Google Callback:
-    Handles the callback from Google after user authentication.
-    Exchanges the authorization code for an access token and retrieves the user's information.
-    TODO: Change the redirect URI to the frontend URL when deploying.
-'''
-@app.get("../frontend/src/GoogleCallback.tsx")
-async def auth_google(code: str):
-    token_url = "https://accounts.google.com/o/oauth2/token"
-    data = {
-        "code": code,
-        "client_id": GOOGLE_CLIENT_ID,
-        "redirect_uri": GOOGLE_REDIRECT_URI,
-        "grant_type": "authorization_code",
-    }
-    response = requests.post(token_url, data=data)
-    access_token = response.json().get("access_token")
-    user_info = requests.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {access_token}"})
-    return user_info.json()
+# JWT Configurations
+SECRET_KEY = os.getenv("JWT_SECRET_KEY") 
+ALGORITHM = "HS256" # Algorithm used for encoding/decoding JWT tokens
