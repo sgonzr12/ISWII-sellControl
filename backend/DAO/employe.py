@@ -1,4 +1,4 @@
-class Employee:
+class Employe:
     def __init__(self, employeeID: int, rol: int):
         self.employeeID = employeeID
         

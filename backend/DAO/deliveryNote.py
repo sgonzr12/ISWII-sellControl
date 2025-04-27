@@ -2,7 +2,7 @@ from datetime import date
 from product import Product
 from typing import Optional, List, Tuple  
 
-class deliveryNote:
+class DeliveryNote:
     def __init__(self, deliveryNoteID: int, employeId: int, clientId: int, deliveryNoteDate: Optional[date] = None, 
                  totalPrize: Optional[float] = None, products: Optional[List[Tuple[Product, int]]] = None):
         self.deliveryNoteID = deliveryNoteID
