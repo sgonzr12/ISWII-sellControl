@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 import psycopg2.extensions
+import requests
+from fastapi import HTTPException
+import jwt
+import datetime
 
 app = FastAPI()
 postgresql_db: psycopg2.extensions.connection
@@ -22,3 +26,55 @@ def read_root():
     print("Database version:", db_version)
     # You can return the database version or any other info
     return {"message": "Hello World", "db_version": db_version}
+
+    """
+    endpoint to check a token with the google auth service
+    Args:
+        token (str): user token from google auth service
+
+    Returns:
+        access_token (str): access token for the user
+    """
+@app.get("/auth")
+def auth(token: str) -> str:
+    
+    SECRET_KEY = "your_secret_key"  # Ensure SECRET_KEY is explicitly a string
+
+    user_data = validate_google_token(token)
+    expiration_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+
+    payload = {
+        "sub": str(user_data["sub"]),
+        "email": str(user_data["email"]),
+        "name": str(user_data["name"]),
+        "exp": str(expiration_time),
+    }
+
+    access_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # type: ignore
+
+    return access_token
+
+
+def validate_google_token(id_token: str, google_client_id: str = "547605560322-uhhrg4hg9lccjnoica1oec7n0jcij1r9.apps.googleusercontent.com"):
+    """
+    Valida un id_token de Google y devuelve los datos del usuario si es válido.
+    """
+    url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + id_token
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+    
+    user_info = response.json()
+    
+    # Verificar que el token fue emitido para nuestro cliente
+    if user_info.get("aud") != google_client_id:
+        raise HTTPException(status_code=401, detail="Token emitido para otra aplicacion")
+    
+    return {
+        "sub": user_info.get("sub"),  # ID único del usuario en Google
+        "email": user_info.get("email"),
+        "name": user_info.get("name"),
+        "picture": user_info.get("picture"),
+        "email_verified": user_info.get("email_verified"),
+    }
