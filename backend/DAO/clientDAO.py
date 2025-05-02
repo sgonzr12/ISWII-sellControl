@@ -1,4 +1,5 @@
 import psycopg2.extensions
+import logging
 from client import Client
 
 class ClientDAO:
@@ -7,6 +8,10 @@ class ClientDAO:
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
         """
+        
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        
         self.db_connection = db_connection
 
     def create_client(self, client: Client) -> int:
@@ -18,6 +23,9 @@ class ClientDAO:
         query = """
         INSERT INTO clients (clientID, commercialName, CIF, address, email, phone, contact)
         """
+        
+        logging.debug(f"Creating client: {client}")
+        
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 client.clientID,
@@ -30,9 +38,11 @@ class ClientDAO:
             ))
             result = cursor.fetchone()
             if result is None:
+                self.logger.error("Failed to insert client and retrieve its ID.")
                 raise ValueError("Failed to insert client and retrieve its ID.")
             client_id = result[0]
             self.db_connection.commit()
+            logging.info(f"Client created with ID: {client_id}")
             return client_id
         
     
@@ -43,10 +53,15 @@ class ClientDAO:
         :return: A Client object containing the client details or None if not found.
         """
         query = "SELECT * FROM clients WHERE clientID = %s"
+        
+        logging.debug(f"Retrieving client with ID: {client_id}")
+        
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (client_id,))
             row = cursor.fetchone()
             if row:
+                
+                logging.info(f"Client found: {row}")
                 return Client(
                     clientID=row[0],
                     commercialName=row[1],
@@ -57,7 +72,10 @@ class ClientDAO:
                     contact=row[6]
                 )
             else:
+                self.logger.error(f"Client with ID {client_id} not found.")
                 raise ValueError(f"Client with ID {client_id} not found.")
+        
+            
             
     def get_all_clients(self) -> list[Client]:
         """
@@ -65,6 +83,9 @@ class ClientDAO:
         :return: A list of Client objects.
         """
         query = "SELECT * FROM clients"
+        
+        logging.debug("Retrieving all clients")
+        
         with self.db_connection.cursor() as cursor:
             cursor.execute(query)
             results = cursor.fetchall()
@@ -82,6 +103,7 @@ class ClientDAO:
                 )
                 clients.append(client)
         
+            logging.info(f"Retrieved {len(clients)} clients")
             return clients
         
     def update_client(self, client: Client) -> bool:
@@ -95,6 +117,9 @@ class ClientDAO:
         SET commercialName = %s, CIF = %s, address = %s, email = %s, phone = %s, contact = %s
         WHERE clientID = %s;
         """
+        
+        logging.debug(f"Updating client: {client}")
+        
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 client.commercialName,
@@ -106,6 +131,8 @@ class ClientDAO:
                 client.clientID
             ))
             self.db_connection.commit()
+            
+            logging.info(f"Client with ID {client.clientID} updated")
             return cursor.rowcount > 0
         
     def delete_client(self, client_id: int) -> bool:
@@ -115,8 +142,13 @@ class ClientDAO:
         :return: True if the deletion was successful, False otherwise.
         """
         query = "DELETE FROM clients WHERE clientID = %s"
+        
+        logging.debug(f"Deleting client with ID: {client_id}")
+        
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (client_id,))
             self.db_connection.commit()
             return cursor.rowcount > 0
+        
+        logging.info(f"Client with ID {client_id} deleted")
         
