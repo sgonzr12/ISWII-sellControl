@@ -38,16 +38,21 @@ def read_root():
 @app.get("/auth")
 def auth(token: str) -> str:
     
-    SECRET_KEY = "your_secret_key"  # Ensure SECRET_KEY is explicitly a string
-
-    user_data = validate_google_token(token)
+    SECRET_KEY = "your_secret_key"  #TODO: replace with secret key and store it in a secure place 
+    
+    try:
+        user_data = validate_google_token(token)
+    except HTTPException as e:
+        return "Authentication failed: " + str(e.detail)
+    
     expiration_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
 
     payload = {
         "sub": str(user_data["sub"]),
         "email": str(user_data["email"]),
         "name": str(user_data["name"]),
-        "exp": str(expiration_time),
+        "rol": "0",  # TODO: implement roles
+        "exp": expiration_time.isoformat(),  # Convert datetime to ISO 8601 string
     }
 
     access_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # type: ignore

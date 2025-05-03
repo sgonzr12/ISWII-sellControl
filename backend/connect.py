@@ -7,6 +7,7 @@ import psycopg2.extensions
 def connect(config: dict[str, str]) -> Optional[psycopg2.extensions.connection]:
     """ Connect to the PostgreSQL database server """
     try:
+        print('Connecting to the PostgreSQL database...')
         # connecting to the PostgreSQL server
         with psycopg2.connect(
             dbname=config.get("database"),

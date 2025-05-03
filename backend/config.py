@@ -1,8 +1,15 @@
 from configparser import ConfigParser
 
 from typing import Dict, List
+import os
 
 def load_config(filename: str = "../database.ini", section: str = "postgresql") -> Dict[str, str]:
+    # Resolve the path relative to the script's directory
+    filename = os.path.join(os.path.dirname(__file__), filename)
+    
+    if not os.path.isfile(filename):
+        raise FileNotFoundError(f"The configuration file '{os.path.abspath(filename)}' does not exist. Please ensure the file exists at the specified path.")
+    
     parser = ConfigParser()
     parser.read(filename)
 
