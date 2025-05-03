@@ -1,3 +1,5 @@
+import logging
+
 class Client:
     def __init__(self, clientID: int, commercialName: str, CIF: int, address: str, email: str, phone: int, contact: str):
         self.clientID = clientID
@@ -7,6 +9,8 @@ class Client:
         self.email = email
         self.phone = phone
         self.contact = contact
+        
+        self.logger = logging.getLogger("appLogger")
 
     def __repr__(self):
         return (f"Client(clientID={self.clientID}, commercialName='{self.commercialName}', CIF={self.CIF}, "

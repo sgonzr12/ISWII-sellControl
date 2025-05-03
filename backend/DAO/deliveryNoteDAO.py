@@ -1,4 +1,6 @@
 import psycopg2.extensions
+import logging
+
 from deliveryNote import DeliveryNote
 from product import Product
 from productDAO import ProductDAO
@@ -10,6 +12,7 @@ class DeliveryNoteDAO:
         :param db_connection: A database connection object.
         """
         self.db_connection = db_connection
+        self.logger = logging.getLogger("appLogger")
 
     def create_delivery_note(self, delivery_note: DeliveryNote) -> int:
         """

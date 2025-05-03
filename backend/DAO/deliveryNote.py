@@ -1,6 +1,8 @@
-from datetime import date  
-from product import Product
-from typing import Optional, List, Tuple  
+from datetime import date
+from typing import Optional, List, Tuple
+import logging
+  
+from product import Product  
 
 class DeliveryNote:
     def __init__(self, deliveryNoteID: int, employeId: int, clientId: int, deliveryNoteDate: Optional[date] = None, 
@@ -11,6 +13,7 @@ class DeliveryNote:
         self.date = deliveryNoteDate if deliveryNoteDate is not None else date.today()
         self.products = products if products is not None else []
         self.totalPrize = totalPrize if totalPrize is not None else self.calculatePrice(self.products)
+        self.logger = logging.getLogger("appLogger")
 
     def __repr__(self):
         return (f"deliveryNote(deliveryNoteID={self.deliveryNoteID}, employeId={self.employeId}, "
@@ -21,4 +24,5 @@ class DeliveryNote:
         total = 0.0
         for product, amount in products:
             total += product.sellPrize * amount
+        self.logger.debug(f"Calculated total price: {total}")
         return total
