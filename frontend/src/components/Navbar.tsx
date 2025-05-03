@@ -2,6 +2,8 @@ import './Navbar.css';
 import logo from '../images/logo.png';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { googleLogout } from '@react-oauth/google';
+
 interface NavbarProps {
   setIsAuthenticated: (value: boolean) => void;
 }
@@ -10,28 +12,17 @@ function Navbar({ setIsAuthenticated }: NavbarProps) {
   const navigate = useNavigate();
   
   const handleLogout = () => {
-    // Delete the credential from local storage
+    // Clear local storage
     localStorage.removeItem('credential');
     
     // Update authentication state
     setIsAuthenticated(false);
     
-    // Cerrar sesión de Google
-    const googleLogoutUrl = 'https://accounts.google.com/logout';
+    // Use the official method
+    googleLogout();
     
-    // Create an iframe to perform the logout
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = googleLogoutUrl;
-    document.body.appendChild(iframe);
-    
-    // Redirect to the home page after logout
+    // Redirect to home page
     navigate('/');
-    
-    // Clean up the iframe after a short delay
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 1000);
   };
   
   const navigateToHome = () => {
