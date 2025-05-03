@@ -9,8 +9,7 @@ class ClientDAO:
         :param db_connection: A database connection object.
         """
         
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger = logging.getLogger("appLogger")
         
         self.db_connection = db_connection
 
