@@ -5,7 +5,7 @@ from connect import connect
 from hello_world import create_app
 
 
-
+#TODO: change prints with logger (branch database)
 if __name__ == "__main__":
     
     # Load the database configuration

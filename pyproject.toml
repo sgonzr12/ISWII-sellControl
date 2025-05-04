@@ -9,5 +9,6 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
     "pyjwt>=2.10.1",
     "requests>=2.32.3",
+    "types-pyjwt>=1.7.1",
     "uvicorn>=0.34.0",
 ]
