@@ -1,4 +1,6 @@
 import psycopg2.extensions
+import logging
+
 from order import Order
 from product import Product
 from productDAO import ProductDAO
@@ -10,6 +12,7 @@ class OrderDAO:
         :param db_connection: A database connection object.
         """
         self.db_connection = db_connection
+        self.logger = logging.getLogger("appLogger")
 
     def create_order(self, order: Order) -> int:
         """
@@ -22,6 +25,9 @@ class OrderDAO:
         VALUES (%s, %s, %s, %s)
         RETURNING orderID;
         """
+
+        logging.debug(f"Creating order: {order}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 order.employeId,
@@ -32,6 +38,7 @@ class OrderDAO:
             
             result = cursor.fetchone()
             if result is None:
+                self.logger.error("Failed to insert order and retrieve its ID.")
                 raise ValueError("Failed to insert order and retrieve its ID.")
             order_id = result[0]
 
@@ -50,6 +57,7 @@ class OrderDAO:
                 ))
 
             self.db_connection.commit()
+            logging.info(f"Order created with ID: {order_id}")
             return order_id
         
     def get_order_by_id(self, order_id: int) -> Order:
@@ -63,6 +71,9 @@ class OrderDAO:
         FROM orders
         WHERE orderID = %s;
         """
+
+        logging.debug(f"Retrieving order with ID: {order_id}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (order_id,))
             result = cursor.fetchone()
@@ -84,6 +95,7 @@ class OrderDAO:
                     if product:
                         products.append((product, quantity))
                     else:
+                        logging.error(f"Product with ID {product_id} not found.")
                         raise ValueError(f"Product with ID {product_id} not found.")
                 # Create and return the Order object
                 order = Order(
@@ -95,8 +107,10 @@ class OrderDAO:
                     products=products
                 )
             
+                logging.info(f"Order found: {order}")
                 return order
             else:
+                self.logger.error(f"Order with ID {order_id} not found.")
                 raise ValueError(f"No order found with ID {order_id}.")
             
     def update_order(self, updated_order: Order) -> bool:
@@ -109,6 +123,9 @@ class OrderDAO:
         SET employeId = %s, clientID = %s, order_date = %s, totalPrize = %s
         WHERE orderID = %s;
         """
+
+        logging.debug(f"Updating order: {updated_order}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 updated_order.employeId,
@@ -134,7 +151,9 @@ class OrderDAO:
                     product.productId,
                     quantity
                 ))
+
             self.db_connection.commit()
+            logging.info(f"Order updated with ID: {updated_order.orderID}")
             return cursor.rowcount > 0
             
     def delete_order(self, order_id: int) -> bool:
@@ -143,6 +162,9 @@ class OrderDAO:
         :param order_id: The ID of the order to delete.
         :return: True if the deletion was successful, False otherwise.
         """
+
+        logging.debug(f"Deleting order with ID: {order_id}")
+
         with self.db_connection.cursor() as cursor:
             # Delete products associated with the order
             delete_products_query = """
@@ -159,6 +181,7 @@ class OrderDAO:
             cursor.execute(delete_order_query, (order_id,))
             
             self.db_connection.commit()
+            logging.info(f"Order with ID {order_id} deleted")
             return cursor.rowcount > 0
         
     def get_all_orders(self) -> list[Order]:
@@ -170,6 +193,9 @@ class OrderDAO:
         SELECT *
         FROM orders;
         """
+
+        logging.debug("Retrieving all orders")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query)
             results = cursor.fetchall()
@@ -193,6 +219,7 @@ class OrderDAO:
                     if product:
                         products.append((product, quantity))
                     else:
+                        logging.error(f"Product with ID {product_id} not found.")
                         raise ValueError(f"Product with ID {product_id} not found.")
                 
                 # Create and append the Order object to the list
@@ -206,8 +233,6 @@ class OrderDAO:
                 )
                 
                 orders.append(order)
+            
+            logging.info(f"Retrieved all {len(orders)} orders")
             return orders
-        
-        
-        
-
