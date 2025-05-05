@@ -7,6 +7,7 @@ import Home from './pages/Home';
 // import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
 // import Invoice from './pages/Invoice';
+import NotFound from './pages/NotFound'; // Importa el componente NotFound
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
@@ -84,6 +85,9 @@ function App() {
           <Route path="/deliverynote" element={<DeliveryNote />} />
           <Route path="/invoice" element={<Invoice />} /> */}
         </Route>
+        
+        {/* Ruta 404 para manejar todas las rutas no definidas - debe ser la última */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

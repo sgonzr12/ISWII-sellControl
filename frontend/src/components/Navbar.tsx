@@ -32,7 +32,7 @@ function Navbar({ setIsAuthenticated }: NavbarProps) {
   return (
     <nav className="navbar">
       <div className="logo-container" onClick={navigateToHome} style={{ cursor: 'pointer' }}>
-        <img src={logo} alt="Logo" className="logo" />
+      <img src={logo} alt="Logo" className="navbar-logo" />
         <h2>SellControl</h2>
       </div>
       <ul className="nav-links">

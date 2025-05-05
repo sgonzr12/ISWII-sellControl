@@ -2,6 +2,7 @@ import './Landing.css';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import logo from '../images/logo.png';
 
 interface LandingProps {
   setIsAuthenticated: (value: boolean) => void;
@@ -12,50 +13,54 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
 
   return (
     <div className="landing-container">
-      <h1>Bienvenido</h1>
-      <p>Por favor, inicia sesión para continuar.</p>
-      <GoogleLogin
-onSuccess={(credentialResponse) => {
-        if (credentialResponse.credential) {
+      <div className="landing-content">
+      <img src={logo} alt="SellControl Logo" className="landing-logo" />
+        <h1>Bienvenido a SellControl</h1>
+        <p>La plataforma que simplifica la gestión de ventas y control de inventario para tu negocio.</p>
+        <GoogleLogin
+        onSuccess={(credentialResponse) => {
+          if (credentialResponse.credential) {
 
-          //const decoded = jwtDecode(credentialResponse.credential);
-          //console.log('Token de google:', decoded);
-          
-          //Envío el token al backend
-          fetch(`http://192.168.1.172:8000/auth`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token: credentialResponse.credential })
-          })
-          //Lo que me responde el backend es el awt. Este hay que decodificarlo y guardarlo en el localStorage
-            .then(response => response.text())
-            .then(token => {
+            const token = jwtDecode(credentialResponse.credential);
 
-            console.log('Respuesta completa del backend:', token);
+              if (token) {
+                //const decodedToken = jwtDecode(token);
+                console.log('Decoded JWT:', token);
+                localStorage.setItem('credential', credentialResponse.credential);
+                setIsAuthenticated(true);
 
-
-            if (token) {
-              const decodedToken = jwtDecode(token);
-              console.log('Decoded JWT:', decodedToken);
-              localStorage.setItem('credential', token);
-              setIsAuthenticated(true);
-              navigate('/home');
-            } else {
-              console.error('Token not received from backend');
-              alert('Error al iniciar sesión. Por favor, intenta de nuevo.');
+                // Realizar petición fetch al backend
+                fetch('http://aperturelab.ignorelist.com:8000/user', {
+                  headers: {
+                    Authorization: `Bearer ${credentialResponse.credential}`
+                  }
+                })
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    // Almacenar la respuesta en localStorage
+                    localStorage.setItem('backendData', JSON.stringify(data));
+                    console.log('Data from backend:', data);
+                    
+                    // Navegar a home después de recibir la respuesta
+                    navigate('/home');
+                  })
+                  .catch(error => {
+                    console.error('Error fetching data from backend:', error);
+                    // Navegar a home incluso si hay un error
+                    //navigate('/home');
+                  });
+              } else {
+                alert('Login failed. Please try again.');
             }
-            })
-            .catch(error => {
-            console.error('Error al contactar el backend:', error);
-            alert('Error al iniciar sesión. Por favor, intenta de nuevo.');
-            });
-        } else {
-          console.error('Credential is undefined');
-        }
-      }}
-      />
+          }
+        }}
+        />
+      </div>
     </div>
   );
 }

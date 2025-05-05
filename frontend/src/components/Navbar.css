@@ -1,18 +1,18 @@
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #282c34;
-    color: white;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #282c34;
+  color: white;
+}
   
   .logo-container {
     display: flex;
     align-items: center;
   }
   
-  .logo {
+  .navbar-logo {
     height: 40px;
     margin-right: 10px;
   }
