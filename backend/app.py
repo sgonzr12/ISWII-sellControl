@@ -18,6 +18,7 @@ def verifyToken(token: str = Depends(security))-> None:
     """
     Verify the token
     """
+    print("Verifying token")  # TODO: REMOVE WHEN LOGGER IS READY
 
     # Verify loaded environment variables
     if CLIENT_ID is None or CLIENT_SECRET is None:
@@ -48,6 +49,9 @@ def verifyUser(user_id: str, token: str = Depends(security)) -> None:
     """
     Verify that the user in request params matches the user in the token
     """
+    
+    print("Verifying user")  # TODO: REMOVE WHEN LOGGER IS READY
+    
     # Decode the token to extract user information
     try:
         payload = jwt.decode(token, options={"verify_signature": False})

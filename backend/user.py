@@ -27,6 +27,7 @@ async def get_user(token: str = Depends(verifyToken)) -> dict[str,str]:
     """
     Get user information
     """
+    print ("User info requested")# TODO: REMOVE WHEN LOGGER IS READY
     user = User()
     return user.getUserJSON()
 
