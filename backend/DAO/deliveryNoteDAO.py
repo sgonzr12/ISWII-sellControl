@@ -25,6 +25,9 @@ class DeliveryNoteDAO:
         VALUES (%s, %s, %s, %s)
         RETURNING deliveryNoteID;
         """
+
+        logging.debug(f"Creating delivery note: {delivery_note}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 delivery_note.employeId,
@@ -35,6 +38,7 @@ class DeliveryNoteDAO:
             
             result = cursor.fetchone()
             if result is None:
+                self.logger.error("Failed to insert delivery note and retrieve its ID.")
                 raise ValueError("Failed to insert delivery note and retrieve its ID.")
             delivery_note_id = result[0]
 
@@ -53,6 +57,7 @@ class DeliveryNoteDAO:
                 ))
 
             self.db_connection.commit()
+            logging.info(f"Delivery note created with ID: {delivery_note_id}")
             return delivery_note_id
     
     
@@ -67,6 +72,9 @@ class DeliveryNoteDAO:
         FROM delivery_notes
         WHERE deliveryNoteID = %s;
         """
+
+        logging.debug(f"Retrieving delivery note with ID: {delivery_note_id}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (delivery_note_id,))
             result = cursor.fetchone()
@@ -94,9 +102,12 @@ class DeliveryNoteDAO:
                     totalPrize=result[4],
                     products=products
                 )
+
                 # Return the DeliveryNote object
+                logging.info(f"Delivery note found: {delivery_note}")
                 return delivery_note
             else:
+                self.logger.error(f"Delivery note with ID {delivery_note_id} not found.")
                 raise ValueError(f"Delivery note with ID {delivery_note_id} not found.")
     
     def update_delivery_note(self, updated_delivery_note: DeliveryNote) -> bool:
@@ -110,6 +121,9 @@ class DeliveryNoteDAO:
         SET employeId = %s, clientID = %s, delivery_date = %s, totalPrize = %s
         WHERE deliveryNoteID = %s;
         """
+
+        logging.debug(f"Updating delivery note: {updated_delivery_note}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 updated_delivery_note.employeId,
@@ -136,6 +150,7 @@ class DeliveryNoteDAO:
                 ))
                 
             self.db_connection.commit()
+            logging.info(f"Delivery note updated with ID: {updated_delivery_note.deliveryNoteID}")
             return cursor.rowcount > 0
         
         
@@ -145,6 +160,8 @@ class DeliveryNoteDAO:
         :param delivery_note_id: The ID of the delivery note to delete.
         :return: True if the deletion was successful, False otherwise.
         """
+
+        logging.debug(f"Deleting delivery note with ID: {delivery_note_id}")
         
         with self.db_connection.cursor() as cursor:
             # Delete products related to the delivery note
@@ -154,7 +171,9 @@ class DeliveryNoteDAO:
             # Delete the delivery note itself
             query = "DELETE FROM delivery_notes WHERE deliveryNoteID = %s;"
             cursor.execute(query, (delivery_note_id,))
+
             self.db_connection.commit()
+            logging.info(f"Delivery note with ID {delivery_note_id} deleted")
             return cursor.rowcount > 0
         
     def get_all_delivery_notes(self) -> list[DeliveryNote]:
@@ -163,6 +182,9 @@ class DeliveryNoteDAO:
         :return: A list of DeliveryNote objects.
         """
         query = "SELECT * FROM delivery_notes;"
+
+        logging.debug("Retrieving all delivery notes")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query)
             results = cursor.fetchall()
@@ -193,5 +215,7 @@ class DeliveryNoteDAO:
                     products=products
                 )
                 delivery_notes.append(delivery_note)
+            
+            logging.info(f"Retrieved all {len(delivery_notes)} delivery notes")
             return delivery_notes
         
