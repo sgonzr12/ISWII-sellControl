@@ -12,7 +12,7 @@ class DatabaseConnection:
         if cls._instance is None:
             config = load_config()
             cls._instance = psycopg2.connect(
-                dbname=config['dbname'],
+                dbname=config['database'],
                 user=config['user'],
                 password=config['password'],
                 host=config['host'],
