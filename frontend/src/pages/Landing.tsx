@@ -18,48 +18,47 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
         <h1>Bienvenido a SellControl</h1>
         <p>La plataforma que simplifica la gestión de ventas y control de inventario para tu negocio.</p>
         <GoogleLogin
-        onSuccess={(credentialResponse) => {
-          if (credentialResponse.credential) {
+  onSuccess={(credentialResponse) => {
+    if (credentialResponse.credential) {
+      const token = jwtDecode(credentialResponse.credential);
+      console.log('Decoded token:', token);
 
-            const token = jwtDecode(credentialResponse.credential);
-
-              if (token) {
-                //const decodedToken = jwtDecode(token);
-                console.log('Decoded JWT:', token);
-                localStorage.setItem('credential', credentialResponse.credential);
-                setIsAuthenticated(true);
-
-                // Realizar petición fetch al backend
-                fetch('http://aperturelab.ignorelist.com:8000/user', {
-                  headers: {
-                    Authorization: `Bearer ${credentialResponse.credential}`
-                  }
-                })
-                  .then(response => {
-                    if (!response.ok) {
-                      throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                  })
-                  .then(data => {
-                    // Almacenar la respuesta en localStorage
-                    localStorage.setItem('backendData', JSON.stringify(data));
-                    console.log('Data from backend:', data);
-                    
-                    // Navegar a home después de recibir la respuesta
-                    navigate('/home');
-                  })
-                  .catch(error => {
-                    console.error('Error fetching data from backend:', error);
-                    // Navegar a home incluso si hay un error
-                    //navigate('/home');
-                  });
-              } else {
-                alert('Login failed. Please try again.');
-            }
+      if (token) {
+        // Realizar petición fetch al backend
+        
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
+          headers: {
+            Authorization: `Bearer ${credentialResponse.credential}`
           }
-        }}
-        />
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Solo aquí almacena la credencial y autentica
+            if (credentialResponse.credential) {
+              localStorage.setItem('credential', credentialResponse.credential);
+            } else {
+              console.error('Credential is undefined');
+            }
+            setIsAuthenticated(true);
+            localStorage.setItem('backendData', JSON.stringify(data));
+            console.log('Data from backend:', data);
+            navigate('/home');
+          })
+          .catch(error => {
+            console.error('Error fetching data from backend:', error);
+            alert('No se pudo autenticar con el backend.');
+          });
+      } else {
+        alert('Login failed. Please try again.');
+      }
+    }
+  }}
+/>
       </div>
     </div>
   );
