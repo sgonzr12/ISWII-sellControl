@@ -3,16 +3,7 @@ from fastapi import FastAPI
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
-
-_app_instance = None
-
-
-def get_app() -> FastAPI:
-    global _app_instance
-    if _app_instance is None:
-        _app_instance = FastAPI()
-    return _app_instance
-
+import user
 
 
 
@@ -24,7 +15,7 @@ if __name__ == "__main__":
     connector = get_db_connection()
 
     #get app instance
-    app = get_app()
+    app = FastAPI()
     
     # TODO: change to allow only specific origins in production
     app.add_middleware(
@@ -35,6 +26,8 @@ if __name__ == "__main__":
         allow_headers=["*"],  # Allow all headers
     )
     
+    app.include_router(user.router, prefix="user", tags=["user"])
+    
     #start the server
     uvicorn.run(app, host="0.0.0.0", port=8000)
     
@@ -44,3 +37,4 @@ if __name__ == "__main__":
 
 
 
+user_instance = user
