@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+#import logging
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
