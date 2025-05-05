@@ -19,4 +19,4 @@ RUN /root/.local/bin/uv sync
 EXPOSE 8000
 
 # Comando para ejecutar FastAPI con uv
-CMD ["/root/.local/bin/uv", "run", "main.py"]
+CMD ["/root/.local/bin/uv", "run", "backend/main.py"]
