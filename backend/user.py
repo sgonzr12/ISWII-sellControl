@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from app import verifyToken, verifyUser
+from app import verifyToken
  
 
 # Temporary user class for demonstration purposes. TODO: REMOVE WHEN DATABASE IS READY
@@ -22,7 +22,7 @@ class User:
 
 router = APIRouter()
 
-@router.get("/", tags=["user"], dependencies=[Depends(verifyToken), Depends(verifyUser)])
+@router.get("/", tags=["user"], dependencies=[Depends(verifyToken)])
 async def get_user(token: str = Depends(verifyToken)) -> dict[str,str]:
     """
     Get user information

@@ -26,7 +26,7 @@ if __name__ == "__main__":
         allow_headers=["*"],  # Allow all headers
     )
     
-    app.include_router(user.router, prefix="user", tags=["user"])
+    app.include_router(user.router, prefix="/user", tags=["user"])
     
     #start the server
     uvicorn.run(app, host="0.0.0.0", port=8000)
