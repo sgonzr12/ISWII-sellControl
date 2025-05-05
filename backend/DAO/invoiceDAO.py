@@ -1,4 +1,6 @@
 import psycopg2.extensions
+import logging
+
 from invoice import Invoice
 from product import Product
 from productDAO import ProductDAO
@@ -10,6 +12,7 @@ class InvoiceDAO:
         :param db_connection: A database connection object.
         """
         self.db_connection = db_connection
+        self.logger = logging.getLogger("appLogger")
 
     def create_invoice(self, invoice: Invoice) -> int:
         """
@@ -22,6 +25,9 @@ class InvoiceDAO:
         VALUES (%s, %s, %s, %s)
         RETURNING invoiceID;
         """
+
+        logging.debug(f"Creating invoice: {invoice}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 invoice.employeId,
@@ -32,6 +38,7 @@ class InvoiceDAO:
             
             result = cursor.fetchone()
             if result is None:
+                self.logger.error("Failed to insert invoice and retrieve its ID.")
                 raise ValueError("Failed to insert invoice and retrieve its ID.")
             invoice_id = result[0]
 
@@ -50,6 +57,7 @@ class InvoiceDAO:
                 ))
 
             self.db_connection.commit()
+            logging.info(f"Invoice created with ID: {invoice_id}")
             return invoice_id
         
     def get_invoice_by_id(self, invoice_id: int) -> Invoice:
@@ -61,6 +69,9 @@ class InvoiceDAO:
         query = """
         SELECT * FROM invoices WHERE invoiceID = %s;
         """
+
+        logging.debug(f"Retrieving invoice with ID: {invoice_id}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (invoice_id,))
             result = cursor.fetchone()
@@ -87,8 +98,11 @@ class InvoiceDAO:
                     totalPrize=result[4],
                     products=products
                 )
+
+                logging.info(f"Invoice found: {invoice}")
                 return invoice
             else:
+                self.logger.error(f"Invoice with ID {invoice_id} not found.")
                 raise ValueError(f"Invoice with ID {invoice_id} not found.")
             
     def update_invoice(self, updated_invoice: Invoice) -> bool:
@@ -102,6 +116,9 @@ class InvoiceDAO:
         SET employeId = %s, clientId = %s, invoice_date = %s, totalPrize = %s
         WHERE invoiceID = %s;
         """
+
+        logging.debug(f"Updating invoice: {updated_invoice}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 updated_invoice.employeId,
@@ -131,6 +148,7 @@ class InvoiceDAO:
                 ))
                 
             self.db_connection.commit()
+            logging.info(f"Invoice updated with ID: {updated_invoice.invoiceID}")
             return cursor.rowcount > 0
     
     
@@ -141,6 +159,8 @@ class InvoiceDAO:
         :return: True if the deletion was successful, False otherwise.
         """
         
+        logging.debug(f"Deleting invoice with ID: {invoice_id}")
+
         with self.db_connection.cursor() as cursor:
             # Delete products from ProdInv table
             delete_query = """
@@ -155,7 +175,9 @@ class InvoiceDAO:
             WHERE invoiceID = %s;
             """
             cursor.execute(query, (invoice_id,))
+
             self.db_connection.commit()
+            logging.info(f"Invoice with ID {invoice_id} deleted")
             return cursor.rowcount > 0
         
     
@@ -167,6 +189,9 @@ class InvoiceDAO:
         query = """
         SELECT * FROM invoices;
         """
+
+        logging.debug("Retrieving all invoices")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query)
             results = cursor.fetchall()
@@ -197,5 +222,7 @@ class InvoiceDAO:
                     totalPrize=result[4],
                     products=products
                 ))
+            
+            logging.info(f"Retrieved all {len(invoices)} invoices")
             return invoices
         
