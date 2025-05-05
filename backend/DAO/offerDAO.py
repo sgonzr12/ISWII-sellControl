@@ -1,4 +1,6 @@
 import psycopg2.extensions
+import logging
+
 from offer import Offer
 from product import Product
 from productDAO import ProductDAO
@@ -11,6 +13,7 @@ class offerDAO:
         :param db_connection: A database connection object.
         """
         self.db_connection = db_connection
+        self.logger = logging.getLogger("appLogger")
 
     def create_offer(self, offer: Offer)-> int:
         """
@@ -23,6 +26,9 @@ class offerDAO:
         VALUES (%s, %s, %s, %s)
         RETURNING offerID;
         """
+
+        logging.debug(f"Creating offer: {offer}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 offer.employeId,
@@ -33,6 +39,7 @@ class offerDAO:
             
             result = cursor.fetchone()
             if result is None:
+                self.logger.error("Failed to insert offer and retrieve its ID.")
                 raise ValueError("Failed to insert offer and retrieve its ID.")
             offer_id = result[0]
 
@@ -51,6 +58,7 @@ class offerDAO:
                 ))
 
             self.db_connection.commit()
+            logging.info(f"Offer created with ID: {offer_id}")
             return offer_id
 
     def get_offer_by_id(self, offer_id: int)-> Offer:
@@ -62,6 +70,9 @@ class offerDAO:
         query = """
         SELECT * FROM offers WHERE offerID = %s;
         """
+
+        logging.debug(f"Retrieving offer with ID: {offer_id}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (offer_id,))
             result = cursor.fetchone()
@@ -96,8 +107,10 @@ class offerDAO:
                     products=products
                 )
                 # Return the offer object
+                logging.info(f"Offer found: {offer}")
                 return offer
             else:
+                self.logger.error(f"Offer with ID {offer_id} not found.")
                 raise ValueError(f"No offer found with ID {offer_id}.")
 
     def update_offer(self, updated_offer: Offer)-> bool:
@@ -111,6 +124,9 @@ class offerDAO:
         SET employeId = %s, clientID = %s, offer_date = %s, totalPrize = %s
         WHERE offerID = %s;
         """
+
+        logging.debug(f"Updating offer: {updated_offer}")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
                 updated_offer.employeId,
@@ -138,6 +154,7 @@ class offerDAO:
                 ))
 
             self.db_connection.commit()
+            logging.info(f"Offer updated with ID: {updated_offer.offerID}")
             return cursor.rowcount > 0
 
     def delete_offer(self, offer_id: int)-> bool:
@@ -146,6 +163,8 @@ class offerDAO:
         :param offer_id: The ID of the offer to delete.
         :return: True if the deletion was successful, False otherwise.
         """
+        logging.debug(f"Deleting offer with ID: {offer_id}")
+
         with self.db_connection.cursor() as cursor:
             # Delete products related to the offer
             prod_query = "DELETE FROM ProdOfe WHERE offerID = %s;"
@@ -154,7 +173,9 @@ class offerDAO:
             # Delete the offer itself
             query = "DELETE FROM offers WHERE offerID = %s;"
             cursor.execute(query, (offer_id,))
+
             self.db_connection.commit()
+            logging.info(f"Offer with ID {offer_id} deleted")
             return cursor.rowcount > 0
 
     def get_all_offers(self)-> list[Offer]:
@@ -166,6 +187,9 @@ class offerDAO:
         SELECT *
         FROM offers;
         """
+
+        logging.debug("Retrieving all offers")
+
         with self.db_connection.cursor() as cursor:
             cursor.execute(query)
             results = cursor.fetchall()
@@ -202,5 +226,7 @@ class offerDAO:
                         products=products
                     )
                 )
+            
+            logging.info(f"Retrieved all {len(offers)} offers")
             return offers
         
