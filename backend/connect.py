@@ -15,8 +15,7 @@ class DatabaseConnection:
                 dbname=config['database'],
                 user=config['user'],
                 password=config['password'],
-                host=config['host'],
-                port=config['port']
+                host=config['host']
             )
         return cls._instance
     
