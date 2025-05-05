@@ -3,3 +3,7 @@
 .idea/
 __pycache__/
 database.ini
+
+
+# Local environment variables
+ps.env
