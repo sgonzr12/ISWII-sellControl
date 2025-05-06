@@ -1,12 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
-#import logging
+import logging
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
 import user
 
-#import logging
 
 
 
@@ -30,6 +29,9 @@ if __name__ == "__main__":
     
     app.include_router(user.router, prefix="/user", tags=["user"])
     
+    #start logger
+    logging.getLogger("appLogger").setLevel(logging.DEBUG)
+
     #start the server
     uvicorn.run(app, host="0.0.0.0", port=8000)
     

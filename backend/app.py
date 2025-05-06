@@ -16,7 +16,7 @@ CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
 
-def verifyToken(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
+def verifyToken(token: HTTPAuthorizationCredentials = Depends(security)) -> dict[str, str]:
     """
     Verify the token
     """
@@ -31,11 +31,12 @@ def verifyToken(token: HTTPAuthorizationCredentials = Depends(security)) -> None
 
     # Verify the token
     try:
-        id_token.verify_oauth2_token(  # type: ignore
+        decoded_token = id_token.verify_oauth2_token( #type: ignore
             credentials,
             request=google_requests.Request(),
             audience=CLIENT_ID
         )
+        return decoded_token
     
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
