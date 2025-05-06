@@ -1,13 +1,15 @@
 import uvicorn
 from fastapi import FastAPI
-#import logging
+import os
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 import user
 
-#import logging
-
+env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
+load_dotenv(env_path)
+PORT = os.getenv("PORT")
 
 
 #TODO: change prints with logger (branch database)
@@ -30,8 +32,13 @@ if __name__ == "__main__":
     
     app.include_router(user.router, prefix="/user", tags=["user"])
     
+    
+    #change PORT to int
+    if PORT is None:
+        raise ValueError("PORT environment variable not set")
+    
     #start the server
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(PORT))
     
     #close database connection
     close_db_connection()

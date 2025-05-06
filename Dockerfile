@@ -15,8 +15,8 @@ COPY . /app
 # Instalar dependencias de Python directamente
 RUN /root/.local/bin/uv sync
 
-# Exponer el puerto 8000
-EXPOSE 8000
+# Exponer el puerto 1000
+EXPOSE 1000
 
 # Comando para ejecutar FastAPI con uv
 CMD ["/root/.local/bin/uv", "run", "backend/main.py"]
