@@ -1,10 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
+#import logging
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
 import user
 
+#import logging
 
 
 
@@ -33,8 +35,4 @@ if __name__ == "__main__":
     
     #close database connection
     close_db_connection()
-    
 
-
-
-user_instance = user
