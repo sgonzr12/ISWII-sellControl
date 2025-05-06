@@ -1,6 +1,7 @@
 from configparser import ConfigParser
-
 from typing import Dict, List
+
+import logging
 import os
 
 def load_config(filename: str = "../database.ini", section: str = "postgresql") -> Dict[str, str]:
@@ -19,11 +20,9 @@ def load_config(filename: str = "../database.ini", section: str = "postgresql") 
         params: List[tuple[str,str]] = parser.items(section)
         for param in params:
             config[param[0]] = param[1]
+        logging.debug(f"Configuration loaded: {config}")
     else:
+        logging.error(f"Section {section} not found in the {filename} file")
         raise Exception('Section {0} not found in the {1} file'.format(section, filename))
 
     return config
-
-if __name__ == '__main__':
-    config = load_config()
-    print(config)
