@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 import os
+import logging
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +44,9 @@ if __name__ == "__main__":
     if PORT is None:
         raise ValueError("PORT environment variable not set")
     
+    #start logger
+    logging.getLogger("appLogger").setLevel(logging.DEBUG)
+
     #start the server
     uvicorn.run(app, host="0.0.0.0", port=int(PORT))
     
