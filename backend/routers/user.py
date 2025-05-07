@@ -41,7 +41,7 @@ async def update_user(employe_id: str, rol: int) -> dict[str,str]:
     """
     print ("User info updated")
     
-    if rol < 0 or rol > 6:
+    if rol < 0 or rol > 4:
         raise ValueError("rol must be between 0 and 6")
     
     employe = employeDAO.get_employee_by_id(employe_id)
