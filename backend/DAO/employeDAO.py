@@ -1,4 +1,3 @@
-
 import logging
 from connect import get_db_connection
 
