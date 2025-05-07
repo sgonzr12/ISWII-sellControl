@@ -1,15 +1,16 @@
-import psycopg2.extensions
 import logging
+from connect import get_db_connection
 
 from DAO.employe import Employe
 
 class EmployeDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self):
         """
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
         """
-        self.db_connection = db_connection
+        
+        self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
     def get_all_employees(self)-> list[Employe]:
@@ -39,13 +40,13 @@ class EmployeDAO:
             logging.info(f"Retrieved {len(employees)} employees")
             return employees
 
-    def get_employee_by_id(self, employe_id: int)-> Employe:
+    def get_employee_by_id(self, employe_id: str)-> Employe:
         """
         Retrieve an employee by their ID.
         :param employee_id: The ID of the employee to retrieve.
         :return: An Employee object.
         """
-        query = """SELECT * FROM "Employes" WHERE Employes.EmployeID = %s"""
+        query = """SELECT * FROM "Employes" WHERE "EmployeID" = %s"""
 
         logging.debug(f"Retrieving employee with ID: {employe_id}")
 
@@ -64,7 +65,7 @@ class EmployeDAO:
                 self.logger.error(f"Employee with ID {employe_id} not found.")
                 raise ValueError(f"Employee with ID {employe_id} not found.")
 
-    def add_employee(self, employe_id: int, name: str, family_name: str, email: str, rol: int = 0)-> Employe:
+    def add_employee(self, employe_id: str, name: str, family_name: str, email: str, rol: int = 0)-> Employe:
         """
         Add a new employee to the database.
         :param employe_id: The ID of the employee.
@@ -75,7 +76,7 @@ class EmployeDAO:
         :return: The newly added employee.
         """
         query = """
-        INSERT INTO "Employes" (EmployeID, Name, Family_name, Email, Rol)
+        INSERT INTO "Employes" ("EmployeID", "Name", "Family_name", "Email", "Rol")
         VALUES (%s, %s, %s, %s, %s);
         """
 
@@ -88,7 +89,7 @@ class EmployeDAO:
             return Employe(employe_id=employe_id, name=name, family_name=family_name, email=email, rol=rol)
         
         
-    def update_employee(self, employe_id: int, name: str, family_name: str, email: str, rol: int = 0)-> Employe:
+    def update_employee(self, employe_id: str, name: str, family_name: str, email: str, rol: int = 0)-> Employe:
         """
         Update an existing employee in the database.
         :param employe_id: The ID of the employee to update.
@@ -100,8 +101,8 @@ class EmployeDAO:
         """
         query = """
         UPDATE "Employes"
-        SET Name = %s, Family_name = %s, Email = %s, Rol = %s
-        WHERE Employes.EmployeID = %s;
+        SET "Name" = %s, "Family_name" = %s, "Email" = %s, "Rol" = %s
+        WHERE "EmployeID" = %s;
         """
 
         logging.debug(f"Updating employee with ID: {employe_id}")
@@ -119,7 +120,7 @@ class EmployeDAO:
         :param employee_id: The ID of the employee to delete.
         :return: True if the deletion was successful, False otherwise.
         """
-        query = """DELETE FROM "Employes" WHERE Employe.EmployeID = %s"""
+        query = """DELETE FROM "Employes" WHERE "EmployeID" = %s"""
 
         logging.debug(f"Deleting employee with ID: {employee_id}")
 
@@ -130,7 +131,7 @@ class EmployeDAO:
             return cursor.rowcount > 0
         
         
-    def retriveOrCreate(self, employe_id: int, name: str, family_name: str, email: str) -> Employe:
+    def retriveOrCreate(self, employe_id: str, name: str, family_name: str, email: str) -> Employe:
         """
         Create a new employee if they do not already exist in the database.
         :param employe: An Employee object to create.
