@@ -66,8 +66,6 @@ def verifyTokenAdmin(token: HTTPAuthorizationCredentials = Depends(security)) ->
             request=google_requests.Request(),
             audience=CLIENT_ID
         )
-        if decoded_token["rol"] != 1:
-            raise HTTPException(status_code=403, detail="User is not an admin")
         
         employe = employeDAO.get_employee_by_id(decoded_token["sub"])
         
