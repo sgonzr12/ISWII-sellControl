@@ -34,11 +34,14 @@ async def get_all_users() -> list[dict[str,str]]:
 
 
 @router.put("/update", tags=["user"], dependencies=[Depends(verifyTokenAdmin)])
-async def update_user(employe_id: str, rol: int) -> dict[str,str]:
+async def update_user(employeData: dict[str,str]) -> dict[str,str]:
     """
     Update user information
     """
     logging.debug("User information update requested")
+
+    employe_id = employeData["employe_id"]
+    rol = int(employeData["rol"])
     
     if rol < 0 or rol > 4:
         logging.debug("Invalid rol value")
