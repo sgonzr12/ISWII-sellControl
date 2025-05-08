@@ -15,3 +15,20 @@ class Product:
                 f"description={self.description}, stock={self.stock}, maxStock={self.maxStock}, "
                 f"minStock={self.minStock}, location={self.location}, "
                 f"purchasePrize={self.purchasePrize}, sellPrize={self.sellPrize})")
+        
+    def get_product_JSON(self) -> dict[str, str]:
+        """
+        Convert the product object to a JSON-compatible dictionary.
+        :return: A dictionary representation of the product.
+        """
+        return {
+            "productId": str(self.productId),
+            "name": self.name,
+            "description": self.description,
+            "stock": str(self.stock),
+            "maxStock": str(self.maxStock),
+            "minStock": str(self.minStock),
+            "location": self.location,
+            "purchasePrize": str(self.purchasePrize),
+            "sellPrize": str(self.sellPrize)
+        }

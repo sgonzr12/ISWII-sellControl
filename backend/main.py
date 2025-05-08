@@ -5,7 +5,7 @@ import os
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import user
+import backend.routers.user as user
 
 env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
 load_dotenv(env_path)

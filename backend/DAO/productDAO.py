@@ -1,15 +1,15 @@
-import psycopg2.extensions
 import logging
 
 from product import Product
+from connect import get_db_connection
 
 class ProductDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self):
         """
         Initialize the ProductDAO with a database connection.
         :param db_connection: A database connection object.
         """
-        self.db_connection = db_connection
+        self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
     def create_product(self, product: Product) -> int:
@@ -19,7 +19,7 @@ class ProductDAO:
         :return: The ID of the newly created product.
         """
         query = """
-        INSERT INTO products (productId, name, description, stock, maxStock, minStock, location, purchasePrize, sellPrize)
+        INSERT INTO "products" ("productId", "name", "description", "stock", "maxStock", "minStock", "location", "purchasePrize", "sellPrize")
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING productId;
         """
 
@@ -52,7 +52,9 @@ class ProductDAO:
         logging.debug(f"Retrieving product with ID: {product_id}")
 
         try:
-            query = "SELECT * FROM products WHERE productId = %s;"
+            query = """SELECT * 
+                    FROM "products" 
+                    WHERE "productId" = %s;"""
             cursor.execute(query, (product_id,))
             result = cursor.fetchone()
             if result:
@@ -74,7 +76,7 @@ class ProductDAO:
         finally:
             cursor.close()
 
-    def update_product(self, product_id: int, updated_product: Product) -> bool:
+    def update_product(self, product_id: int, name: str, description: str, stock: int, maxStock: int, minStock: int, location: str, purchsePrize: float, sellPrize: float) -> bool:
         """
         Update an existing product in the database.
         :param product_id: The ID of the product to update.
@@ -82,17 +84,24 @@ class ProductDAO:
         :return: True if the update was successful, False otherwise.
         """
         query = """
-        UPDATE products
-        SET name = %s, description = %s, price = %s, stock = %s
-        WHERE productId = %s;
+        UPDATE "products"
+        SET name = %s, description = %s, stock = %s, maxStock = %s, minStock = %s, location = %s, purchasePrize = %s, sellPrize = %s
+        WHERE "productId" = %s;
         """
         cursor = self.db_connection.cursor()
         logging.debug(f"Updating product with ID: {product_id}")
 
         try:
             cursor.execute(query, (
-                updated_product.name, updated_product.description,
-                updated_product.purchasePrize, updated_product.stock, product_id
+                name,
+                description,
+                stock,
+                maxStock,
+                minStock,
+                location,
+                purchsePrize,
+                sellPrize,
+                product_id
             ))
 
             self.db_connection.commit()
@@ -107,7 +116,7 @@ class ProductDAO:
         :param product_id: The ID of the product to delete.
         :return: True if the deletion was successful, False otherwise.
         """
-        query = "DELETE FROM products WHERE productId = %s;"
+        query = """DELETE FROM "products" WHERE "productId" = %s;"""
         cursor = self.db_connection.cursor()
         logging.debug(f"Deleting product with ID: {product_id}")
 
@@ -129,7 +138,9 @@ class ProductDAO:
         logging.debug("Retrieving all products")
 
         try:
-            query = "SELECT * FROM products;"
+            query = """
+                    SELECT * FROM "products"
+                    """
             cursor.execute(query)
             results = cursor.fetchall()
 
