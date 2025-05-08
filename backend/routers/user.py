@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from app import verifyToken
+from backend.verificator import verifyToken
  
 
 # Temporary user class for demonstration purposes. TODO: REMOVE WHEN DATABASE IS READY
