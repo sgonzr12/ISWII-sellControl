@@ -17,12 +17,17 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 #TODO: change prints with logger (branch database)
 if __name__ == "__main__":
+
+    #Start logger
+    logging.getLogger("appLogger").setLevel(logging.DEBUG)
     
     #open database connection
     connector = get_db_connection()
+    logging.info("Database connection opened")
 
     #get app instance
     app = FastAPI()
+    logging.info("FastAPI app instance created")
     
     if FRONTEND_URL is None:
         raise ValueError("FRONTEND_URL environment variable not set")
@@ -52,4 +57,3 @@ if __name__ == "__main__":
     
     #close database connection
     close_db_connection()
-
