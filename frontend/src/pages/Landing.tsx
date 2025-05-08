@@ -14,7 +14,7 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
   return (
     <div className="landing-container">
       <div className="landing-content">
-      <img src={logo} alt="SellControl Logo" className="landing-logo" />
+        <img src={logo} alt="SellControl Logo" className="landing-logo" />
         <h1>Bienvenido a SellControl</h1>
         <p>La plataforma que simplifica la gestión de ventas y control de inventario para tu negocio.</p>
         <div className="google-login-wrapper">
@@ -25,35 +25,26 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
                 console.log('Decoded token:', token);
 
                 if (token) {
-                  // Realizar petición fetch al backend
-                  
-                  fetch(`${import.meta.env.VITE_BACKEND_URL}/user/`, {
-                    headers: {
-                      Authorization: `Bearer ${credentialResponse.credential}`
-                    }
-                  })
-                    .then(response => {
-                      if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                  try {
+                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
+                      headers: {
+                        Authorization: `Bearer ${credentialResponse.credential}`
                       }
-                      return response.json();
-                    })
-                    .then(data => {
-                      // Solo aquí almacena la credencial y autentica
-                      if (credentialResponse.credential) {
-                        localStorage.setItem('credential', credentialResponse.credential);
-                      } else {
-                        console.error('Credential is undefined');
-                      }
-                      setIsAuthenticated(true);
-                      localStorage.setItem('backendData', JSON.stringify(data));
-                      console.log('Data from backend:', data);
-                      navigate('/home');
-                    })
-                    .catch(error => {
-                      console.error('Error fetching data from backend:', error);
-                      alert('No se pudo autenticar con el backend.');
                     });
+                    if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    // Solo aquí almacena la credencial y autentica
+                    localStorage.setItem('credential', credentialResponse.credential);
+                    setIsAuthenticated(true);
+                    localStorage.setItem('backendData', JSON.stringify(data));
+                    console.log('Data from backend:', data);
+                    navigate('/home');
+                  } catch (error) {
+                    console.error('Error fetching data from backend:', error);
+                    alert('No se pudo autenticar con el backend.');
+                  }
                 } else {
                   alert('Login failed. Please try again.');
                 }
