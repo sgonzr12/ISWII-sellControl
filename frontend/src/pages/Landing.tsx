@@ -18,47 +18,38 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
         <h1>Bienvenido a SellControl</h1>
         <p>La plataforma que simplifica la gestión de ventas y control de inventario para tu negocio.</p>
         <GoogleLogin
-  onSuccess={(credentialResponse) => {
-    if (credentialResponse.credential) {
-      const token = jwtDecode(credentialResponse.credential);
-      console.log('Decoded token:', token);
-
-      if (token) {
-        // Realizar petición fetch al backend
-        
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
-          headers: {
-            Authorization: `Bearer ${credentialResponse.credential}`
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            // Solo aquí almacena la credencial y autentica
+          onSuccess={async (credentialResponse) => {
             if (credentialResponse.credential) {
-              localStorage.setItem('credential', credentialResponse.credential);
-            } else {
-              console.error('Credential is undefined');
+              const token = jwtDecode(credentialResponse.credential);
+              console.log('Decoded token:', token);
+
+              if (token) {
+                try {
+                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
+                    headers: {
+                      Authorization: `Bearer ${credentialResponse.credential}`
+                    }
+                  });
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  const data = await response.json();
+                  // Solo aquí almacena la credencial y autentica
+                  localStorage.setItem('credential', credentialResponse.credential);
+                  setIsAuthenticated(true);
+                  localStorage.setItem('backendData', JSON.stringify(data));
+                  console.log('Data from backend:', data);
+                  navigate('/home');
+                } catch (error) {
+                  console.error('Error fetching data from backend:', error);
+                  alert('No se pudo autenticar con el backend.');
+                }
+              } else {
+                alert('Login failed. Please try again.');
+              }
             }
-            setIsAuthenticated(true);
-            localStorage.setItem('backendData', JSON.stringify(data));
-            console.log('Data from backend:', data);
-            navigate('/home');
-          })
-          .catch(error => {
-            console.error('Error fetching data from backend:', error);
-            alert('No se pudo autenticar con el backend.');
-          });
-      } else {
-        alert('Login failed. Please try again.');
-      }
-    }
-  }}
-/>
+          }}
+        />
       </div>
     </div>
   );

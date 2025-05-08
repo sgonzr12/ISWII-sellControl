@@ -29,6 +29,10 @@ function Navbar({ setIsAuthenticated }: NavbarProps) {
     navigate('/home');
   };
 
+
+  const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  const rol = Number(backendData.rol) || -1; 
+
   return (
     <nav className="navbar">
       <div className="logo-container" onClick={navigateToHome} style={{ cursor: 'pointer' }}>
@@ -41,6 +45,7 @@ function Navbar({ setIsAuthenticated }: NavbarProps) {
         <li><Link to="/order">Pedido</Link></li>
         <li><Link to="/deliverynote">Albarán</Link></li>
         <li><Link to="/invoice">Factura</Link></li>
+        {rol === 1 && (<li><Link to="/administrator">Administración</Link></li>)}
       </ul>
       <button className="login-button" onClick={handleLogout}>
         Cerrar sesión

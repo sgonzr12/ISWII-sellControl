@@ -24,4 +24,5 @@ html, body, #root {
     height: calc(100vh - 60px); /* No navbar height */
     background-color: #f5f5f5;
     width: 100%;
+    align-items: start;
 }
