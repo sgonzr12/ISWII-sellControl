@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
+import Administrator from './pages/Administrator';
 // import Product from './pages/Product';
 // import Offer from './pages/Offer';
 // import Order from './pages/Order';
@@ -62,6 +63,13 @@ function App() {
     return <div>Cargando...</div>;
   }
 
+
+
+    const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+    const rol = Number(backendData.rol) || -1; 
+
+
+
   return (
     <BrowserRouter>
       {isAuthenticated && <Navbar setIsAuthenticated={setIsAuthenticated} />}
@@ -79,6 +87,10 @@ function App() {
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated} />}>
           <Route path="/home" element={<Home />} />
+          {rol === 1 && <Route path="/administrator" element={<Administrator />} />}
+
+         
+
           {/* <Route path="/product" element={<Product />} />
           <Route path="/offer" element={<Offer />} />
           <Route path="/order" element={<Order />} />
