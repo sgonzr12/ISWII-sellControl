@@ -84,16 +84,23 @@
   margin-bottom: 1.5rem;
 }
 
-/* Estiliza el botón de Google Login */
-div[style*="opacity"] {
-  margin: 0 auto;
-  transform: scale(1.2);
-  transition: transform 0.3s ease;
+.google-login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
 }
 
-div[style*="opacity"]:hover {
+.google-login-wrapper > div {
+  transform: scale(1.2);
+  transition: transform 0.3s;
+}
+
+.google-login-wrapper > div:hover {
   transform: scale(1.25);
 }
+
+
 
 @media (max-width: 768px) {
   .landing-container h1 {
