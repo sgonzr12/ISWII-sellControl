@@ -12,13 +12,15 @@ class EmployeDAO:
         
         self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
-
+    
     def get_all_employees(self)-> list[Employe]:
         """
         Retrieve all employees from the database.
         :return: A list of Employee objects.
         """
-        query = """SELECT * FROM "Employes"""""
+        query = """
+                SELECT * FROM "Employes"
+                """
 
         logging.debug("Retrieving all employees")
 
