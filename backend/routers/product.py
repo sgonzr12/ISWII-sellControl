@@ -7,7 +7,7 @@ from DAO.product import Product
 router = APIRouter()
 productDAO = ProductDAO()
 
-@router.get("/", tags=["products"], dependencies=[Depends(verifyTokenEmployee)])
+@router.get("/", tags=["product"], dependencies=[Depends(verifyTokenEmployee)])
 async def get_all_products(token: str = Depends(verifyToken)) -> list[dict[str, str]]:
     """
     Get all products
@@ -16,7 +16,7 @@ async def get_all_products(token: str = Depends(verifyToken)) -> list[dict[str, 
     products = productDAO.get_all_products()
     return [product.get_product_JSON() for product in products]
 
-@router.put("/", tags=["products"], dependencies=[Depends(verifyTokenCURProduct)])
+@router.put("/", tags=["product"], dependencies=[Depends(verifyTokenCURProduct)])
 async def update_product(product: dict[str, str], token: str = Depends(verifyToken)) -> dict[str, str]:
     """
     Update a product
@@ -43,7 +43,7 @@ async def update_product(product: dict[str, str], token: str = Depends(verifyTok
     updated_product = productDAO.update_product(new_product)
     return updated_product.get_product_JSON()
 
-@router.post("/", tags=["products"], dependencies=[Depends(verifyTokenCURProduct)])
+@router.post("/", tags=["product"], dependencies=[Depends(verifyTokenCURProduct)])
 async def create_product(product: dict[str, str], token: str = Depends(verifyToken)) -> dict[str, str]:
     """
     Create a new product
