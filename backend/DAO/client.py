@@ -1,7 +1,7 @@
 import logging
 
 class Client:
-    def __init__(self, clientID: int, commercialName: str, CIF: int, address: str, email: str, phone: int, contact: str):
+    def __init__(self, clientID: str, commercialName: str, CIF: int, address: str, email: str, phone: int, contact: str):
         self.clientID = clientID
         self.commercialName = commercialName
         self.CIF = CIF
