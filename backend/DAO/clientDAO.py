@@ -1,9 +1,10 @@
-import psycopg2.extensions
 import logging
+
+from connect import get_db_connection
 from client import Client
 
 class ClientDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self,):
         """
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
@@ -11,8 +12,9 @@ class ClientDAO:
         
         self.logger = logging.getLogger("appLogger")
         
-        self.db_connection = db_connection
-
+        self.db_connection = get_db_connection()
+        
+        
     def create_client(self, client: Client) -> int:
         """
         Insert a new client into the database.
@@ -20,7 +22,7 @@ class ClientDAO:
         :return: The ID of the newly created client.
         """
         query = """
-        INSERT INTO clients (clientID, commercialName, CIF, address, email, phone, contact)
+        INSERT INTO "Clients" ("ClientID", "CommercialName", "CIF", "Address", "Email", "Phone", "Contact")
         """
         
         logging.debug(f"Creating client: {client}")
@@ -51,8 +53,10 @@ class ClientDAO:
         :param client_id: The ID of the client.
         :return: A Client object containing the client details or None if not found.
         """
-        query = "SELECT * FROM clients WHERE clientID = %s"
-        
+        query = """
+                SELECT * FROM "Clients" WHERE "clientID" = %s
+                """
+                
         logging.debug(f"Retrieving client with ID: {client_id}")
         
         with self.db_connection.cursor() as cursor:
@@ -81,7 +85,9 @@ class ClientDAO:
         Retrieve all clients from the database.
         :return: A list of Client objects.
         """
-        query = "SELECT * FROM clients"
+        query = """
+                SELECT * FROM "Clients"
+                """
         
         logging.debug("Retrieving all clients")
         
@@ -112,9 +118,9 @@ class ClientDAO:
         :return: True if the update was successful, False otherwise.
         """
         query = """
-        UPDATE clients
-        SET commercialName = %s, CIF = %s, address = %s, email = %s, phone = %s, contact = %s
-        WHERE clientID = %s;
+        UPDATE "Clients"
+        SET "CommercialName" = %s, "CIF" = %s, "Address" = %s, "Email" = %s, "Phone" = %s, "Contact" = %s
+        WHERE "ClientID" = %s;
         """
         
         logging.debug(f"Updating client: {client}")
@@ -140,7 +146,8 @@ class ClientDAO:
         :param client_id: The ID of the client to delete.
         :return: True if the deletion was successful, False otherwise.
         """
-        query = "DELETE FROM clients WHERE clientID = %s"
+        query = """DELETE FROM "Clients" WHERE "ClientID" = %s
+        """
         
         logging.debug(f"Deleting client with ID: {client_id}")
         
