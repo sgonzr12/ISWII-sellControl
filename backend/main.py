@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+import logging
 import os
 import logging
 
@@ -13,7 +14,6 @@ env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
 load_dotenv(env_path)
 PORT = os.getenv("PORT")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
-
 
 #TODO: change prints with logger (branch database)
 if __name__ == "__main__":

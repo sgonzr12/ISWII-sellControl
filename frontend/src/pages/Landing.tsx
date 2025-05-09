@@ -17,9 +17,10 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
         <img src={logo} alt="SellControl Logo" className="landing-logo" />
         <h1>Bienvenido a SellControl</h1>
         <p>La plataforma que simplifica la gestión de ventas y control de inventario para tu negocio.</p>
+        
         <div className="google-login-wrapper">
           <GoogleLogin
-            onSuccess={(credentialResponse) => {
+            onSuccess={async (credentialResponse) => {
               if (credentialResponse.credential) {
                 const token = jwtDecode(credentialResponse.credential);
                 console.log('Decoded token:', token);
@@ -51,9 +52,7 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
               }
             }}
           />
-
         </div>
-        
       </div>
     </div>
   );
