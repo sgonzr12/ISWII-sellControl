@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from backend.verificator import verifyToken, verifyTokenCURProduct
+from backend.verificator import verifyToken, verifyTokenCURProduct, verifyTokenEmployee
 
 from DAO.productDAO import ProductDAO
 from DAO.product import Product
@@ -7,7 +7,7 @@ from DAO.product import Product
 router = APIRouter()
 productDAO = ProductDAO()
 
-@router.get("/", tags=["products"], dependencies=[Depends(verifyToken)])
+@router.get("/", tags=["products"], dependencies=[Depends(verifyTokenEmployee)])
 async def get_all_products(token: str = Depends(verifyToken)) -> list[dict[str, str]]:
     """
     Get all products
@@ -43,7 +43,7 @@ async def update_product(product: dict[str, str], token: str = Depends(verifyTok
     updated_product = productDAO.update_product(new_product)
     return updated_product.get_product_JSON()
 
-@router.post("/", tags=["products"], dependencies=[Depends(verifyToken)])
+@router.post("/", tags=["products"], dependencies=[Depends(verifyTokenCURProduct)])
 async def create_product(product: dict[str, str], token: str = Depends(verifyToken)) -> dict[str, str]:
     """
     Create a new product
