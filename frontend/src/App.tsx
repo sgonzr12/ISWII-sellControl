@@ -8,6 +8,7 @@ import Client from './pages/Client';
 // import Product from './pages/Product';
 import Product from './pages/Product';
 // import Offer from './pages/Offer';
+import Offer from './pages/Offer';
 // import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
 // import Invoice from './pages/Invoice';
