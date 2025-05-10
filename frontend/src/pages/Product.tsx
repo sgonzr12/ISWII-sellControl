@@ -2,8 +2,8 @@ import './Product.css';
 import { useState, useEffect} from 'react';
 
 function Product() {
-    const [product, setProducts] = useState<{productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrice: number, sellPrice: number }[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<{productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrice: number, sellPrice: number } | null>(null);
+    const [products, setProducts] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; location: string; purchasePrice: number; sellPrice: number }[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; location: string; purchasePrice: number; sellPrice: number } | null>(null);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [addName, setAddName] = useState('');
@@ -16,6 +16,7 @@ function Product() {
     const [addSellPrice, setAddSellPrice] = useState('');
 
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [editStock, setEditStock] = useState('');
     const [editMaxStock, setEditMaxStock] = useState('');
     const [editMinStock, setEditMinStock] = useState('');
     const [editLocation, setEditLocation] = useState('');
@@ -47,12 +48,13 @@ function Product() {
         fetchProducts();
     } , []);
 
-    const handleSelectProduct = (product: {productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrice: number, sellPrice: number }) => {
+    const handleSelectProduct = (product: {productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; location: string; purchasePrice: number; sellPrice: number }) => {
         setSelectedProduct(product);
     }
 
     const handleEditClick = () => {
         if (selectedProduct) {
+            setEditStock(selectedProduct.stock.toString());
             setEditMaxStock(selectedProduct.maxStock.toString());
             setEditMinStock(selectedProduct.minStock.toString());
             setEditLocation(selectedProduct.location);
@@ -90,7 +92,7 @@ function Product() {
                     productId: selectedProduct.productId,
                     name: selectedProduct.name,
                     description: selectedProduct.description,
-                    stock: selectedProduct.stock,
+                    stock: editStock,
                     maxStock: editMaxStock,
                     minStock: editMinStock,
                     location: editLocation,
@@ -105,7 +107,7 @@ function Product() {
 
             const data = await response.json();
             console.log('Updated product:', data);
-            setProducts(product.map(product => product.productId === selectedProduct.productId ? data : product));
+            setProducts(products.map(products => products.productId === selectedProduct.productId ? data : products));
             setIsUpdateModalOpen(false);
             fetchProducts();
         }
@@ -141,7 +143,7 @@ function Product() {
 
             const data = await response.json();
             console.log('Added product:', data);
-            setProducts([...product, data]);
+            setProducts([...products, data]);
             setIsAddModalOpen(false);
             fetchProducts();
         }
@@ -157,7 +159,7 @@ function Product() {
                     <h1>Productos</h1>
                     
                     <ul className="product-list">
-                        {product.map(product => (
+                        {products.map(product => (
                             <li 
                                 key={product.productId} 
                                 className={selectedProduct?.productId === product.productId ? 'selected' : ''}
@@ -197,7 +199,8 @@ function Product() {
                             <h2>Modificar producto</h2>
                             <label>Nombre: &nbsp; {selectedProduct?.name}</label>
                             <label>Descripción: &nbsp; {selectedProduct?.description}</label>
-                            <label>Stock: &nbsp; {selectedProduct?.stock}</label>
+                            <label>Stock: &nbsp;</label>
+                            <input type="number" value={selectedProduct?.stock} onChange={e => setEditStock(e.target.value)}/>
                             <label>Stock máximo: &nbsp;</label>
                             <input type="number" value={selectedProduct?.maxStock} onChange={e => setEditMaxStock(e.target.value)} />
                             <label>Stock mínimo: &nbsp;</label>
