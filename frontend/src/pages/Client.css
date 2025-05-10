@@ -26,8 +26,8 @@
 .client-table {
   border-collapse: collapse;
   margin: 0 auto;
-  width: 80%;
-  max-width: 700px;
+  width: 90%;
+  max-width: 1000px;
   border: 2px solid #000;
   background: #fff;
 }
