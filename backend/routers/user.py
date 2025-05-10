@@ -17,6 +17,12 @@ async def get_user(token: dict[str,str] = Depends(verifyToken)) -> dict[str,str]
     Get user information
     """
     logging.debug("User information requested")
+    # print the token
+    logging.debug(f"Token: {token}")
+    
+    # if there is no field "family_name" in the token, set it to ""
+    if "family_name" not in token:
+        token["family_name"] = ""
 
     user = employeDAO.retriveOrCreate(token["sub"], token["name"], token["family_name"], token["email"])
     logging.info(f"User {user.getUserJSON()} retrieved")
