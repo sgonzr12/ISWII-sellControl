@@ -3,7 +3,7 @@ import logging
 from fastapi import HTTPException
 
 from connect import get_db_connection
-from client import Client
+from DAO.client import Client
 
 class ClientDAO:
     def __init__(self,):
@@ -31,7 +31,7 @@ class ClientDAO:
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.commercialName,
+                client.CompanyName,
                 client.CIF,
                 client.address,
                 client.email,
@@ -72,7 +72,7 @@ class ClientDAO:
                 logging.info(f"Client found: {row}")
                 return Client(
                     clientID=row[0],
-                    commercialName=row[1],
+                    CompanyName=row[1],
                     CIF=row[2],
                     address=row[3],
                     email=row[4],
@@ -104,7 +104,7 @@ class ClientDAO:
             for row in results:
                 client = Client(
                     clientID=row[0],
-                    commercialName=row[1],
+                    CompanyName=row[1],
                     CIF=row[2],
                     address=row[3],
                     email=row[4],
@@ -132,7 +132,8 @@ class ClientDAO:
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.commercialName,
+                client.CompanyName,
+
                 client.CIF,
                 client.address,
                 client.email,
