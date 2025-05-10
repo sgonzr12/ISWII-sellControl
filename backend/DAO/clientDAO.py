@@ -1,5 +1,7 @@
 import logging
 
+from fastapi import HTTPException
+
 from connect import get_db_connection
 from client import Client
 
@@ -15,21 +17,20 @@ class ClientDAO:
         self.db_connection = get_db_connection()
         
         
-    def create_client(self, client: Client) -> int:
+    def create_client(self, client: Client) -> Client:
         """
         Insert a new client into the database.
         :param client: A Client object containing client details.
         :return: The ID of the newly created client.
         """
         query = """
-        INSERT INTO "Clients" ("ClientID", "CommercialName", "CIF", "Address", "Email", "Phone", "Contact")
+        INSERT INTO "Clients" ("CommercialName", "CIF", "Address", "Email", "Phone", "Contact")
         """
         
         logging.debug(f"Creating client: {client}")
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.clientID,
                 client.commercialName,
                 client.CIF,
                 client.address,
@@ -40,14 +41,18 @@ class ClientDAO:
             result = cursor.fetchone()
             if result is None:
                 self.logger.error("Failed to insert client and retrieve its ID.")
-                raise ValueError("Failed to insert client and retrieve its ID.")
+                raise HTTPException(status_code=500, detail="Failed to create client.")
             client_id = result[0]
             self.db_connection.commit()
+            
+            client.clientID = client_id
+            
             logging.info(f"Client created with ID: {client_id}")
-            return client_id
+            return client
+
         
     
-    def get_client_by_id(self, client_id: int) -> Client:
+    def get_client_by_id(self, client_id: str) -> Client:
         """
         Retrieve a client by its ID.
         :param client_id: The ID of the client.
@@ -76,7 +81,7 @@ class ClientDAO:
                 )
             else:
                 self.logger.error(f"Client with ID {client_id} not found.")
-                raise ValueError(f"Client with ID {client_id} not found.")
+                raise HTTPException(status_code=404, detail=f"Client with ID {client_id} not found.")
         
             
             
@@ -111,7 +116,7 @@ class ClientDAO:
             logging.info(f"Retrieved {len(clients)} clients")
             return clients
         
-    def update_client(self, client: Client) -> bool:
+    def update_client(self, client: Client) -> Client:
         """
         Update an existing client in the database.
         :param client: A Client object containing updated client details.
@@ -138,7 +143,10 @@ class ClientDAO:
             self.db_connection.commit()
             
             logging.info(f"Client with ID {client.clientID} updated")
-            return cursor.rowcount > 0
+            if cursor.rowcount == 0:
+                self.logger.error(f"Failed to update client with ID {client.clientID}.")
+                raise HTTPException(status_code=404, detail=f"Client with ID {client.clientID} not found.")
+            return client
         
     def delete_client(self, client_id: int) -> bool:
         """
