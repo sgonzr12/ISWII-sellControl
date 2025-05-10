@@ -89,7 +89,7 @@ class ProductDAO:
         query = """
         UPDATE "Products"
         SET Name = %s, Description = %s, Stock = %s, MaxStock = %s, MinStock = %s, Location = %s, PurchasePrice = %s, SellPrice = %s
-        WHERE "productID" = %s;
+        WHERE "ProductID" = %s;
         """
         cursor = self.db_connection.cursor()
         logging.debug(f"Updating product with ID: {product.productId}")
