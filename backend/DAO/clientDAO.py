@@ -3,7 +3,7 @@ import logging
 from fastapi import HTTPException
 
 from connect import get_db_connection
-from client import Client
+from DAO.client import Client
 
 class ClientDAO:
     def __init__(self,):
@@ -24,14 +24,15 @@ class ClientDAO:
         :return: The ID of the newly created client.
         """
         query = """
-        INSERT INTO "Clients" ("CommercialName", "CIF", "Address", "Email", "Phone", "Contact")
+        INSERT INTO "Clients" ("CompanyName", "CIF", "Address", "Email", "Phone", "Contact")
+        values (%s, %s, %s, %s, %s, %s) RETURNING "ClientID";
         """
         
         logging.debug(f"Creating client: {client}")
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.commercialName,
+                client.CompanyName,
                 client.CIF,
                 client.address,
                 client.email,
@@ -59,7 +60,7 @@ class ClientDAO:
         :return: A Client object containing the client details or None if not found.
         """
         query = """
-                SELECT * FROM "Clients" WHERE "clientID" = %s
+                SELECT * FROM "Clients" WHERE "ClientID" = %s
                 """
                 
         logging.debug(f"Retrieving client with ID: {client_id}")
@@ -72,7 +73,7 @@ class ClientDAO:
                 logging.info(f"Client found: {row}")
                 return Client(
                     clientID=row[0],
-                    commercialName=row[1],
+                    CompanyName=row[1],
                     CIF=row[2],
                     address=row[3],
                     email=row[4],
@@ -104,7 +105,7 @@ class ClientDAO:
             for row in results:
                 client = Client(
                     clientID=row[0],
-                    commercialName=row[1],
+                    CompanyName=row[1],
                     CIF=row[2],
                     address=row[3],
                     email=row[4],
@@ -124,7 +125,7 @@ class ClientDAO:
         """
         query = """
         UPDATE "Clients"
-        SET "CommercialName" = %s, "CIF" = %s, "Address" = %s, "Email" = %s, "Phone" = %s, "Contact" = %s
+        SET "CompanyName" = %s, "CIF" = %s, "Address" = %s, "Email" = %s, "Phone" = %s, "Contact" = %s
         WHERE "ClientID" = %s;
         """
         
@@ -132,7 +133,8 @@ class ClientDAO:
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.commercialName,
+                client.CompanyName,
+
                 client.CIF,
                 client.address,
                 client.email,

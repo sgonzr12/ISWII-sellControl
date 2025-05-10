@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
-from backend.verificator import verifyToken, verifyTokenEmployee
+from verificator import verifyToken, verifyTokenEmployee
 
 from DAO.clientDAO import ClientDAO
 from DAO.client import Client
@@ -31,7 +31,7 @@ async def update_client(client: dict[str, str], token: str = Depends(verifyToken
     actual_client = clientDAO.get_client_by_id(clientId)
     
     
-    new_client = Client(clientID=clientId, commercialName=actual_client.commercialName, CIF=actual_client.CIF, address=address, email=email, phone=int(phone), contact=contact)
+    new_client = Client(clientID=int(clientId), CompanyName=actual_client.CompanyName, CIF=actual_client.CIF, address=address, email=email, phone=int(phone), contact=contact)
     
     # Update the client
     updated_client = clientDAO.update_client(new_client)
@@ -43,14 +43,14 @@ async def create_client(client: dict[str, str], token: str = Depends(verifyToken
     Create a new client
     """     
     print("Client creation requested")
-    commercialName = client["commercialName"]
+    CompanyName = client["CompanyName"]
     CIF = client["CIF"]
     address = client["address"]
     email = client["email"]
     phone = client["phone"]
     contact = client["contact"]
     
-    new_client = Client( commercialName=commercialName, CIF=int(CIF), address=address, email=email, phone=int(phone), contact=contact)
+    new_client = Client( CompanyName=CompanyName, CIF=CIF, address=address, email=email, phone=int(phone), contact=contact)
     
     # Verify the client
     if not new_client.ready_to_insert():

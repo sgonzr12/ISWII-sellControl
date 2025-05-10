@@ -1,9 +1,9 @@
 import logging
 
 class Client:
-    def __init__(self, commercialName: str, CIF: int, address: str, email: str, phone: int, contact: str, clientID: str = ""):
+    def __init__(self, CompanyName: str, CIF: str, address: str, email: str, phone: int, contact: str, clientID: int = 0):
         self.clientID = clientID
-        self.commercialName = commercialName
+        self.CompanyName = CompanyName
         self.CIF = CIF
         self.address = address
         self.email = email
@@ -13,16 +13,20 @@ class Client:
         self.logger = logging.getLogger("appLogger")
 
     def __repr__(self):
-        return (f"Client(clientID={self.clientID}, commercialName='{self.commercialName}', CIF={self.CIF}, "
+        return (f"Client(clientID={self.clientID}, CompanyName='{self.CompanyName}', CIF={self.CIF}, "
                 f"address='{self.address}', email='{self.email}', phone={self.phone}, contact='{self.contact}')")
         
     def getClientJSON(self) -> dict[str, str]:
         """
         Get client information as a JSON object
         """
+
+        # Print the client information as a JSON object
+        self.logger.debug(f"Client JSON: {self.__dict__}")        
+        
         return {
-            "clientID": self.clientID,
-            "commercialName": self.commercialName,
+            "clientID": str(self.clientID),
+            "CompanyName": self.CompanyName,
             "CIF": str(self.CIF),
             "address": self.address,
             "email": self.email,
@@ -36,9 +40,9 @@ class Client:
         client is ready if all fields are filled except for clientID
         :return: True if the client is ready, False otherwise.
         """
-        return (self.clientID == "" and 
-                self.commercialName != "" and
-                self.CIF != 0 and
+        return (self.clientID == 0 and 
+                self.CompanyName != "" and
+                self.CIF != "" and
                 self.address != "" and
                 self.email != "" and
                 self.phone != 0 and
