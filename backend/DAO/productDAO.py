@@ -20,7 +20,7 @@ class ProductDAO:
         """
         
         query = """
-        INSERT INTO "Products" ("ProductID", "Name", "Description", "Stock", "MaxStock", "MinStock", "Location", "PurchasePrice", "SellPrice")
+        INSERT INTO "Products" ("ProductID", "Name", "Description", "Stock", "MaxStock", "MinStock", "PurchasePrice", "SellPrice")
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING "ProductID";
         """
 
@@ -32,7 +32,7 @@ class ProductDAO:
         try:
             cursor.execute(query, (
                 product.productId, product.name, product.description, product.stock,
-                product.maxStock, product.minStock, product.location,
+                product.maxStock, product.minStock,
                 product.purchasePrice, product.sellPrice
             ))
             self.db_connection.commit()
@@ -69,7 +69,6 @@ class ProductDAO:
                     stock=result[3],
                     maxStock=result[4],
                     minStock=result[5],
-                    location=result[6],
                     purchasePrice=result[7],
                     sellPrice=result[8]
                 )
@@ -88,7 +87,7 @@ class ProductDAO:
         """
         query = """
         UPDATE "Products"
-        SET Name = %s, Description = %s, Stock = %s, MaxStock = %s, MinStock = %s, Location = %s, PurchasePrice = %s, SellPrice = %s
+        SET "Name" = %s, "Description" = %s, "Stock" = %s, "MaxStock" = %s, "MinStock" = %s, "PurchasePrice" = %s, "SellPrice" = %s
         WHERE "ProductID" = %s;
         """
         cursor = self.db_connection.cursor()
@@ -99,14 +98,13 @@ class ProductDAO:
         try:
             cursor.execute(query, (
                 product.name, product.description, product.stock,
-                product.maxStock, product.minStock, product.location,
+                product.maxStock, product.minStock,
                 product.purchasePrice, product.sellPrice,
                 product.productId
             ))
 
             self.db_connection.commit()
-            data = cursor.fetchone()
-            if data is None:
+            if cursor.rowcount == 0:
                 self.logger.error(f"Product with ID {product.productId} not found.")
                 raise HTTPException(status_code=404, detail="Product not found.")
             
@@ -168,7 +166,6 @@ class ProductDAO:
                     stock=row[3],
                     maxStock=row[4],
                     minStock=row[5],
-                    location=row[6],
                     purchasePrice=row[7],
                     sellPrice=row[8]
                 )

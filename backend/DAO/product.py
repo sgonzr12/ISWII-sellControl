@@ -1,19 +1,18 @@
 class Product:
-    def __init__(self, name: str, description: str, stock: int, maxStock: int, minStock: int, location: str, purchasePrice: float, sellPrice: float, productId: int = 0):
+    def __init__(self, name: str, description: str, stock: int, maxStock: int, minStock: int, purchasePrice: float, sellPrice: float, productId: int = 0):
         self.productId = productId
         self.name = name
         self.description = description
         self.stock = stock
         self.maxStock = maxStock
         self.minStock = minStock
-        self.location = location
         self.purchasePrice = purchasePrice
         self.sellPrice = sellPrice
 
     def __repr__(self):
         return (f"Product(productId={self.productId}, name={self.name}, "
                 f"description={self.description}, stock={self.stock}, maxStock={self.maxStock}, "
-                f"minStock={self.minStock}, location={self.location}, "
+                f"minStock={self.minStock}, "
                 f"purchasePrice={self.purchasePrice}, sellPrice={self.sellPrice})")
         
     def get_product_JSON(self) -> dict[str, str]:
@@ -28,7 +27,6 @@ class Product:
             "stock": str(self.stock),
             "maxStock": str(self.maxStock),
             "minStock": str(self.minStock),
-            "location": self.location,
             "purchasePrice": str(self.purchasePrice),
             "sellPrice": str(self.sellPrice)
         }
@@ -47,7 +45,6 @@ class Product:
             self.maxStock >= self.minStock,
             self.minStock <= self.stock <= self.maxStock,
             
-            self.location,
             self.purchasePrice >= 0,
             self.sellPrice >= 0
         ])
@@ -68,7 +65,6 @@ class Product:
             self.maxStock >= self.minStock,
             self.minStock <= self.stock <= self.maxStock,
             
-            self.location,
             self.purchasePrice >= 0,
             self.sellPrice >= 0
         ])
