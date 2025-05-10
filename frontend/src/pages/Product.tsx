@@ -2,8 +2,8 @@ import './Product.css';
 import { useState, useEffect} from 'react';
 
 function Product() {
-    const [product, setProducts] = useState<{productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrize: number, sellPrize: number }[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<{productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrize: number, sellPrize: number } | null>(null);
+    const [product, setProducts] = useState<{productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrice: number, sellPrice: number }[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<{productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrice: number, sellPrice: number } | null>(null);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [addName, setAddName] = useState('');
@@ -12,15 +12,15 @@ function Product() {
     const [addMaxStock, setAddMaxStock] = useState('');
     const [addMinStock, setAddMinStock] = useState('');
     const [addLocation, setAddLocation] = useState('');
-    const [addPurchasePrize, setAddPurchasePrize] = useState('');
-    const [addSellPrize, setAddSellPrize] = useState('');
+    const [addPurchasePrice, setAddPurchasePrice] = useState('');
+    const [addSellPrice, setAddSellPrice] = useState('');
 
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [editMaxStock, setEditMaxStock] = useState('');
     const [editMinStock, setEditMinStock] = useState('');
     const [editLocation, setEditLocation] = useState('');
-    const [editPurchasePrize, setEditPurchasePrize] = useState('');
-    const [editSellPrize, setEditSellPrize] = useState('');
+    const [editPurchasePrice, setEditPurchasePrice] = useState('');
+    const [editSellPrice, setEditSellPrice] = useState('');
 
     const fetchProducts = async () => {
         try {
@@ -47,7 +47,7 @@ function Product() {
         fetchProducts();
     } , []);
 
-    const handleSelectProduct = (product: {productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrize: number, sellPrize: number }) => {
+    const handleSelectProduct = (product: {productId: string, name: string, description: string, stock: number, maxStock: number, minStock: number, location: string, purchasePrice: number, sellPrice: number }) => {
         setSelectedProduct(product);
     }
 
@@ -56,8 +56,8 @@ function Product() {
             setEditMaxStock(selectedProduct.maxStock.toString());
             setEditMinStock(selectedProduct.minStock.toString());
             setEditLocation(selectedProduct.location);
-            setEditPurchasePrize(selectedProduct.purchasePrize.toString());
-            setEditSellPrize(selectedProduct.sellPrize.toString());
+            setEditPurchasePrice(selectedProduct.purchasePrice.toString());
+            setEditSellPrice(selectedProduct.sellPrice.toString());
         }
         setIsUpdateModalOpen(true);
     }
@@ -70,8 +70,8 @@ function Product() {
             setAddMaxStock(selectedProduct.maxStock.toString());
             setAddMinStock(selectedProduct.minStock.toString());
             setAddLocation(selectedProduct.location);
-            setAddPurchasePrize(selectedProduct.purchasePrize.toString());
-            setAddSellPrize(selectedProduct.sellPrize.toString());
+            setAddPurchasePrice(selectedProduct.purchasePrice.toString());
+            setAddSellPrice(selectedProduct.sellPrice.toString());
         }
         setIsAddModalOpen(true);
     }
@@ -94,8 +94,8 @@ function Product() {
                     maxStock: editMaxStock,
                     minStock: editMinStock,
                     location: editLocation,
-                    purchasePrize: editPurchasePrize,
-                    sellPrize: editSellPrize,
+                    purchasePrice: editPurchasePrice,
+                    sellPrice: editSellPrice,
                 }),
             });
 
@@ -130,8 +130,8 @@ function Product() {
                     maxStock: addMaxStock,
                     minStock: addMinStock,
                     location: addLocation,
-                    purchasePrize: addPurchasePrize,
-                    sellPrize: addSellPrize,
+                    purchasePrice: addPurchasePrice,
+                    sellPrice: addSellPrice,
                 }),
             });
 
@@ -169,8 +169,8 @@ function Product() {
                                 <p>Stock máximo: {product.maxStock}</p>
                                 <p>Stock mínimo: {product.minStock}</p>
                                 <p>Ubicación: {product.location}</p>
-                                <p>Precio de compra: {product.purchasePrize}</p>
-                                <p>Precio de venta: {product.sellPrize}</p>
+                                <p>Precio de compra: {product.purchasePrice}</p>
+                                <p>Precio de venta: {product.sellPrice}</p>
                             </li>
                         ))}
                     </ul>
@@ -205,9 +205,9 @@ function Product() {
                             <label>Ubicación: &nbsp;</label>
                             <input type="text" value={selectedProduct?.location} onChange={e => setEditLocation(e.target.value)} />
                             <label>Precio de compra: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.purchasePrize} onChange={e => setEditPurchasePrize(e.target.value)} />
+                            <input type="number" value={selectedProduct?.purchasePrice} onChange={e => setEditPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.sellPrize} onChange={e => setEditSellPrize(e.target.value)} />
+                            <input type="number" value={selectedProduct?.sellPrice} onChange={e => setEditSellPrice(e.target.value)} />
                         
                             <div className="modal-buttons">
                                 <button onClick={handleSave}>Guardar</button>
@@ -234,9 +234,9 @@ function Product() {
                             <label>Ubicación: &nbsp;</label>
                             <input type="text" onChange={e => setAddLocation(e.target.value)} />
                             <label>Precio de compra: &nbsp;</label>
-                            <input type="number" onChange={e => setAddPurchasePrize(e.target.value)} />
+                            <input type="number" onChange={e => setAddPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
-                            <input type="number" onChange={e => setAddSellPrize(e.target.value)} />
+                            <input type="number" onChange={e => setAddSellPrice(e.target.value)} />
 
                             <div className="modal-buttons">
                                 <button onClick={handleAdd}>Guardar</button>
