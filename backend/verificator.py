@@ -5,7 +5,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 import jwt
 import os
+
 import logging 
+
 
 from DAO.employeDAO import EmployeDAO
 
@@ -23,14 +25,17 @@ def verifyToken(token: HTTPAuthorizationCredentials = Depends(security)) -> dict
     """
     Verify the token
     """
-    
+
     logging.debug("Verifying token")
+
 
     credentials = token.credentials  # Extract the actual token string
 
     # Verify loaded environment variables
     if CLIENT_ID is None or CLIENT_SECRET is None:
+
         logging.debug("Missing environment variables")
+
         raise HTTPException(status_code=500, detail="Missing environment variables")
 
     # Verify the token
@@ -49,6 +54,7 @@ def verifyToken(token: HTTPAuthorizationCredentials = Depends(security)) -> dict
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
         logging.debug("Invalid token")
+
         raise HTTPException(status_code=401, detail="Invalid token")
     
 def verifyTokenEmployee(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
@@ -89,11 +95,13 @@ def verifyTokenAdmin(token: HTTPAuthorizationCredentials = Depends(security)) ->
     Verify the token and check if the user is an admin
     """
     logging.debug("Verifying token for admin")
+
     credentials = token.credentials  # Extract the actual token string
 
     # Verify loaded environment variables
     if CLIENT_ID is None or CLIENT_SECRET is None:
         logging.debug("Missing environment variables")
+
         raise HTTPException(status_code=500, detail="Missing environment variables")
 
     # Verify the token
@@ -107,6 +115,7 @@ def verifyTokenAdmin(token: HTTPAuthorizationCredentials = Depends(security)) ->
         employe = employeDAO.get_employee_by_id(decoded_token["sub"])
         
         if employe.rol != 1:
+
             logging.debug("User is not an admin")
             raise HTTPException(status_code=403, detail="User is not an admin")
         
@@ -117,6 +126,7 @@ def verifyTokenAdmin(token: HTTPAuthorizationCredentials = Depends(security)) ->
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
         logging.debug("Invalid token")
+
         raise HTTPException(status_code=401, detail="Invalid token")
     except ValueError:
         raise ValueError("Employee not found")
@@ -126,7 +136,7 @@ def verifyTokenCURProduct(token: HTTPAuthorizationCredentials = Depends(security
     Verify the token and check if the user have the permission to create, update or remove products
     """
    
-    print("Verifying token")  # TODO: REMOVE WHEN LOGGER IS READY
+    print("Verifying token CUR Product")  # TODO: REMOVE WHEN LOGGER IS READY
 
     credentials = token.credentials  # Extract the actual token string
 
@@ -144,8 +154,11 @@ def verifyTokenCURProduct(token: HTTPAuthorizationCredentials = Depends(security
         
         employe = employeDAO.get_employee_by_id(decoded_token["sub"])
         
-        if employe.rol != 3 and employe.rol != 0:
-            raise HTTPException(status_code=403, detail="User is not an admin")
+        # Check if the user has the permission to create, update or remove products
+        # 0 = none, 1 = admin, 2 = manager, 3 = sales, 4 = warehouse manager
+        if employe.rol == 3 or employe.rol == 0:
+            raise HTTPException(status_code=403, detail="User is not allowed to create, update or remove products")
+
     
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")

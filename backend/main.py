@@ -44,6 +44,7 @@ if __name__ == "__main__":
     
     app.include_router(user.router, prefix="/user", tags=["user"])
     app.include_router(product.router, prefix="/product", tags=["product"])
+
     app.include_router(client.router, prefix="/client", tags=["client"])
     
     
