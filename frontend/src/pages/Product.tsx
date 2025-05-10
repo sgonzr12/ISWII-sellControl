@@ -200,18 +200,18 @@ function Product() {
                             <label>Nombre: &nbsp; {selectedProduct?.name}</label>
                             <label>Descripción: &nbsp; {selectedProduct?.description}</label>
                             <label>Stock: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.stock} onChange={e => setEditStock(e.target.value)}/>
+                            <input type="number" value={editStock} onChange={e => setEditStock(e.target.value)}/>
                             <label>Stock máximo: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.maxStock} onChange={e => setEditMaxStock(e.target.value)} />
+                            <input type="number" value={editMaxStock} onChange={e => setEditMaxStock(e.target.value)} />
                             <label>Stock mínimo: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.minStock} onChange={e => setEditMinStock(e.target.value)} />
+                            <input type="number" value={editMinStock} onChange={e => setEditMinStock(e.target.value)} />
                             <label>Ubicación: &nbsp;</label>
-                            <input type="text" value={selectedProduct?.location} onChange={e => setEditLocation(e.target.value)} />
+                            <input type="text" value={editLocation} onChange={e => setEditLocation(e.target.value)} />
                             <label>Precio de compra: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.purchasePrice} onChange={e => setEditPurchasePrice(e.target.value)} />
+                            <input type="number" value={editPurchasePrice} step="0.01" onChange={e => setEditPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
-                            <input type="number" value={selectedProduct?.sellPrice} onChange={e => setEditSellPrice(e.target.value)} />
-                        
+                            <input type="number" value={editSellPrice} step="0.01" onChange={e => setEditSellPrice(e.target.value)} />
+                            
                             <div className="modal-buttons">
                                 <button onClick={handleSave}>Guardar</button>
                                 <button onClick={() => setIsUpdateModalOpen(false)}>Cancelar</button>
