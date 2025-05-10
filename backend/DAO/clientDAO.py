@@ -60,7 +60,7 @@ class ClientDAO:
         :return: A Client object containing the client details or None if not found.
         """
         query = """
-                SELECT * FROM "Clients" WHERE "clientID" = %s
+                SELECT * FROM "Clients" WHERE "ClientID" = %s
                 """
                 
         logging.debug(f"Retrieving client with ID: {client_id}")
