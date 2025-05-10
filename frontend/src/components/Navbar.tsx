@@ -45,7 +45,9 @@ function Navbar({ setIsAuthenticated }: NavbarProps) {
         <li><Link to="/order">Pedido</Link></li>
         <li><Link to="/deliverynote">Albarán</Link></li>
         <li><Link to="/invoice">Factura</Link></li>
+        <li><Link to="/client">Clientes</Link></li>
         {rol === 1 && (<li><Link to="/administrator">Administración</Link></li>)}
+        
       </ul>
       <button className="login-button" onClick={handleLogout}>
         Cerrar sesión

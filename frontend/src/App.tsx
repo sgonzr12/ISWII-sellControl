@@ -2,8 +2,9 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
-import Product from './pages/Product';
+//import Product from './pages/Product';
 import Administrator from './pages/Administrator';
+import Client from './pages/Client';
 // import Product from './pages/Product';
 // import Offer from './pages/Offer';
 // import Order from './pages/Order';
@@ -87,14 +88,16 @@ function App() {
   
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated} />}>
-        <Route path="/product" element={<Product />} />
-          <Route path="/home" element={<Home />} />
+        
+        <Route path="/home" element={<Home />} />
           {rol === 1 && <Route path="/administrator" element={<Administrator />} />}
+          <Route path="/client" element={<Client />} />
 
          
 
           {/* <Route path="/product" element={<Product />} />
           <Route path="/offer" element={<Offer />} />
+          <Route path="/product" element={<Product />} />
           <Route path="/order" element={<Order />} />
           <Route path="/deliverynote" element={<DeliveryNote />} />
           <Route path="/invoice" element={<Invoice />} /> */}

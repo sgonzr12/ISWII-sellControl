@@ -78,4 +78,5 @@ html, body, #root {
   height: calc(100vh - 60px); /* Altura completa menos la navbar */
   background-color: #f5f5f5;
   width: 100%;
+  margin: 0 auto;
 }
