@@ -1,7 +1,7 @@
 import logging
 
 class Client:
-    def __init__(self, CompanyName: str, CIF: int, address: str, email: str, phone: int, contact: str, clientID: int = 0):
+    def __init__(self, CompanyName: str, CIF: str, address: str, email: str, phone: int, contact: str, clientID: int = 0):
         self.clientID = clientID
         self.CompanyName = CompanyName
         self.CIF = CIF
@@ -42,7 +42,7 @@ class Client:
         """
         return (self.clientID == 0 and 
                 self.CompanyName != "" and
-                self.CIF != 0 and
+                self.CIF != "" and
                 self.address != "" and
                 self.email != "" and
                 self.phone != 0 and

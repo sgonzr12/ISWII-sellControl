@@ -24,7 +24,8 @@ class ClientDAO:
         :return: The ID of the newly created client.
         """
         query = """
-        INSERT INTO "Clients" ("CommercialName", "CIF", "Address", "Email", "Phone", "Contact")
+        INSERT INTO "Clients" ("CompanyName", "CIF", "Address", "Email", "Phone", "Contact")
+        values (%s, %s, %s, %s, %s, %s) RETURNING "ClientID";
         """
         
         logging.debug(f"Creating client: {client}")
@@ -124,7 +125,7 @@ class ClientDAO:
         """
         query = """
         UPDATE "Clients"
-        SET "CommercialName" = %s, "CIF" = %s, "Address" = %s, "Email" = %s, "Phone" = %s, "Contact" = %s
+        SET "CompanyName" = %s, "CIF" = %s, "Address" = %s, "Email" = %s, "Phone" = %s, "Contact" = %s
         WHERE "ClientID" = %s;
         """
         

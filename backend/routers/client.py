@@ -50,7 +50,7 @@ async def create_client(client: dict[str, str], token: str = Depends(verifyToken
     phone = client["phone"]
     contact = client["contact"]
     
-    new_client = Client( CompanyName=CompanyName, CIF=int(CIF), address=address, email=email, phone=int(phone), contact=contact)
+    new_client = Client( CompanyName=CompanyName, CIF=CIF, address=address, email=email, phone=int(phone), contact=contact)
     
     # Verify the client
     if not new_client.ready_to_insert():
