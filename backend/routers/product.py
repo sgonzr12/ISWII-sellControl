@@ -29,10 +29,10 @@ async def update_product(product: dict[str, str], token: str = Depends(verifyTok
     maxStock = product["maxStock"]
     minStock = product["minStock"]
     location = product["location"]
-    purchasePrize = product["purchasePrize"]
-    sellPrize = product["sellPrize"]
+    purchasePrice = product["purchasePrice"]
+    sellPrice = product["sellPrice"]
     
-    new_product = Product(productId=productId, name=name, description=description, stock=int(stock), maxStock=int(maxStock), minStock=int(minStock), location=location, purchasePrize=float(purchasePrize), sellPrize=float(sellPrize))
+    new_product = Product(productId=productId, name=name, description=description, stock=int(stock), maxStock=int(maxStock), minStock=int(minStock), location=location, purchasePrice=float(purchasePrice), sellPrice=float(sellPrice))
        
     #Verify the product
     if not new_product.verify_product():
@@ -55,12 +55,12 @@ async def create_product(product: dict[str, str], token: str = Depends(verifyTok
     maxStock = product["maxStock"]
     minStock = product["minStock"]  
     location = product["location"]
-    purchasePrize = product["purchasePrize"]
-    sellPrize = product["sellPrize"]
+    purchasePrice = product["purchasePrice"]
+    sellPrice = product["sellPrice"]
     
     #Create the product
  
-    new_product = Product(name=name, description=description, stock=int(stock), maxStock=int(maxStock), minStock=int(minStock), location=location, purchasePrize=float(purchasePrize), sellPrize=float(sellPrize))
+    new_product = Product(name=name, description=description, stock=int(stock), maxStock=int(maxStock), minStock=int(minStock), location=location, purchasePrice=float(purchasePrice), sellPrice=float(sellPrice))
     
     #Verify the product
     if not new_product.ready_to_insert():

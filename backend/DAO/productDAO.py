@@ -20,8 +20,8 @@ class ProductDAO:
         """
         
         query = """
-        INSERT INTO "products" ("productId", "name", "description", "stock", "maxStock", "minStock", "location", "purchasePrize", "sellPrize")
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING productId;
+        INSERT INTO "Products" ("ProductID", "Name", "Description", "Stock", "MaxStock", "MinStock", "Location", "PurchasePrice", "SellPrice")
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING "ProductID";
         """
 
         
@@ -33,7 +33,7 @@ class ProductDAO:
             cursor.execute(query, (
                 product.productId, product.name, product.description, product.stock,
                 product.maxStock, product.minStock, product.location,
-                product.purchasePrize, product.sellPrize
+                product.purchasePrice, product.sellPrice
             ))
             self.db_connection.commit()
             result = cursor.fetchone()
@@ -56,8 +56,8 @@ class ProductDAO:
 
         try:
             query = """SELECT * 
-                    FROM "products" 
-                    WHERE "productId" = %s;"""
+                    FROM "Products" 
+                    WHERE "ProductID" = %s;"""
             cursor.execute(query, (product_id,))
             result = cursor.fetchone()
             if result:
@@ -70,8 +70,8 @@ class ProductDAO:
                     maxStock=result[4],
                     minStock=result[5],
                     location=result[6],
-                    purchasePrize=result[7],
-                    sellPrize=result[8]
+                    purchasePrice=result[7],
+                    sellPrice=result[8]
                 )
             else:
                 self.logger.error(f"Product with ID {product_id} not found.")
@@ -87,9 +87,9 @@ class ProductDAO:
         :return: True if the update was successful, False otherwise.
         """
         query = """
-        UPDATE "products"
-        SET name = %s, description = %s, stock = %s, maxStock = %s, minStock = %s, location = %s, purchasePrize = %s, sellPrize = %s
-        WHERE "productId" = %s;
+        UPDATE "Products"
+        SET Name = %s, Description = %s, Stock = %s, MaxStock = %s, MinStock = %s, Location = %s, PurchasePrice = %s, SellPrice = %s
+        WHERE "productID" = %s;
         """
         cursor = self.db_connection.cursor()
         logging.debug(f"Updating product with ID: {product.productId}")
@@ -100,7 +100,7 @@ class ProductDAO:
             cursor.execute(query, (
                 product.name, product.description, product.stock,
                 product.maxStock, product.minStock, product.location,
-                product.purchasePrize, product.sellPrize,
+                product.purchasePrice, product.sellPrice,
                 product.productId
             ))
 
@@ -124,7 +124,7 @@ class ProductDAO:
         :param product_id: The ID of the product to delete.
         :return: True if the deletion was successful, False otherwise.
         """
-        query = """DELETE FROM "products" WHERE "productId" = %s;"""
+        query = """DELETE FROM "Products" WHERE "ProductID" = %s;"""
         cursor = self.db_connection.cursor()
         logging.debug(f"Deleting product with ID: {product_id}")
 
@@ -153,7 +153,7 @@ class ProductDAO:
 
         try:
             query = """
-                    SELECT * FROM "products"
+                    SELECT * FROM "Products"
                     """
             cursor.execute(query)
             results = cursor.fetchall()
@@ -169,8 +169,8 @@ class ProductDAO:
                     maxStock=row[4],
                     minStock=row[5],
                     location=row[6],
-                    purchasePrize=row[7],
-                    sellPrize=row[8]
+                    purchasePrice=row[7],
+                    sellPrice=row[8]
                 )
                 for row in results
             ]

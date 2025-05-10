@@ -23,6 +23,6 @@ class DeliveryNote:
     def calculatePrice(self, products: List[Tuple[Product, int]]) -> float:
         total = 0.0
         for product, amount in products:
-            total += product.sellPrize * amount
+            total += product.sellPrice * amount
         self.logger.debug(f"Calculated total price: {total}")
         return total
