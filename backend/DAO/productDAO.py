@@ -1,6 +1,6 @@
 import logging
 from fastapi import HTTPException
-from product import Product
+from DAO.product import Product
 from connect import get_db_connection
 
 class ProductDAO:

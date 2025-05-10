@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from backend.verificator import verifyToken, verifyTokenCURProduct, verifyTokenEmployee
+from verificator import verifyToken, verifyTokenCURProduct, verifyTokenEmployee
 
 from DAO.productDAO import ProductDAO
 from DAO.product import Product
