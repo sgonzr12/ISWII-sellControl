@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, HTTPException
 from verificator import verifyToken, verifyTokenCURProduct, verifyTokenEmployee
 
 from DAO.productDAO import ProductDAO
@@ -36,7 +36,7 @@ async def update_product(product: dict[str, str], token: str = Depends(verifyTok
     #Verify the product
     if not new_product.verify_product():
         print("Product verification failed")
-        raise ValueError("Product verification failed")
+        raise HTTPException(status_code=400, detail="Product verification failed")
 
     #Update the product
     updated_product = productDAO.update_product(new_product)
@@ -63,7 +63,7 @@ async def create_product(product: dict[str, str], token: str = Depends(verifyTok
     #Verify the product
     if not new_product.ready_to_insert():
         print("Product verification failed")
-        raise ValueError("Product verification failed")
+        raise HTTPException(status_code=400, detail="Product verification failed")
     
     new_product = productDAO.create_product(new_product)
     return new_product.get_product_JSON()

@@ -20,8 +20,8 @@ class ProductDAO:
         """
         
         query = """
-        INSERT INTO "Products" ("ProductID", "Name", "Description", "Stock", "MaxStock", "MinStock", "PurchasePrice", "SellPrice")
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING "ProductID";
+        INSERT INTO "Products" ("Name", "Description", "Stock", "MaxStock", "MinStock", "PurchasePrice", "SellPrice")
+        VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING "ProductID";
         """
 
         
@@ -31,7 +31,7 @@ class ProductDAO:
 
         try:
             cursor.execute(query, (
-                product.productId, product.name, product.description, product.stock,
+                product.name, product.description, product.stock,
                 product.maxStock, product.minStock,
                 product.purchasePrice, product.sellPrice
             ))
