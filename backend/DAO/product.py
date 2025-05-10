@@ -14,7 +14,7 @@ class Product:
         return (f"Product(productId={self.productId}, name={self.name}, "
                 f"description={self.description}, stock={self.stock}, maxStock={self.maxStock}, "
                 f"minStock={self.minStock}, location={self.location}, "
-                f"purchasePrize={self.purchasePrice}, sellPrize={self.sellPrice})")
+                f"purchasePrice={self.purchasePrice}, sellPrice={self.sellPrice})")
         
     def get_product_JSON(self) -> dict[str, str]:
         """
@@ -29,8 +29,8 @@ class Product:
             "maxStock": str(self.maxStock),
             "minStock": str(self.minStock),
             "location": self.location,
-            "purchasePrize": str(self.purchasePrice),
-            "sellPrize": str(self.sellPrice)
+            "purchasePrice": str(self.purchasePrice),
+            "sellPrice": str(self.sellPrice)
         }
     
     def verify_product(self) -> bool:
