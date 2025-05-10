@@ -2,8 +2,8 @@ import './Product.css';
 import { useState, useEffect} from 'react';
 
 function Product() {
-    const [products, setProducts] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; location: string; purchasePrice: number; sellPrice: number }[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; location: string; purchasePrice: number; sellPrice: number } | null>(null);
+    const [products, setProducts] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; purchasePrice: number; sellPrice: number }[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; purchasePrice: number; sellPrice: number } | null>(null);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [addName, setAddName] = useState('');
@@ -11,7 +11,6 @@ function Product() {
     const [addStock, setAddStock] = useState('');
     const [addMaxStock, setAddMaxStock] = useState('');
     const [addMinStock, setAddMinStock] = useState('');
-    const [addLocation, setAddLocation] = useState('');
     const [addPurchasePrice, setAddPurchasePrice] = useState('');
     const [addSellPrice, setAddSellPrice] = useState('');
 
@@ -19,7 +18,6 @@ function Product() {
     const [editStock, setEditStock] = useState('');
     const [editMaxStock, setEditMaxStock] = useState('');
     const [editMinStock, setEditMinStock] = useState('');
-    const [editLocation, setEditLocation] = useState('');
     const [editPurchasePrice, setEditPurchasePrice] = useState('');
     const [editSellPrice, setEditSellPrice] = useState('');
 
@@ -48,7 +46,7 @@ function Product() {
         fetchProducts();
     } , []);
 
-    const handleSelectProduct = (product: {productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; location: string; purchasePrice: number; sellPrice: number }) => {
+    const handleSelectProduct = (product: {productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; purchasePrice: number; sellPrice: number }) => {
         setSelectedProduct(product);
     }
 
@@ -57,7 +55,6 @@ function Product() {
             setEditStock(selectedProduct.stock.toString());
             setEditMaxStock(selectedProduct.maxStock.toString());
             setEditMinStock(selectedProduct.minStock.toString());
-            setEditLocation(selectedProduct.location);
             setEditPurchasePrice(selectedProduct.purchasePrice.toString());
             setEditSellPrice(selectedProduct.sellPrice.toString());
         }
@@ -71,7 +68,6 @@ function Product() {
             setAddStock(selectedProduct.stock.toString());
             setAddMaxStock(selectedProduct.maxStock.toString());
             setAddMinStock(selectedProduct.minStock.toString());
-            setAddLocation(selectedProduct.location);
             setAddPurchasePrice(selectedProduct.purchasePrice.toString());
             setAddSellPrice(selectedProduct.sellPrice.toString());
         }
@@ -95,7 +91,7 @@ function Product() {
                     stock: editStock,
                     maxStock: editMaxStock,
                     minStock: editMinStock,
-                    location: editLocation,
+
                     purchasePrice: editPurchasePrice,
                     sellPrice: editSellPrice,
                 }),
@@ -131,7 +127,6 @@ function Product() {
                     stock: addStock,
                     maxStock: addMaxStock,
                     minStock: addMinStock,
-                    location: addLocation,
                     purchasePrice: addPurchasePrice,
                     sellPrice: addSellPrice,
                 }),
@@ -170,7 +165,6 @@ function Product() {
                                 <p>Stock: {product.stock}</p>
                                 <p>Stock máximo: {product.maxStock}</p>
                                 <p>Stock mínimo: {product.minStock}</p>
-                                <p>Ubicación: {product.location}</p>
                                 <p>Precio de compra: {product.purchasePrice}</p>
                                 <p>Precio de venta: {product.sellPrice}</p>
                             </li>
@@ -205,8 +199,6 @@ function Product() {
                             <input type="number" value={editMaxStock} onChange={e => setEditMaxStock(e.target.value)} />
                             <label>Stock mínimo: &nbsp;</label>
                             <input type="number" value={editMinStock} onChange={e => setEditMinStock(e.target.value)} />
-                            <label>Ubicación: &nbsp;</label>
-                            <input type="text" value={editLocation} onChange={e => setEditLocation(e.target.value)} />
                             <label>Precio de compra: &nbsp;</label>
                             <input type="number" value={editPurchasePrice} step="0.01" onChange={e => setEditPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
@@ -234,8 +226,6 @@ function Product() {
                             <input type="number" onChange={e => setAddMaxStock(e.target.value)} />
                             <label>Stock mínimo: &nbsp;</label>
                             <input type="number" onChange={e => setAddMinStock(e.target.value)} />
-                            <label>Ubicación: &nbsp;</label>
-                            <input type="text" onChange={e => setAddLocation(e.target.value)} />
                             <label>Precio de compra: &nbsp;</label>
                             <input type="number" onChange={e => setAddPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
