@@ -1,8 +1,7 @@
 from fastapi import Depends, APIRouter
-from verificator import verifyToken, verifyTokenAdmin
 import logging
-from verificator import verifyToken
- 
+
+from verificator import verifyToken, verifyTokenAdmin
 
 from DAO.employeDAO import EmployeDAO 
         

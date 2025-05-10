@@ -58,6 +58,7 @@ class ProductDAO:
             query = """SELECT * 
                     FROM "Products" 
                     WHERE "ProductID" = %s;"""
+            
             cursor.execute(query, (product_id,))
             result = cursor.fetchone()
             if result:
@@ -123,6 +124,7 @@ class ProductDAO:
         :return: True if the deletion was successful, False otherwise.
         """
         query = """DELETE FROM "Products" WHERE "ProductID" = %s;"""
+
         cursor = self.db_connection.cursor()
         logging.debug(f"Deleting product with ID: {product_id}")
 

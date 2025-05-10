@@ -1,0 +1,99 @@
+
+
+.client-filters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.client-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.client-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.client-table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1000px;
+  border: 2px solid #000;
+  background: #fff;
+}
+
+.client-table th, .client-table td {
+  border: 1px solid #000;
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+.client-table tr.selected {
+  background: #e364f4;
+  color: #fff;
+}
+
+button {
+  border: 2px solid #000;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #e364f4;
+  color: #fff;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  min-width: 300px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+
+.modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.client-title {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 2rem;
+}

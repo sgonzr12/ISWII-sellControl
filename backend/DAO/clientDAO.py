@@ -1,9 +1,12 @@
-import psycopg2.extensions
 import logging
-from client import Client
+
+from fastapi import HTTPException
+
+from connect import get_db_connection
+from DAO.client import Client
 
 class ClientDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self,):
         """
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
@@ -11,24 +14,25 @@ class ClientDAO:
         
         self.logger = logging.getLogger("appLogger")
         
-        self.db_connection = db_connection
-
-    def create_client(self, client: Client) -> int:
+        self.db_connection = get_db_connection()
+        
+        
+    def create_client(self, client: Client) -> Client:
         """
         Insert a new client into the database.
         :param client: A Client object containing client details.
         :return: The ID of the newly created client.
         """
         query = """
-        INSERT INTO clients (clientID, commercialName, CIF, address, email, phone, contact)
+        INSERT INTO "Clients" ("CompanyName", "CIF", "Address", "Email", "Phone", "Contact")
+        values (%s, %s, %s, %s, %s, %s) RETURNING "ClientID";
         """
         
         logging.debug(f"Creating client: {client}")
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.clientID,
-                client.commercialName,
+                client.CompanyName,
                 client.CIF,
                 client.address,
                 client.email,
@@ -38,21 +42,27 @@ class ClientDAO:
             result = cursor.fetchone()
             if result is None:
                 self.logger.error("Failed to insert client and retrieve its ID.")
-                raise ValueError("Failed to insert client and retrieve its ID.")
+                raise HTTPException(status_code=500, detail="Failed to create client.")
             client_id = result[0]
             self.db_connection.commit()
+            
+            client.clientID = client_id
+            
             logging.info(f"Client created with ID: {client_id}")
-            return client_id
+            return client
+
         
     
-    def get_client_by_id(self, client_id: int) -> Client:
+    def get_client_by_id(self, client_id: str) -> Client:
         """
         Retrieve a client by its ID.
         :param client_id: The ID of the client.
         :return: A Client object containing the client details or None if not found.
         """
-        query = "SELECT * FROM clients WHERE clientID = %s"
-        
+        query = """
+                SELECT * FROM "Clients" WHERE "ClientID" = %s
+                """
+                
         logging.debug(f"Retrieving client with ID: {client_id}")
         
         with self.db_connection.cursor() as cursor:
@@ -63,7 +73,7 @@ class ClientDAO:
                 logging.info(f"Client found: {row}")
                 return Client(
                     clientID=row[0],
-                    commercialName=row[1],
+                    CompanyName=row[1],
                     CIF=row[2],
                     address=row[3],
                     email=row[4],
@@ -72,7 +82,7 @@ class ClientDAO:
                 )
             else:
                 self.logger.error(f"Client with ID {client_id} not found.")
-                raise ValueError(f"Client with ID {client_id} not found.")
+                raise HTTPException(status_code=404, detail=f"Client with ID {client_id} not found.")
         
             
             
@@ -81,7 +91,9 @@ class ClientDAO:
         Retrieve all clients from the database.
         :return: A list of Client objects.
         """
-        query = "SELECT * FROM clients"
+        query = """
+                SELECT * FROM "Clients"
+                """
         
         logging.debug("Retrieving all clients")
         
@@ -93,7 +105,7 @@ class ClientDAO:
             for row in results:
                 client = Client(
                     clientID=row[0],
-                    commercialName=row[1],
+                    CompanyName=row[1],
                     CIF=row[2],
                     address=row[3],
                     email=row[4],
@@ -105,23 +117,24 @@ class ClientDAO:
             logging.info(f"Retrieved {len(clients)} clients")
             return clients
         
-    def update_client(self, client: Client) -> bool:
+    def update_client(self, client: Client) -> Client:
         """
         Update an existing client in the database.
         :param client: A Client object containing updated client details.
         :return: True if the update was successful, False otherwise.
         """
         query = """
-        UPDATE clients
-        SET commercialName = %s, CIF = %s, address = %s, email = %s, phone = %s, contact = %s
-        WHERE clientID = %s;
+        UPDATE "Clients"
+        SET "CompanyName" = %s, "CIF" = %s, "Address" = %s, "Email" = %s, "Phone" = %s, "Contact" = %s
+        WHERE "ClientID" = %s;
         """
         
         logging.debug(f"Updating client: {client}")
         
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                client.commercialName,
+                client.CompanyName,
+
                 client.CIF,
                 client.address,
                 client.email,
@@ -132,7 +145,10 @@ class ClientDAO:
             self.db_connection.commit()
             
             logging.info(f"Client with ID {client.clientID} updated")
-            return cursor.rowcount > 0
+            if cursor.rowcount == 0:
+                self.logger.error(f"Failed to update client with ID {client.clientID}.")
+                raise HTTPException(status_code=404, detail=f"Client with ID {client.clientID} not found.")
+            return client
         
     def delete_client(self, client_id: int) -> bool:
         """
@@ -140,7 +156,8 @@ class ClientDAO:
         :param client_id: The ID of the client to delete.
         :return: True if the deletion was successful, False otherwise.
         """
-        query = "DELETE FROM clients WHERE clientID = %s"
+        query = """DELETE FROM "Clients" WHERE "ClientID" = %s
+        """
         
         logging.debug(f"Deleting client with ID: {client_id}")
         
