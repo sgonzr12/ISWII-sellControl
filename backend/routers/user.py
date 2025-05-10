@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter
 import logging
 
-from backend.verificator import verifyToken, verifyTokenAdmin
+from verificator import verifyToken, verifyTokenAdmin
 from DAO.employeDAO import EmployeDAO 
         
 # App user related endpoints

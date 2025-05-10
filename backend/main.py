@@ -2,13 +2,12 @@ import uvicorn
 from fastapi import FastAPI
 import logging
 import os
-import logging
 
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import backend.routers.user as user
-import backend.routers.product as product
+import routers.user as user
+import routers.product as product
 
 env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
 load_dotenv(env_path)
