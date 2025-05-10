@@ -6,7 +6,8 @@ import os
 from connect import get_db_connection, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import user
+import routers.user as user
+import routers.product as product
 
 env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
 load_dotenv(env_path)
@@ -40,7 +41,9 @@ if __name__ == "__main__":
     )
     
     app.include_router(user.router, prefix="/user", tags=["user"])
-
+    app.include_router(product.router, prefix="/product", tags=["product"])
+    
+    
     #change PORT to int
     if PORT is None:
         raise ValueError("PORT environment variable not set")

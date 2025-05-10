@@ -4,6 +4,7 @@ import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Administrator from './pages/Administrator';
 // import Product from './pages/Product';
+import Product from './pages/Product';
 // import Offer from './pages/Offer';
 // import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
@@ -86,6 +87,7 @@ function App() {
   
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated} />}>
+        <Route path="/product" element={<Product />} />
           <Route path="/home" element={<Home />} />
           {rol === 1 && <Route path="/administrator" element={<Administrator />} />}
 
