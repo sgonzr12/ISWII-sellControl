@@ -94,11 +94,11 @@ function App() {
           <Route path="/home" element={<Home />} />
           {rol === 1 && <Route path="/administrator" element={<Administrator />} />}
           <Route path="/client" element={<Client />} />
+          <Route path="/offer" element={<Offer />} />
 
          
 
           {/* <Route path="/product" element={<Product />} />
-          <Route path="/offer" element={<Offer />} />
           <Route path="/product" element={<Product />} />
           <Route path="/order" element={<Order />} />
           <Route path="/deliverynote" element={<DeliveryNote />} />
