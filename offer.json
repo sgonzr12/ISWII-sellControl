@@ -14,3 +14,36 @@
         }
     ]
 }
+
+
+
+// crear una oferta
+{
+    "clientId": "client_id_placeholder",
+    "products": {
+        {
+            "id": "product_id_placeholder",
+            "quantity": "1"
+        },
+        {
+            "id": "product_id_placeholder",
+            "quantity": "1"
+        }
+    }89
+
+}
+
+// modificar una oferta
+{
+    "offerID": 1234156,
+    "products": {
+        {
+            "id": "product_id_placeholder",
+            "quantity": "1"
+        },
+        {
+            "id": "product_id_placeholder",
+            "quantity": "1"
+        }
+    }
+}
