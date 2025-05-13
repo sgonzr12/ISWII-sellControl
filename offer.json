@@ -1,12 +1,16 @@
 {
-    "OfferID": 1234156,
-    "Employe": "Juan",
-    "Client": "Pedro",
-    "Date": "2023-10-01",
-    "price": 1000,
-    "products":{
-        "productName": "Laptop",
-        "quantity": 1,
-        "price": 1000
-    }
+    "offerID": 1234156,
+    "employeId": "employee_id_placeholder",
+    "employeName": "Juan",
+    "clientId": "client_id_placeholder",
+    "clientName": "Pedro",
+    "date": "2023-10-01",
+    "totalPrize": "1000",
+    "products": [
+        {
+            "name": "Laptop",
+            "id": "product_id_placeholder",
+            "quantity": "1"
+        }
+    ]
 }
