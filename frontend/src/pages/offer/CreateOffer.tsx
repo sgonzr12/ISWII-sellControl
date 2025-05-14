@@ -103,6 +103,10 @@ function CreateOffer() {
   const handleAddProduct = () => {
     setError(null);
     if (!product || !productQuantity.trim()) return;
+    if (Number(productQuantity) <= 0) {
+      setError('La cantidad debe ser mayor que 0.');
+      return;
+    }
     if (products.some(p => p.name === product.name)) {
       setError('Este producto ya ha sido añadido.');
       return;

@@ -126,7 +126,16 @@ function OfferTable() {
       </div>
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
         <button onClick={() => navigate('/createoffer')}>Crear oferta</button>
-        <button onClick={() => navigate('/editoffer')} disabled={!selectedOffer}>Editar oferta</button>
+        <button
+        onClick={() => {
+          if (selectedOffer) {
+            navigate('/editoffer', { state: { offerID: selectedOffer.offerID, products: selectedOffer.products } });
+          }
+        }}
+        disabled={!selectedOffer}
+      >
+        Editar oferta
+      </button>
         <button onClick={handleDelete} disabled={!selectedOffer}>Eliminar oferta</button>
       </div>
       {isProductsModalOpen && (
