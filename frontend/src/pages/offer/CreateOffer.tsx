@@ -116,40 +116,40 @@ function CreateOffer() {
     setProducts(products.filter((_, i) => i !== idx));
   };
 
-const handleCreateOffer = async () => {
-  if (!client || products.length === 0) {
-    setError('Selecciona un cliente y añade al menos un producto.');
-    return;
-  }
-  const offerPayload = {
-    clientId: client.id,
-    products: JSON.stringify( products.map(prod => {
-      // Buscar el id real del producto por el nombre
-      const prodOption = productsOptions.find(opt => opt.name === prod.name);
-      return {
-        id: prodOption ? prodOption.id : '',
-        quantity: prod.quantity,
-      };
-    }))
-  };
+  const handleCreateOffer = async () => {
+    if (!client || products.length === 0) {
+      setError('Selecciona un cliente y añade al menos un producto.');
+      return;
+    }
+    const offerPayload = {
+      clientID: client.id,
+      products: products.map(prod => {
+        // Buscar el id real del producto por el nombre
+        const prodOption = productsOptions.find(opt => opt.name === prod.name);
+        return {
+          id: prodOption ? prodOption.id : '',
+          quantity: prod.quantity,
+        };
+      })
+    };
 
-  try {
-    console.log('Payload:', offerPayload);
-    const credential = localStorage.getItem('credential');
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/offer/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${credential}`,
-      },
-      body: JSON.stringify(offerPayload),
-    });
-    if (!response.ok) throw new Error('Error al crear la oferta');
-    navigate('/offer');
-  } catch {
-    setError('Error al crear la oferta');
-  }
-};
+    try {
+      console.log('Payload:', offerPayload);
+      const credential = localStorage.getItem('credential');
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/offer/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${credential}`,
+        },
+        body: JSON.stringify(offerPayload),
+      });
+      if (!response.ok) throw new Error('Error al crear la oferta');
+      navigate('/offer');
+    } catch {
+      setError('Error al crear la oferta');
+    }
+  };
 
   return (
     <main className="main-content">
