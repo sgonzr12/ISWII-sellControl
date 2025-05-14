@@ -16,16 +16,7 @@ html, body, #root {
     flex-direction: column;
 }
   
-/* Main content */
-.main-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 60px); /* No navbar height */
-    background-color: #f5f5f5;
-    width: 100%;
-    align-items: start;
-}
+
 
   .offer-table {
       border-collapse: collapse;
