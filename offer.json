@@ -1,0 +1,47 @@
+{
+    "datos oferta":{
+        "offerID": 1234156,
+        "employeID": "employee_id_placeholder",
+        "employeName": "Juan",
+        "clientID": "client_id_placeholder",
+        "clientName": "Pedro",
+        "date": "2023-10-01",
+        "totalPrice": "1000",
+        "products": [
+            {
+                "id": "product_id_placeholder",
+                "name": "Laptop",
+                "quantity": "1"
+            }
+        ]
+    },
+
+    "crear oferta":{
+        "clientID": "client_id_placeholder",
+        "products": [
+            {
+                "id": "product_id_placeholder",
+                "quantity": "1"
+            },
+            {
+                "id": "product_id_placeholder",
+                "quantity": "1"
+            }
+        ]
+
+    },
+
+    "modificar oferta":{
+        "offerID": 1234156,
+        "products": [
+            {
+                "id": "product_id_placeholder",
+                "quantity": "1"
+            },
+            {
+                "id": "product_id_placeholder",
+                "quantity": "1"
+            }
+        ]
+    }
+}
