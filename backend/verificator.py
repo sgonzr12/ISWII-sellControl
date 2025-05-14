@@ -57,7 +57,7 @@ def verifyToken(token: HTTPAuthorizationCredentials = Depends(security)) -> dict
 
         raise HTTPException(status_code=401, detail="Invalid token")
     
-def verifyTokenEmployee(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
+def verifyTokenEmployee(token: HTTPAuthorizationCredentials = Depends(security)) -> dict[str, str]:
     """
     Verify the token and check if the user is an employee
     """
@@ -82,6 +82,7 @@ def verifyTokenEmployee(token: HTTPAuthorizationCredentials = Depends(security))
         
         if employe.rol == 0:
             raise HTTPException(status_code=403, detail="User is not an employee")
+        return decoded_token
     
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
@@ -89,6 +90,7 @@ def verifyTokenEmployee(token: HTTPAuthorizationCredentials = Depends(security))
         raise HTTPException(status_code=401, detail="Invalid token")
     except ValueError:
         raise ValueError("Employee not found")
+    
     
 def verifyTokenAdmin(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
     """

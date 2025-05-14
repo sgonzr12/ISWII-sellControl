@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import routers.client as client
 import routers.user as user
 import routers.product as product
+import routers.offer as offer
 
 env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
 load_dotenv(env_path)
@@ -20,7 +21,9 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 if __name__ == "__main__":
 
     #Start logger
-    logging.getLogger("appLogger").setLevel(logging.DEBUG)
+    # Configure logger with formatting
+    logger = logging.getLogger("appLogger")
+    logger.setLevel(logging.DEBUG)
     
     #open database connection
     connector = get_db_connection()
@@ -44,9 +47,9 @@ if __name__ == "__main__":
     
     app.include_router(user.router, prefix="/user", tags=["user"])
     app.include_router(product.router, prefix="/product", tags=["product"])
-
     app.include_router(client.router, prefix="/client", tags=["client"])
-    
+    app.include_router(offer.router, prefix="/offer", tags=["offer"])
+    logging.info("Routers included in FastAPI app")
     
     #change PORT to int
     if PORT is None:
