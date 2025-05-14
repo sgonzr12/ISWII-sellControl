@@ -93,7 +93,7 @@ function EditOffer() {
         const prodOption = productsOptions.find(opt => opt.name === prod.name);
         return {
           id: prodOption ? prodOption.id : '',
-          quantity: prod.quantity,
+          quantity: String(prod.quantity), // <-- Mandar como string
         };
       });
       const payload = { offerID, products: productsWithIds };
@@ -190,7 +190,11 @@ function EditOffer() {
           </table>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
-          <button type="button" onClick={handleSave}>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!offerID}
+          >
             Guardar cambios
           </button>
         </div>
