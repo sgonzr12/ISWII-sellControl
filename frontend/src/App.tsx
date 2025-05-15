@@ -8,6 +8,7 @@ import Product from './pages/Product';
 import Offer from './pages/offer/Offer';
 import CreateOffer from './pages/offer/CreateOffer';
 import EditOffer from './pages/offer/EditOffer';
+import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
 // import Invoice from './pages/Invoice';
 import NotFound from './pages/NotFound'; // Importa el componente NotFound
@@ -95,12 +96,11 @@ function App() {
           <Route path="/offer" element={<Offer />} />
           <Route path="/createoffer" element={<CreateOffer />} />
           <Route path="/editoffer" element={<EditOffer />} />
-
+          <Route path="/order" element={<Order />} />
          
 
           {/* <Route path="/product" element={<Product />} />
           <Route path="/product" element={<Product />} />
-          <Route path="/order" element={<Order />} />
           <Route path="/deliverynote" element={<DeliveryNote />} />
           <Route path="/invoice" element={<Invoice />} /> */}
         </Route>
