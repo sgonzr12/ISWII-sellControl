@@ -41,7 +41,7 @@ class Order:
     def calculatePrice(self, products: List[Tuple[Product, int]]) -> float:
         total = 0.0
         for product, amount in products:
-            total += product.sellPrice * amount
+            total += float(product.sellPrice * amount)
         return total
     
     def get_order_client(self) -> Client:
@@ -58,7 +58,7 @@ class Order:
             clientID=str(self.clientId),
             clientName=self.get_order_client().CompanyName,
             date=self.date,
-            totalPrice=self.TotalPrice,
+            totalPrice=self.totalPrice,
             products=[ProductInOrder(id=product.productId, name=product.name, quantity=amount) for product, amount in self.products]
         )
     

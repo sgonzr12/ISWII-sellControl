@@ -14,33 +14,27 @@ class OrderDAO:
         self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
-    def create_order(self, order: Order) -> int:
+    def create_order(self, order: Order) -> None:
         """
         Insert a new order into the database.
         :param order: An Order object containing order details.
         :return: The ID of the newly created order.
         """
         query = """
-        INSERT INTO "Orders" ("EmployeID", "ClientID", "Date", "TotalPrice")
-        VALUES (%s, %s, %s, %s)
-        RETURNING "OrderID";
+        INSERT INTO "Orders" ("OrderID", "EmployeID", "ClientID", "Date", "TotalPrice")
+        VALUES (%s, %s, %s, %s, %s)
         """
 
         logging.debug(f"Creating order: {order}")
 
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
+                order.orderID,
                 order.employeId,
                 order.clientId,
                 order.date,
                 order.totalPrice
             ))
-            
-            result = cursor.fetchone()
-            if result is None:
-                self.logger.error("Failed to insert order and retrieve its ID.")
-                raise ValueError("Failed to insert order and retrieve its ID.")
-            order_id = result[0]
 
             # Insert products into ProdOrd table
             for productTup in order.products:
@@ -51,16 +45,15 @@ class OrderDAO:
                 """
                 product, quantity = productTup  # Unpack the tuple
                 cursor.execute(prod_query, (
-                    order_id,
+                    order.orderID,
                     product.productId,
                     quantity
                 ))
 
             self.db_connection.commit()
-            logging.info(f"Order created with ID: {order_id}")
-            return order_id
+            logging.info(f"Order created with ID: {order.orderID}")
         
-    def get_order_by_id(self, order_id: int) -> Order:
+    def get_order_by_id(self, order_id: str) -> Order:
         """
         Retrieve an order by its ID, including its products.
         :param order_id: The ID of the order.
