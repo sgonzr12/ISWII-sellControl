@@ -32,7 +32,7 @@ function DeliveryNoteTable() {
     const fetchDeliveryNotes = async () => {
       try {
         const credential = localStorage.getItem('credential');
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/deliverynote/`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/deliverynote`, {
           headers: {
             Authorization: `Bearer ${credential}`,
           },
