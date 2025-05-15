@@ -58,7 +58,7 @@ class Order:
             clientID=str(self.clientId),
             clientName=self.get_order_client().CompanyName,
             date=self.date,
-            totalPrice=self.TotalPrice,
+            totalPrice=self.totalPrice,
             products=[ProductInOrder(id=product.productId, name=product.name, quantity=amount) for product, amount in self.products]
         )
     

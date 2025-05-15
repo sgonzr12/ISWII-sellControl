@@ -1,9 +1,9 @@
 import logging
 
 from connect import get_db_connection
-from deliveryNote import DeliveryNote
-from product import Product
-from productDAO import ProductDAO
+from DAO.deliveryNote import DeliveryNote
+from DAO.product import Product
+from DAO.productDAO import ProductDAO
 
 class DeliveryNoteDAO:
     def __init__(self):
@@ -14,33 +14,27 @@ class DeliveryNoteDAO:
         self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
-    def create_delivery_note(self, delivery_note: DeliveryNote) -> int:
+    def create_delivery_note(self, delivery_note: DeliveryNote) -> None:
         """
         Insert a new delivery note into the database.
         :param delivery_note: A DeliveryNote object containing delivery note details.
         :return: The ID of the newly created delivery note.
         """
         query = """
-        INSERT INTO "DeliveryNotes" ("EmployeID", "ClientID", "Date", "TotalPrice")
-        VALUES (%s, %s, %s, %s)
-        RETURNING "DeliveryNoteID";
+        INSERT INTO "DeliveryNotes" ("DeliveryNoteID", "EmployeID", "ClientID", "Date", "TotalPrice")
+        VALUES (%s, %s, %s, %s, %s)
         """
 
         logging.debug(f"Creating delivery note: {delivery_note}")
 
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
+                delivery_note.deliveryNoteID,
                 delivery_note.employeId,
                 delivery_note.clientId,
                 delivery_note.date,
                 delivery_note.totalPrice
             ))
-            
-            result = cursor.fetchone()
-            if result is None:
-                self.logger.error("Failed to insert delivery note and retrieve its ID.")
-                raise ValueError("Failed to insert delivery note and retrieve its ID.")
-            delivery_note_id = result[0]
 
             # Insert products into ProdDn table
             for productTup in delivery_note.products:
@@ -51,14 +45,13 @@ class DeliveryNoteDAO:
                 """
                 product, quantity = productTup  # Unpack the tuple
                 cursor.execute(prod_query, (
-                    delivery_note_id,
+                    delivery_note.deliveryNoteID,
                     product.productId,
                     quantity
                 ))
 
             self.db_connection.commit()
-            logging.info(f"Delivery note created with ID: {delivery_note_id}")
-            return delivery_note_id
+            logging.info(f"Delivery note created with ID: {delivery_note.deliveryNoteID}")
     
     
     def get_delivery_note_by_id(self, delivery_note_id: int) -> DeliveryNote:

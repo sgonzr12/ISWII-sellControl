@@ -59,6 +59,12 @@ async def create_order(orfer_data: dict[str,str], token: dict[str,str] = Depends
     # format the order ID offerID = "of-xxxxxx" orderID = "or-xxxxxx" with the same xxxxxx
     orderID = "or-" + offerID[3:]
     
+    # Check if the order already exists
+    existing_order = orderDAO.get_order_by_id(orderID)
+    if existing_order:
+        logger.error("Order already exists")
+        raise HTTPException(status_code=400, detail="Order already exists")
+    
     # Create the order 
     order = Order(orderID=orderID, employeId=employee_id, clientId=offer.clientID, products=offer.products)
     orderDAO.create_order(order)
