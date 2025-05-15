@@ -60,7 +60,7 @@ class OrderDAO:
             logging.info(f"Order created with ID: {order_id}")
             return order_id
         
-    def get_order_by_id(self, order_id: int) -> Order:
+    def get_order_by_id(self, order_id: str) -> Order:
         """
         Retrieve an order by its ID, including its products.
         :param order_id: The ID of the order.
