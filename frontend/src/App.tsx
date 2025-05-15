@@ -11,6 +11,8 @@ import EditOffer from './pages/offer/EditOffer';
 import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
 import Invoice from './pages/invoice';
+import DeliveryNote from './pages/DeliveryNote';
+// import Invoice from './pages/Invoice';
 import NotFound from './pages/NotFound'; // Importa el componente NotFound
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { useState, useEffect } from 'react';
@@ -103,6 +105,12 @@ function App() {
           <Route path="/product" element={<Product />} />
           <Route path="/deliverynote" element={<DeliveryNote />} />
            */}
+          <Route path="/deliverynote" element={<DeliveryNote />} />
+
+          {/* <Route path="/product" element={<Product />} />
+          <Route path="/product" element={<Product />} />
+          
+          <Route path="/invoice" element={<Invoice />} /> */}
         </Route>
         
         {/* Ruta 404 para manejar todas las rutas no definidas - debe ser la última */}
