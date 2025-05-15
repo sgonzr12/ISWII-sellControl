@@ -62,7 +62,7 @@ class DeliveryNote:
             clientID=str(self.clientId),
             clientName=self.get_deliveryNote_client().CompanyName,
             date=self.date,
-            totalPrice=self.TotalPrice,
+            totalPrice=self.totalPrice,
             products=[ProductInDeliveryNote(id=product.productId, name=product.name, quantity=amount) for product, amount in self.products]
         )
     

@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import logging
 
 from connect import get_db_connection
@@ -101,7 +102,7 @@ class DeliveryNoteDAO:
                 return delivery_note
             else:
                 self.logger.error(f"Delivery note with ID {delivery_note_id} not found.")
-                raise ValueError(f"Delivery note with ID {delivery_note_id} not found.")
+                raise HTTPException(status_code=404, detail=f"Delivery note with ID {delivery_note_id} not found.")
     
     def update_delivery_note(self, updated_delivery_note: DeliveryNote) -> bool:
         """

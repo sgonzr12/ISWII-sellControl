@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import logging
 
 from connect import get_db_connection
@@ -57,7 +58,8 @@ class InvoiceDAO:
     def get_invoice_by_id(self, invoice_id: str) -> Invoice:
         """
         Retrieve an invoice by its ID, including its products.
-        :param invoice_id: The ID of the invoice.
+        :param invoice_id: The ID of the invoice.ValueError(f"Invoice with ID {invoice_id} not found.")
+            
         :return: An Invoice object containing the invoice details or None if not found.
         """
         query = """
@@ -97,7 +99,7 @@ class InvoiceDAO:
                 return invoice
             else:
                 self.logger.error(f"Invoice with ID {invoice_id} not found.")
-                raise ValueError(f"Invoice with ID {invoice_id} not found.")
+                raise HTTPException(status_code=404, detail="Invoice not found") 
             
     def update_invoice(self, updated_invoice: Invoice) -> bool:
         """

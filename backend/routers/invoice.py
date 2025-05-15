@@ -37,8 +37,8 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
     logger.debug("Create invoice requested")
     
     # Extract data from the request
-    deliveryNoteID = invoice_data["deliveryNoteID"]
-    
+    deliveryNoteID = invoice_data["DeliveryNoteID"]
+        
     if not deliveryNoteID:
         logger.error("Missing required fields")
         raise HTTPException(status_code=400, detail="Missing required fields")
@@ -58,12 +58,17 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
     # format the invoice ID clientID = "cl-xxxxxx" invoiceID = "in-xxxxxx" with the same xxxxxx
     invoiceID = "in-" + deliveryNoteID[3:]
     
-    # check if the invoice already exists
-    invoice = invoiceDAO.get_invoice_by_id(invoiceID)
-    if invoice:
-        logger.error("Invoice already exists")
-        raise HTTPException(status_code=400, detail="Invoice already exists")
-    
+    try:
+        # check if the invoice already exists
+        invoice = invoiceDAO.get_invoice_by_id(invoiceID)
+        if invoice:
+            logger.error("Invoice already exists")
+            raise HTTPException(status_code=400, detail="Invoice already exists")
+    except HTTPException as e:
+        if e.status_code == 404:
+            pass
+        else:
+            raise e
     # Create the invoice
     invoice = Invoice(
         invoiceID=invoiceID,
