@@ -1,64 +1,57 @@
-import psycopg2.extensions
 import logging
 
-from deliveryNote import DeliveryNote
-from product import Product
-from productDAO import ProductDAO
+from connect import get_db_connection
+from DAO.deliveryNote import DeliveryNote
+from DAO.product import Product
+from DAO.productDAO import ProductDAO
 
 class DeliveryNoteDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self):
         """
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
         """
-        self.db_connection = db_connection
+        self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
-    def create_delivery_note(self, delivery_note: DeliveryNote) -> int:
+    def create_delivery_note(self, delivery_note: DeliveryNote) -> None:
         """
         Insert a new delivery note into the database.
         :param delivery_note: A DeliveryNote object containing delivery note details.
         :return: The ID of the newly created delivery note.
         """
         query = """
-        INSERT INTO delivery_notes (employeId, clientID, delivery_date, totalPrize)
-        VALUES (%s, %s, %s, %s)
-        RETURNING deliveryNoteID;
+        INSERT INTO "DeliveryNotes" ("DeliveryNoteID", "EmployeID", "ClientID", "Date", "TotalPrice")
+        VALUES (%s, %s, %s, %s, %s)
         """
 
         logging.debug(f"Creating delivery note: {delivery_note}")
 
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
+                delivery_note.deliveryNoteID,
                 delivery_note.employeId,
                 delivery_note.clientId,
                 delivery_note.date,
-                delivery_note.totalPrize
+                delivery_note.totalPrice
             ))
-            
-            result = cursor.fetchone()
-            if result is None:
-                self.logger.error("Failed to insert delivery note and retrieve its ID.")
-                raise ValueError("Failed to insert delivery note and retrieve its ID.")
-            delivery_note_id = result[0]
 
-            # Insert products into ProdDel table
+            # Insert products into ProdDn table
             for productTup in delivery_note.products:
                 # Assuming product is a dictionary with 'Product' and 'quantity'
                 prod_query = """
-                INSERT INTO ProdDel (deliveryNoteID, productID, quantity)
+                INSERT INTO "ProdDn" ("DeliveryNoteID", "ProductID", "Quantity")
                 VALUES (%s, %s, %s);
                 """
                 product, quantity = productTup  # Unpack the tuple
                 cursor.execute(prod_query, (
-                    delivery_note_id,
+                    delivery_note.deliveryNoteID,
                     product.productId,
                     quantity
                 ))
 
             self.db_connection.commit()
-            logging.info(f"Delivery note created with ID: {delivery_note_id}")
-            return delivery_note_id
+            logging.info(f"Delivery note created with ID: {delivery_note.deliveryNoteID}")
     
     
     def get_delivery_note_by_id(self, delivery_note_id: int) -> DeliveryNote:
@@ -69,8 +62,8 @@ class DeliveryNoteDAO:
         """
         query = """
         SELECT *
-        FROM delivery_notes
-        WHERE deliveryNoteID = %s;
+        FROM "DeliveryNotes"
+        WHERE "DeliveryNoteID" = %s;
         """
 
         logging.debug(f"Retrieving delivery note with ID: {delivery_note_id}")
@@ -80,11 +73,11 @@ class DeliveryNoteDAO:
             result = cursor.fetchone()
             if result:
                 # Retrieve products associated with this delivery note
-                product_dao = ProductDAO(self.db_connection)
+                product_dao = ProductDAO()
                 product_query = """
-                SELECT productID, quantity
-                FROM ProdDel
-                WHERE deliveryNoteID = %s;
+                SELECT "ProductID", "Quantity"
+                FROM "ProdDn"
+                WHERE "DeliveryNoteID" = %s;
                 """
                 cursor.execute(product_query, (delivery_note_id,))
                 products = list[tuple[Product, int]]()
@@ -99,7 +92,7 @@ class DeliveryNoteDAO:
                     employeId=result[1],
                     clientId=result[2],
                     deliveryNoteDate=result[3],
-                    totalPrize=result[4],
+                    totalPrice=result[4],
                     products=products
                 )
 
@@ -117,9 +110,9 @@ class DeliveryNoteDAO:
         :return: True if the update was successful, False otherwise.
         """
         query = """
-        UPDATE delivery_notes
-        SET employeId = %s, clientID = %s, delivery_date = %s, totalPrize = %s
-        WHERE deliveryNoteID = %s;
+        UPDATE "DeliveryNotes"
+        SET "EmployeID" = %s, "ClientID" = %s, "Date" = %s, "TotalPrice" = %s
+        WHERE "DeliveryNoteID" = %s;
         """
 
         logging.debug(f"Updating delivery note: {updated_delivery_note}")
@@ -129,17 +122,20 @@ class DeliveryNoteDAO:
                 updated_delivery_note.employeId,
                 updated_delivery_note.clientId,
                 updated_delivery_note.date,
-                updated_delivery_note.totalPrize,
+                updated_delivery_note.totalPrice,
                 updated_delivery_note.deliveryNoteID
             ))
             
-            # Update products in ProdDel table
-            delete_query = "DELETE FROM ProdDel WHERE deliveryNoteID = %s;"
+            # Update products in ProdDn table
+            delete_query = """
+                           DELETE FROM "ProdDn" 
+                           WHERE "DeliveryNoteID" = %s;
+                           """
             cursor.execute(delete_query, (updated_delivery_note.deliveryNoteID,))
             # Insert updated products
             for productTup in updated_delivery_note.products:
                 prod_query = """
-                INSERT INTO ProdDel (deliveryNoteID, productID, quantity)
+                INSERT INTO "ProdDn" ("DeliveryNoteID", "ProductID", "Quantity")
                 VALUES (%s, %s, %s);
                 """
                 product, quantity = productTup
@@ -165,11 +161,17 @@ class DeliveryNoteDAO:
         
         with self.db_connection.cursor() as cursor:
             # Delete products related to the delivery note
-            prod_query = "DELETE FROM ProdDel WHERE deliveryNoteID = %s;"
+            prod_query = """
+                         DELETE FROM "ProdDn"
+                         WHERE "DeliveryNoteID" = %s;
+                         """
             cursor.execute(prod_query, (delivery_note_id,))
             
             # Delete the delivery note itself
-            query = "DELETE FROM delivery_notes WHERE deliveryNoteID = %s;"
+            query = """
+                    DELETE FROM "DeliveryNotes"
+                    WHERE "DeliveryNoteID" = %s;
+                    """
             cursor.execute(query, (delivery_note_id,))
 
             self.db_connection.commit()
@@ -181,7 +183,10 @@ class DeliveryNoteDAO:
         Retrieve all delivery notes from the database.
         :return: A list of DeliveryNote objects.
         """
-        query = "SELECT * FROM delivery_notes;"
+        query = """
+                SELECT *
+                FROM "DeliveryNotes";
+                """
 
         logging.debug("Retrieving all delivery notes")
 
@@ -191,11 +196,11 @@ class DeliveryNoteDAO:
             delivery_notes = list[DeliveryNote]()
             for row in results:
                 # Retrieve products associated with this delivery note
-                product_dao = ProductDAO(self.db_connection)
+                product_dao = ProductDAO()
                 product_query = """
-                SELECT productID, quantity
-                FROM ProdDel
-                WHERE deliveryNoteID = %s;
+                SELECT "ProductID", "Quantity"
+                FROM "ProdDn"
+                WHERE "DeliveryNoteID" = %s;
                 """
                 cursor.execute(product_query, (row[0],))
                 products = list[tuple[Product, int]]()
@@ -211,7 +216,7 @@ class DeliveryNoteDAO:
                     employeId=row[1],
                     clientId=row[2],
                     deliveryNoteDate=row[3],
-                    totalPrize=row[4],
+                    totalPrice=row[4],
                     products=products
                 )
                 delivery_notes.append(delivery_note)
