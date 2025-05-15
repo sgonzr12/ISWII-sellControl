@@ -10,7 +10,7 @@ import CreateOffer from './pages/offer/CreateOffer';
 import EditOffer from './pages/offer/EditOffer';
 import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
-// import Invoice from './pages/Invoice';
+import Invoice from './pages/invoice';
 import NotFound from './pages/NotFound'; // Importa el componente NotFound
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { useState, useEffect } from 'react';
@@ -97,12 +97,12 @@ function App() {
           <Route path="/createoffer" element={<CreateOffer />} />
           <Route path="/editoffer" element={<EditOffer />} />
           <Route path="/order" element={<Order />} />
-         
+          <Route path="/invoice" element={<Invoice />} />
 
           {/* <Route path="/product" element={<Product />} />
           <Route path="/product" element={<Product />} />
           <Route path="/deliverynote" element={<DeliveryNote />} />
-          <Route path="/invoice" element={<Invoice />} /> */}
+           */}
         </Route>
         
         {/* Ruta 404 para manejar todas las rutas no definidas - debe ser la última */}
