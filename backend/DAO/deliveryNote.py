@@ -48,19 +48,19 @@ class DeliveryNote:
             total += float(product.sellPrice * amount)
         return total
     
-    def get_order_client(self) -> Client:
+    def get_deliveryNote_client(self) -> Client:
         return ClientDAO().get_client_by_id(self.clientId)
     
-    def get_order_employe(self) -> Employe:
+    def get_deliveryNote_employe(self) -> Employe:
         return EmployeDAO().get_employee_by_id(self.employeId)
 
     def get_json(self) -> DeliveryNoteModel:
         return DeliveryNoteModel(
             DeliveryNoteID=self.deliveryNoteID,
             employeID=self.employeId,
-            employeName=self.get_order_employe().name,
+            employeName=self.get_deliveryNote_employe().name,
             clientID=str(self.clientId),
-            clientName=self.get_order_client().CompanyName,
+            clientName=self.get_deliveryNote_client().CompanyName,
             date=self.date,
             totalPrice=self.TotalPrice,
             products=[ProductInDeliveryNote(id=product.productId, name=product.name, quantity=amount) for product, amount in self.products]
