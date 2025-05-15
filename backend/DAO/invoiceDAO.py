@@ -222,3 +222,24 @@ class InvoiceDAO:
             logging.info(f"Retrieved all {len(invoices)} invoices")
             return invoices
         
+    def check_invoice_exists(self, invoice_id: str) -> bool:
+        """
+        Check if an invoice exists in the database.
+        :param invoice_id: The ID of the invoice to check.
+        :return: True if the invoice exists, False otherwise.
+        """
+        query = """
+        SELECT COUNT(*)
+        FROM "Invoices"
+        WHERE "InvoiceID" = %s;
+        """
+
+        logging.debug(f"Checking if invoice with ID {invoice_id} exists")
+
+        with self.db_connection.cursor() as cursor:
+            cursor.execute(query, (invoice_id,))
+            result = cursor.fetchone()
+            if result is None:
+                return False
+            else:
+                return result[0] > 0

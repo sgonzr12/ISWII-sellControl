@@ -58,17 +58,11 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
     # format the invoice ID clientID = "cl-xxxxxx" invoiceID = "in-xxxxxx" with the same xxxxxx
     invoiceID = "in-" + deliveryNoteID[3:]
     
-    try:
-        # check if the invoice already exists
-        invoice = invoiceDAO.get_invoice_by_id(invoiceID)
-        if invoice:
-            logger.error("Invoice already exists")
-            raise HTTPException(status_code=400, detail="Invoice already exists")
-    except HTTPException as e:
-        if e.status_code == 404:
-            pass
-        else:
-            raise e
+    # check if the invoice already exists
+    existing_invoice = invoiceDAO.check_invoice_exists(invoiceID)
+    if existing_invoice:
+        logger.error("Invoice already exists")
+        raise HTTPException(status_code=400, detail="Invoice already exists")
     # Create the invoice
     invoice = Invoice(
         invoiceID=invoiceID,
@@ -78,4 +72,8 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
         totalPrice=delivery_note.totalPrice,
         products=delivery_note.products
     )
+    
+    # Create the invoice in the database
+    invoiceDAO.create_invoice(invoice)
+    logger.debug(f"Invoice created: {invoice.get_json()}")
     

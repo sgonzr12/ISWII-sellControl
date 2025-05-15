@@ -225,3 +225,24 @@ class DeliveryNoteDAO:
             logging.info(f"Retrieved all {len(delivery_notes)} delivery notes")
             return delivery_notes
         
+    def check_delivery_note_exists(self, delivery_note_id: str) -> bool:
+        """
+        Check if a delivery note exists in the database.
+        :param delivery_note_id: The ID of the delivery note to check.
+        :return: True if the delivery note exists, False otherwise.
+        """
+        query = """
+                SELECT COUNT(*)
+                FROM "DeliveryNotes"
+                WHERE "DeliveryNoteID" = %s;
+                """
+
+        logging.debug(f"Checking if delivery note with ID {delivery_note_id} exists")
+
+        with self.db_connection.cursor() as cursor:
+            cursor.execute(query, (delivery_note_id,))
+            result = cursor.fetchone()
+            if result is None:
+                return False
+            else:
+                return result[0] > 0

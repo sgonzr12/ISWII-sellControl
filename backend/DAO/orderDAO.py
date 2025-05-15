@@ -230,3 +230,25 @@ class OrderDAO:
             
             logging.info(f"Retrieved all {len(orders)} orders")
             return orders
+        
+    def check_order_exists(self, order_id: str) -> bool:
+        """
+        Check if an order exists in the database.
+        :param order_id: The ID of the order to check.
+        :return: True if the order exists, False otherwise.
+        """
+        query = """
+        SELECT COUNT(*)
+        FROM "Orders"
+        WHERE "OrderID" = %s;
+        """
+
+        logging.debug(f"Checking if order exists with ID: {order_id}")
+
+        with self.db_connection.cursor() as cursor:
+            cursor.execute(query, (order_id,))
+            result = cursor.fetchone()
+            if result is None:
+                return False
+            else:
+                return result[0] > 0
