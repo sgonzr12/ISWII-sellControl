@@ -54,7 +54,7 @@ class DeliveryNoteDAO:
             logging.info(f"Delivery note created with ID: {delivery_note.deliveryNoteID}")
     
     
-    def get_delivery_note_by_id(self, delivery_note_id: int) -> DeliveryNote:
+    def get_delivery_note_by_id(self, delivery_note_id: str) -> DeliveryNote:
         """
         Retrieve a delivery note by its ID, including its products.
         :param delivery_note_id: The ID of the delivery note.
