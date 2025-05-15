@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Offer.css';
+import './Order.css';
 
 interface Product {
   name: string;
@@ -8,8 +7,8 @@ interface Product {
   quantity: string | number;
 }
 
-interface Offer {
-  offerID: string;
+interface Order {
+  orderID: string;
   employeID: string;
   employeName: string;
   clientID: string;
@@ -19,77 +18,77 @@ interface Offer {
   products: Product[];
 }
 
-function OfferTable() {
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [filteredOffers, setFilteredOffers] = useState<Offer[]>([]);
-  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+function OrderTable() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [filterStart, setFilterStart] = useState('');
   const [filterEnd, setFilterEnd] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
-  const navigate = useNavigate();
-
-  // Fetch real de ofertas desde el backend
+  // Llamada GET al backend para obtener los pedidos
   useEffect(() => {
-    const fetchOffers = async () => {
+    const fetchOrders = async () => {
       try {
         const credential = localStorage.getItem('credential');
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/offer/`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/`, {
           headers: {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener las ofertas');
-        const data: Offer[] = await response.json();
-        setOffers(data);
-        setFilteredOffers(data);
+        if (!response.ok) throw new Error('Error al obtener los pedidos');
+        const data: Order[] = await response.json();
+        console.log(data);
+        setOrders(data);
+        setFilteredOrders(data);
       } catch {
-        setOffers([]);
-        setFilteredOffers([]);
+        setOrders([]);
+        setFilteredOrders([]);
       }
     };
-    fetchOffers();
+    fetchOrders();
   }, []);
 
   // Filtrado por fecha
   useEffect(() => {
-    let filtered = offers;
+    let filtered = orders;
     if (filterStart) {
       filtered = filtered.filter(o => o.date >= filterStart);
     }
     if (filterEnd) {
       filtered = filtered.filter(o => o.date <= filterEnd);
     }
-    setFilteredOffers(filtered);
-  }, [filterStart, filterEnd, offers]);
+    setFilteredOrders(filtered);
+  }, [filterStart, filterEnd, orders]);
 
-  const handleConvertToOrder = async () => {
-    if (!selectedOffer) return;
+  // Convertir a albarán
+  const handleConvertToDeliveryNote = async () => {
+    if (!selectedOrder) return;
     try {
       const credential = localStorage.getItem('credential');
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/deliverynote/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${credential}`,
         },
-        body: JSON.stringify({ offerID: selectedOffer.offerID }),
+        body: JSON.stringify({ orderID: selectedOrder.orderID }),
       });
       if (!response.ok) {
-        alert('Error al convertir la oferta en pedido');
+        alert('Error al convertir el pedido en albarán');
         return;
       }
-      alert('Oferta convertida en pedido correctamente');
+      alert('Pedido convertido en albarán correctamente');
     } catch {
-      alert('Error al convertir la oferta en pedido');
+      alert('Error al convertir el pedido en albarán');
     }
   };
 
   return (
-    <div className="OfferTable">
-      <h1 className="offer-title">Tabla de Ofertas</h1>
-      <div className="offer-filters">
+    <div className="OrderTable">
+      <h1 className="order-title">Tabla de Pedidos</h1>
+      <div className="order-filters">
         <label>
           Fecha inicial:
           <input type="date" value={filterStart} onChange={e => setFilterStart(e.target.value)} />
@@ -99,8 +98,8 @@ function OfferTable() {
           <input type="date" value={filterEnd} onChange={e => setFilterEnd(e.target.value)} />
         </label>
       </div>
-      <div className="offers-table-container">
-        <table className="offer-table">
+      <div className="orders-table-container">
+        <table className="order-table">
           <thead>
             <tr>
               <th>Empleado</th>
@@ -111,23 +110,23 @@ function OfferTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredOffers.map(offer => (
+            {filteredOrders.map(order => (
               <tr
-                key={offer.offerID}
-                className={selectedOffer?.offerID === offer.offerID ? 'selected' : ''}
-                onClick={() => setSelectedOffer(offer)}
+                key={order.orderID}
+                className={selectedOrder?.orderID === order.orderID ? 'selected' : ''}
+                onClick={() => setSelectedOrder(order)}
                 style={{ cursor: 'pointer' }}
               >
-                <td>{offer.employeName}</td>
-                <td>{offer.clientName}</td>
-                <td>{offer.date}</td>
-                <td>{offer.totalPrice}</td>
+                <td>{order.employeName}</td>
+                <td>{order.clientName}</td>
+                <td>{order.date}</td>
+                <td>{order.totalPrice}</td>
                 <td>
                   <button
                     type="button"
                     onClick={e => {
                       e.stopPropagation();
-                      setProductsToShow(offer.products);
+                      setProductsToShow(order.products);
                       setIsProductsModalOpen(true);
                     }}
                   >
@@ -140,25 +139,17 @@ function OfferTable() {
         </table>
       </div>
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
-        <button onClick={() => navigate('/createoffer')}>Crear oferta</button>
         <button
-          onClick={() => {
-            if (selectedOffer) {
-              navigate('/editoffer', { state: { offerID: selectedOffer.offerID, products: selectedOffer.products } });
-            }
-          }}
-          disabled={!selectedOffer}
+          onClick={handleConvertToDeliveryNote}
+          disabled={!selectedOrder}
         >
-          Editar oferta
-        </button>
-        <button onClick={handleConvertToOrder} disabled={!selectedOffer}>
-          Convertir a pedido
+          Convertir a albarán
         </button>
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">
           <div className="modal">
-            <h2>Productos de la oferta</h2>
+            <h2>Productos del pedido</h2>
             <div className="products-table-container">
               <table className="products-table">
                 <thead>
@@ -187,4 +178,4 @@ function OfferTable() {
   );
 }
 
-export default OfferTable;
+export default OrderTable;

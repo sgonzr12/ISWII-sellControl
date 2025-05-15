@@ -31,8 +31,8 @@ class OfferDAO:
         logging.debug(f"Creating offer")
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                offer.employeId,
-                offer.clientId,
+                offer.employeID,
+                offer.clientID,
                 offer.date,
                 offer.TotalPrice
             ))
@@ -59,8 +59,8 @@ class OfferDAO:
             logging.info(f"Offer created with ID: {offer_id}")
             return Offer(
                 offerID=str(offer_id),
-                employeId=offer.employeId,
-                clientId=offer.clientId,
+                employeId=offer.employeID,
+                clientId=offer.clientID,
                 offer_date=offer.date,
                 TotalPrice=offer.TotalPrice,
                 products=offer.products
@@ -137,8 +137,8 @@ class OfferDAO:
 
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
-                updated_offer.employeId,
-                updated_offer.clientId,
+                updated_offer.employeID,
+                updated_offer.clientID,
                 updated_offer.date,
                 updated_offer.TotalPrice,
                 updated_offer.offerID

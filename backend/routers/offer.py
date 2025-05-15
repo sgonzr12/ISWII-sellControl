@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
-from verificator import verifyToken, verifyTokenEmployee
+from verificator import verifyTokenEmployee
 from pydantic import BaseModel
 import logging
 
@@ -20,7 +20,7 @@ productDAO = ProductDAO()
 logger = logging.getLogger("appLogger")
 
 @router.get("/", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
-async def get_all_offers(token: str = Depends(verifyToken)) -> list[OfferModel]:
+async def get_all_offers(token: str = Depends(verifyTokenEmployee)) -> list[OfferModel]:
     """
     Get all offers
     """
@@ -102,7 +102,7 @@ class updateOfferModel(BaseModel):
     
 
 @router.put("/", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
-async def update_offer(offer: updateOfferModel, token: dict[str,str] = Depends(verifyToken)) -> None:
+async def update_offer(offer: updateOfferModel, token: dict[str,str] = Depends(verifyTokenEmployee)) -> None:
     """
     Update an existing offer
     """

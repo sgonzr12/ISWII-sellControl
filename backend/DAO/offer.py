@@ -28,22 +28,22 @@ class Offer:
     def __init__(self, employeId: str, clientId: str, products:List[tuple[Product, int]], offer_date: Optional[date] = None, 
                  TotalPrice: Optional[float] = None, offerID: str = ""):
         self.offerID = offerID
-        self.employeId = employeId
-        self.clientId = clientId
+        self.employeID = employeId
+        self.clientID = clientId
         self.date = offer_date if offer_date is not None else date.today()
         self.products = products
         self.TotalPrice = TotalPrice if TotalPrice is not None else self.calculatePrice(self.products)
 
     def __repr__(self):
-        return (f"offer(offerID={self.offerID}, employeId={self.employeId}, "
-                f"clientId={self.clientId}, date={self.date}, TotalPrice={self.TotalPrice}, "
+        return (f"offer(offerID={self.offerID}, employeId={self.employeID}, "
+                f"clientId={self.clientID}, date={self.date}, TotalPrice={self.TotalPrice}, "
                 f"products={self.products})")
         
     def get_offer_client(self) -> Client:
-        return ClientDAO().get_client_by_id(self.clientId)
+        return ClientDAO().get_client_by_id(self.clientID)
     
     def get_offer_employe(self) -> Employe:
-        return EmployeDAO().get_employee_by_id(self.employeId)
+        return EmployeDAO().get_employee_by_id(self.employeID)
     
     def calculatePrice(self, products: List[tuple[Product, int]]) -> float:
         total = 0.0
@@ -54,9 +54,9 @@ class Offer:
     def get_json(self) -> OfferModel:
         return OfferModel(
             offerID=self.offerID,
-            employeID=self.employeId,
+            employeID=self.employeID,
             employeName=self.get_offer_employe().name,
-            clientID=str(self.clientId),
+            clientID=str(self.clientID),
             clientName=self.get_offer_client().CompanyName,
             date=self.date,
             totalPrice=self.TotalPrice,
