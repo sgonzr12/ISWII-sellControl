@@ -1,17 +1,17 @@
-import psycopg2.extensions
 import logging
 
-from order import Order
-from product import Product
-from productDAO import ProductDAO
+from connect import get_db_connection
+from DAO.order import Order
+from DAO.product import Product
+from DAO.productDAO import ProductDAO
 
 class OrderDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self):
         """
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
         """
-        self.db_connection = db_connection
+        self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
     def create_order(self, order: Order) -> int:
@@ -21,9 +21,9 @@ class OrderDAO:
         :return: The ID of the newly created order.
         """
         query = """
-        INSERT INTO orders (employeId, clientID, order_date, totalPrize)
+        INSERT INTO "Orders" ("EmployeID", "ClientID", "Date", "TotalPrice")
         VALUES (%s, %s, %s, %s)
-        RETURNING orderID;
+        RETURNING "OrderID";
         """
 
         logging.debug(f"Creating order: {order}")
@@ -33,7 +33,7 @@ class OrderDAO:
                 order.employeId,
                 order.clientId,
                 order.date,
-                order.totalPrize
+                order.totalPrice
             ))
             
             result = cursor.fetchone()
@@ -46,7 +46,7 @@ class OrderDAO:
             for productTup in order.products:
                 # Assuming product is a dictionary with 'Product' and 'quantity'
                 prod_query = """
-                INSERT INTO ProdOrd (orderID, productID, quantity)
+                INSERT INTO "ProdOrd" ("OrderID", "ProductID", "Quantity")
                 VALUES (%s, %s, %s);
                 """
                 product, quantity = productTup  # Unpack the tuple
@@ -68,8 +68,8 @@ class OrderDAO:
         """
         query = """
         SELECT *
-        FROM orders
-        WHERE orderID = %s;
+        FROM "Orders"
+        WHERE "OrderID" = %s;
         """
 
         logging.debug(f"Retrieving order with ID: {order_id}")
@@ -80,11 +80,11 @@ class OrderDAO:
             if result:
 
                 # Retrieve products for this order
-                product_dao = ProductDAO(self.db_connection)
+                product_dao = ProductDAO()
                 product_query = """
-                SELECT productID, quantity
-                    FROM ProdOrd
-                    WHERE orderID = %s;
+                SELECT "ProductID", "Quantity"
+                    FROM "ProdOrd"
+                    WHERE "OrderID" = %s;
                 """
                 cursor.execute(product_query, (order_id,))
                 products = list[tuple[Product, int]]()
@@ -103,7 +103,7 @@ class OrderDAO:
                     employeId=result[1],
                     clientId=result[2],
                     orderDate=result[3],
-                    totalPrize=result[4],
+                    totalPrice=result[4],
                     products=products
                 )
             
@@ -119,9 +119,9 @@ class OrderDAO:
         :param order: An Order object containing updated order details.
         """
         query = """
-        UPDATE orders
-        SET employeId = %s, clientID = %s, order_date = %s, totalPrize = %s
-        WHERE orderID = %s;
+        UPDATE "Orders"
+        SET "EmployeID" = %s, "ClientID" = %s, "Date" = %s, "TotalPrice" = %s
+        WHERE "OrderID" = %s;
         """
 
         logging.debug(f"Updating order: {updated_order}")
@@ -131,18 +131,18 @@ class OrderDAO:
                 updated_order.employeId,
                 updated_order.clientId,
                 updated_order.date,
-                updated_order.totalPrize,
+                updated_order.totalPrice,
                 updated_order.orderID
             ))
             
             # Update products in ProdOrd table
-            delete_query = """ DELETE FROM ProdOrd WHERE orderID = %s; """
+            delete_query = """ DELETE FROM "ProdOrd" WHERE "OrderID" = %s; """
             cursor.execute(delete_query, (updated_order.orderID,))
             
             for productTup in updated_order.products:
                 # Assuming product is a dictionary with 'Product' and 'quantity'
                 prod_query = """
-                INSERT INTO ProdOrd (orderID, productID, quantity)
+                INSERT INTO ProdOrd ("OrderID", productID, quantity)
                 VALUES (%s, %s, %s);
                 """
                 product, quantity = productTup
@@ -168,15 +168,15 @@ class OrderDAO:
         with self.db_connection.cursor() as cursor:
             # Delete products associated with the order
             delete_products_query = """
-            DELETE FROM ProdOrd
-            WHERE orderID = %s;
+            DELETE FROM "ProdOrd"
+            WHERE "OrderID" = %s;
             """
             cursor.execute(delete_products_query, (order_id,))
             
             # Delete the order itself
             delete_order_query = """
-            DELETE FROM orders
-            WHERE orderID = %s;
+            DELETE FROM "Orders"
+            WHERE "OrderID" = %s;
             """
             cursor.execute(delete_order_query, (order_id,))
             
@@ -191,7 +191,7 @@ class OrderDAO:
         """
         query = """
         SELECT *
-        FROM orders;
+        FROM "Orders";
         """
 
         logging.debug("Retrieving all orders")
@@ -201,14 +201,14 @@ class OrderDAO:
             results = cursor.fetchall()
             orders = list[Order]()
             for row in results:
-                order_id, employe_id, client_id, order_date, total_prize = row
+                order_id, employe_id, client_id, order_date, total_Price = row
                 
                 # Retrieve products for this order
-                product_dao = ProductDAO(self.db_connection)
+                product_dao = ProductDAO()
                 product_query = """
-                SELECT productID, quantity
-                    FROM ProdOrd
-                    WHERE orderID = %s;
+                SELECT "ProductID", "Quantity"
+                    FROM "ProdOrd"
+                    WHERE "OrderID" = %s;
                 """
                 cursor.execute(product_query, (order_id,))
                 products = list[tuple[Product, int]]()
@@ -228,7 +228,7 @@ class OrderDAO:
                     employeId=employe_id,
                     clientId=client_id,
                     orderDate=order_date,
-                    totalPrize=total_prize,
+                    totalPrice=total_Price,
                     products=products
                 )
                 
