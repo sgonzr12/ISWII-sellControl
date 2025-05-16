@@ -39,7 +39,6 @@ function OrderTable() {
         });
         if (!response.ok) throw new Error('Error al obtener los pedidos');
         const data: Order[] = await response.json();
-        console.log(data);
         setOrders(data);
         setFilteredOrders(data);
       } catch {
@@ -83,6 +82,13 @@ function OrderTable() {
     } catch {
       alert('Error al convertir el pedido en albarán');
     }
+  };
+
+  // Generar PDF Pedido (deja la función preparada para la llamada al backend)
+  const handleGeneratePDF = async () => {
+    if (!selectedOrder) return;
+    // TODO: Implementar la llamada al backend para generar el PDF del pedido
+    alert('Funcionalidad de generación de PDF pendiente de implementar.');
   };
 
   return (
@@ -144,6 +150,12 @@ function OrderTable() {
           disabled={!selectedOrder}
         >
           Convertir a albarán
+        </button>
+        <button
+          onClick={handleGeneratePDF}
+          disabled={!selectedOrder}
+        >
+          Generar PDF Pedido
         </button>
       </div>
       {isProductsModalOpen && (

@@ -1,26 +1,12 @@
 import './Administrator.css';
-import { useState, useEffect} from 'react';
-
-/*
-Endpoints: 
-get /user/ Información del usuario logueado. Un json con el usuario en cuestión.
-get /user/users Información de todos los usuarios. Devuelve un json con todos los usuarios.
-put /user/update:id:rol Cambia el rol del usuario. Recibe un json con todos los datos del usuario.
-*/
-
-// const mockUsers = [
-//   { EmployeID: '100317434052211591144', Name: 'David Fernández Urdiales', Family_name: 'Fernandez Urdiales', Email: 'dfernu00@estudiantes.unileon.es', Rol: 1 },
-//   { EmployeID: '100317434052211591145', Name: 'Juan', Family_name: 'Ffff', Email: 'email@email.com', Rol: 2 },
-//   { EmployeID: '100317434052211591146', Name: 'Pedro', Family_name: 'sdfdsf', Email: 'email3@email.com', Rol: 3 }
-// ];
-
+import { useState, useEffect } from 'react';
 
 function Administrator() {
   const [users, setUsers] = useState<{ employe_id: string; name: string; family_name: string; email: string; rol: number }[]>([]);
-  //const [users] = useState(mockUsers);
   const [selectedUser, setSelectedUser] = useState<{ employe_id: string; name: string; family_name: string; email: string; rol: number } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRol, setEditRol] = useState('');
+  const [search, setSearch] = useState('');
 
   const fetchUsers = async () => {
     try {
@@ -34,8 +20,7 @@ function Administrator() {
         throw new Error('Error al obtener los usuarios');
       }
       const data = await response.json();
-      console.log('Data from backend:', data);
-      setUsers(data); // data debe ser un array de usuarios
+      setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -51,7 +36,7 @@ function Administrator() {
 
   const handleEditClick = () => {
     if (selectedUser) {
-      setEditRol(selectedUser.rol.toString()); // Asignar el rol actual al campo de edición
+      setEditRol(selectedUser.rol.toString());
     }
     setIsModalOpen(true);
   };
@@ -75,29 +60,55 @@ function Administrator() {
         throw new Error('Error al actualizar el rol');
       }
       setIsModalOpen(false);
-      fetchUsers(); // Recarga la lista de usuarios
+      fetchUsers();
     } catch (error) {
       console.error('Error updating user:', error);
       alert('No se pudo actualizar el usuario');
     }
   };
 
+  // Filtrado y ordenación alfabética por nombre
+  const filteredUsers = users
+    .filter(user => user.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div className="Administrator">
       <main className="main-content">
         <div className="administrator">
           <h1>Panel de administración</h1>
-          <ul className="user-list">
-            {users.map(user => (
-              <li
-                key={user.employe_id}
-                className={selectedUser?.employe_id === user.employe_id ? 'selected' : ''}
-                onClick={() => handleSelectUser(user)}
-              >
-                {user.name} ({user.rol})
-              </li>
-            ))}
-          </ul>
+          <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ padding: '0.5rem', width: '250px' }}
+            />
+          </div>
+          <div className="admin-table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Rol</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map(user => (
+                  <tr
+                    key={user.employe_id}
+                    className={selectedUser?.employe_id === user.employe_id ? 'selected' : ''}
+                    onClick={() => handleSelectUser(user)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td>{user.name}</td>
+                    <td>{user.rol}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <button
             className="edit-btn"
             onClick={handleEditClick}
@@ -114,10 +125,10 @@ function Administrator() {
                 Rol: &nbsp;
               </label>
               <input
-                  type="text"
-                  value={editRol}
-                  onChange={e => setEditRol(e.target.value)}
-                />
+                type="text"
+                value={editRol}
+                onChange={e => setEditRol(e.target.value)}
+              />
               <div className="modal-actions">
                 <button onClick={handleSave}>Guardar</button>
                 <button onClick={() => setIsModalOpen(false)}>Cancelar</button>
