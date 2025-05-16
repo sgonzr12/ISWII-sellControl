@@ -1,6 +1,7 @@
 # created by virtualenv automatically
 .venv/
 .idea/
+.vscode/
 __pycache__/
 database.ini
 
@@ -8,3 +9,6 @@ database.ini
 # Local environment variables
 ps.env
 frontend/.env
+
+# Visual Studio Code settings
+.vscode/
