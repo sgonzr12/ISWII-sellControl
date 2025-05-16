@@ -8,7 +8,7 @@ interface Product {
 }
 
 interface Invoice {
-  InvoiceID: string;
+  invoiceID: string;
   employeID: string;
   employeName: string;
   clientID: string;
@@ -96,8 +96,8 @@ function InvoiceTable() {
           <tbody>
             {filteredInvoices.map(invoice => (
               <tr
-                key={invoice.InvoiceID}
-                className={selectedInvoice?.InvoiceID === invoice.InvoiceID ? 'selected' : ''}
+                key={invoice.invoiceID}
+                className={selectedInvoice?.invoiceID === invoice.invoiceID ? 'selected' : ''}
                 onClick={() => setSelectedInvoice(invoice)}
                 style={{ cursor: 'pointer' }}
               >
