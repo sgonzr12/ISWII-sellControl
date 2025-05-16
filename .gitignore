@@ -8,3 +8,6 @@ database.ini
 # Local environment variables
 ps.env
 frontend/.env
+
+# Visual Studio Code settings
+.vscode/

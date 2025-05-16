@@ -1,4 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
+import logging
 
 from verificator import verifyToken, verifyTokenCURProduct, verifyTokenEmployee
 
@@ -7,13 +8,14 @@ from DAO.product import Product
 
 router = APIRouter()
 productDAO = ProductDAO()
+logger = logging.getLogger("appLogger")
 
 @router.get("/", tags=["product"], dependencies=[Depends(verifyTokenEmployee)])
 async def get_all_products(token: str = Depends(verifyToken)) -> list[dict[str, str]]:
     """
     Get all products
     """
-    print("Products requested")
+    logger.debug("Products requested")
     products = productDAO.get_all_products()
     return [product.get_product_JSON() for product in products]
 
@@ -22,7 +24,7 @@ async def update_product(product: dict[str, str], token: str = Depends(verifyTok
     """
     Update a product
     """
-    print("Product update requested")
+    logger.debug("Product update requested")
     productId = int(product["productId"])
     name = product["name"]
     description = product["description"]
@@ -36,11 +38,12 @@ async def update_product(product: dict[str, str], token: str = Depends(verifyTok
 
     #Verify the product
     if not new_product.verify_product():
-        print("Product verification failed")
+        logger.debug("Product verification failed")
         raise HTTPException(status_code=400, detail="Product verification failed")
 
     #Update the product
     updated_product = productDAO.update_product(new_product)
+    logger.info(f"Product updated: {updated_product}")
     return updated_product.get_product_JSON()
 
 @router.post("/", tags=["product"], dependencies=[Depends(verifyTokenCURProduct)])
@@ -48,7 +51,7 @@ async def create_product(product: dict[str, str], token: str = Depends(verifyTok
     """
     Create a new product
     """
-    print("Product creation requested")
+    logger.debug("Product creation requested")
     name = product["name"]
     description = product["description"]
     stock = product["stock"]
@@ -63,10 +66,11 @@ async def create_product(product: dict[str, str], token: str = Depends(verifyTok
     
     #Verify the product
     if not new_product.ready_to_insert():
-        print("Product verification failed")
+        logger.debug("Product verification failed")
         raise HTTPException(status_code=400, detail="Product verification failed")
 
     
     new_product = productDAO.create_product(new_product)
+    logger.info(f"Product created: {new_product}")
     return new_product.get_product_JSON()
     
