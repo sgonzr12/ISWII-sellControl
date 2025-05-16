@@ -27,6 +27,10 @@ function InvoiceTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
+  // Obtener el rol del usuario
+  const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  const rol = Number(backendData.rol) || -1;
+
   // Llamada GET al backend para obtener las facturas
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -123,12 +127,14 @@ function InvoiceTable() {
         </table>
       </div>
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
-        <button
-          onClick={handleGenerateInvoice}
-          disabled={!selectedInvoice}
-        >
-          Generar PDF factura
-        </button>
+        {(rol === 1 || rol === 3) && (
+          <button
+            onClick={handleGenerateInvoice}
+            disabled={!selectedInvoice}
+          >
+            Generar PDF factura
+          </button>
+        )}
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">

@@ -27,6 +27,10 @@ function OrderTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
+  // Obtener el rol del usuario
+  const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  const rol = Number(backendData.rol) || -1;
+
   // Llamada GET al backend para obtener los pedidos
   useEffect(() => {
     const fetchOrders = async () => {
@@ -151,12 +155,14 @@ function OrderTable() {
         >
           Convertir a albarán
         </button>
-        <button
-          onClick={handleGeneratePDF}
-          disabled={!selectedOrder}
-        >
-          Generar PDF Pedido
-        </button>
+        {(rol === 1 || rol === 3 || rol === 4) && (
+          <button
+            onClick={handleGeneratePDF}
+            disabled={!selectedOrder}
+          >
+            Generar PDF Pedido
+          </button>
+        )}
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">

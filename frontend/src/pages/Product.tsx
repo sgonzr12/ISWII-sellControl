@@ -23,6 +23,10 @@ function Product() {
 
     const [search, setSearch] = useState('');
 
+    // Obtener el rol del usuario
+    const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+    const rol = Number(backendData.rol) || -1;
+
     const fetchProducts = async () => {
         try {
             const credential = localStorage.getItem('credential');
@@ -196,17 +200,22 @@ function Product() {
                         </table>
                     </div>
                     <div className="product-buttons-row">
-                        <button
-                            className="add-product-button"
-                            onClick={handleAddClick}>
-                            Añadir producto
-                        </button>
-                        <button
-                            className="update-product-button"
-                            onClick={handleEditClick}
-                            disabled={!selectedProduct}>
-                            Modificar producto
-                        </button>
+                        {/* Solo admin, manager y warehouseManager pueden crear o editar productos */}
+                        {(rol === 1 || rol === 2 || rol === 4) && (
+                            <button
+                                className="add-product-button"
+                                onClick={handleAddClick}>
+                                Añadir producto
+                            </button>
+                        )}
+                        {(rol === 1 || rol === 2 || rol === 4) && (
+                            <button
+                                className="update-product-button"
+                                onClick={handleEditClick}
+                                disabled={!selectedProduct}>
+                                Modificar producto
+                            </button>
+                        )}
                     </div>
                 </div>
 
