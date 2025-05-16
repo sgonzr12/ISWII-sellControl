@@ -1,6 +1,18 @@
 import './Administrator.css';
 import { useState, useEffect } from 'react';
 
+const ROLES: { [key: string]: number } = {
+  Ninguno: 0,
+  Administrador: 1,
+  Manager: 2,
+  Ventas: 3,
+  "Jefe de almacen": 4,
+};
+
+const ROLE_NAMES: { [key: number]: string } = Object.fromEntries(
+  Object.entries(ROLES).map(([name, num]) => [num, name])
+);
+
 function Administrator() {
   const [users, setUsers] = useState<{ employe_id: string; name: string; family_name: string; email: string; rol: number }[]>([]);
   const [selectedUser, setSelectedUser] = useState<{ employe_id: string; name: string; family_name: string; email: string; rol: number } | null>(null);
@@ -103,7 +115,7 @@ function Administrator() {
                     style={{ cursor: 'pointer' }}
                   >
                     <td>{user.name}</td>
-                    <td>{user.rol}</td>
+                    <td>{ROLE_NAMES[user.rol] ?? user.rol}</td>
                   </tr>
                 ))}
               </tbody>
@@ -121,14 +133,16 @@ function Administrator() {
           <div className="modal-backdrop">
             <div className="modal">
               <h2>Cambiar rol</h2>
-              <label>
-                Rol: &nbsp;
-              </label>
-              <input
-                type="text"
+              <select
                 value={editRol}
                 onChange={e => setEditRol(e.target.value)}
-              />
+              >
+                {Object.entries(ROLES).map(([name, num]) => (
+                  <option key={num} value={num}>
+                    {name}
+                  </option>
+                ))}
+              </select>
               <div className="modal-actions">
                 <button onClick={handleSave}>Guardar</button>
                 <button onClick={() => setIsModalOpen(false)}>Cancelar</button>
