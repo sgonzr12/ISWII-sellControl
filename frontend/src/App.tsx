@@ -10,7 +10,7 @@ import CreateOffer from './pages/offer/CreateOffer';
 import EditOffer from './pages/offer/EditOffer';
 import Order from './pages/Order';
 // import DeliveryNote from './pages/DeliveryNote';
-import Invoice from './pages/invoice';
+import Invoice from './pages/Invoice';
 import DeliveryNote from './pages/DeliveryNote';
 // import Invoice from './pages/Invoice';
 import NotFound from './pages/NotFound'; // Importa el componente NotFound
