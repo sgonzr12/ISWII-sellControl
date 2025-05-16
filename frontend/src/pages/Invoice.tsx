@@ -127,7 +127,7 @@ function InvoiceTable() {
           onClick={handleGenerateInvoice}
           disabled={!selectedInvoice}
         >
-          Generar factura
+          Generar PDF factura
         </button>
       </div>
       {isProductsModalOpen && (

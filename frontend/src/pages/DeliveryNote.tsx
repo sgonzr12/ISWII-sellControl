@@ -85,6 +85,13 @@ function DeliveryNoteTable() {
     }
   };
 
+  // Generar PDF Albarán (deja la función preparada para la llamada al backend)
+  const handleGeneratePDF = async () => {
+    if (!selectedDeliveryNote) return;
+    // TODO: Implementar la llamada al backend para generar el PDF del albarán
+    alert('Funcionalidad de generación de PDF pendiente de implementar.');
+  };
+
   return (
     <div className="DeliveryNoteTable">
       <h1 className="deliverynote-title">Tabla de Albaranes</h1>
@@ -144,6 +151,12 @@ function DeliveryNoteTable() {
           disabled={!selectedDeliveryNote}
         >
           Convertir a factura
+        </button>
+        <button
+          onClick={handleGeneratePDF}
+          disabled={!selectedDeliveryNote}
+        >
+          Generar PDF Albaran
         </button>
       </div>
       {isProductsModalOpen && (
