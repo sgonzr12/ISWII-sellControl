@@ -1,73 +1,69 @@
-import psycopg2.extensions
+from fastapi import HTTPException
 import logging
 
-from invoice import Invoice
-from product import Product
-from productDAO import ProductDAO
+from connect import get_db_connection
+from DAO.invoice import Invoice
+from DAO.product import Product
+from DAO.productDAO import ProductDAO
 
 class InvoiceDAO:
-    def __init__(self, db_connection: psycopg2.extensions.connection):
+    def __init__(self):
         """
         Initialize the DAO with a database connection.
         :param db_connection: A database connection object.
         """
-        self.db_connection = db_connection
+        self.db_connection = get_db_connection()
         self.logger = logging.getLogger("appLogger")
 
-    def create_invoice(self, invoice: Invoice) -> int:
+    def create_invoice(self, invoice: Invoice) -> None:
         """
         Insert a new invoice into the database.
         :param invoice: An Invoice object containing invoice details.
         :return: The ID of the newly created invoice.
         """
         query = """
-        INSERT INTO invoices (employeId, clientID, invoice_date, totalPrize)
-        VALUES (%s, %s, %s, %s)
-        RETURNING invoiceID;
+        INSERT INTO "Invoices" ("InvoiceID", "EmployeID", "ClientID", "Date", "TotalPrice")
+        VALUES (%s, %s, %s, %s, %s)
         """
 
         logging.debug(f"Creating invoice: {invoice}")
 
         with self.db_connection.cursor() as cursor:
             cursor.execute(query, (
+                invoice.invoiceID,
                 invoice.employeId,
                 invoice.clientId,
-                invoice.invoiceDate,
-                invoice.totalPrize
+                invoice.date,
+                invoice.totalPrice
             ))
-            
-            result = cursor.fetchone()
-            if result is None:
-                self.logger.error("Failed to insert invoice and retrieve its ID.")
-                raise ValueError("Failed to insert invoice and retrieve its ID.")
-            invoice_id = result[0]
 
             # Insert products into ProdInv table
             for productTup in invoice.products:
                 # Assuming product is a dictionary with 'Product' and 'quantity'
                 prod_query = """
-                INSERT INTO ProdInv (invoiceID, productID, quantity)
+                INSERT INTO "ProdInv" ("InvoiceID", "ProductID", "Quantity")
                 VALUES (%s, %s, %s);
                 """
                 product, quantity = productTup  # Unpack the tuple
                 cursor.execute(prod_query, (
-                    invoice_id,
+                    invoice.invoiceID,
                     product.productId,
                     quantity
                 ))
 
             self.db_connection.commit()
-            logging.info(f"Invoice created with ID: {invoice_id}")
-            return invoice_id
+            logging.info(f"Invoice created with ID: {invoice.invoiceID}")
+            
         
-    def get_invoice_by_id(self, invoice_id: int) -> Invoice:
+    def get_invoice_by_id(self, invoice_id: str) -> Invoice:
         """
         Retrieve an invoice by its ID, including its products.
-        :param invoice_id: The ID of the invoice.
+        :param invoice_id: The ID of the invoice.ValueError(f"Invoice with ID {invoice_id} not found.")
+            
         :return: An Invoice object containing the invoice details or None if not found.
         """
         query = """
-        SELECT * FROM invoices WHERE invoiceID = %s;
+        SELECT * FROM "Invoices" WHERE "InvoiceID" = %s;
         """
 
         logging.debug(f"Retrieving invoice with ID: {invoice_id}")
@@ -77,11 +73,11 @@ class InvoiceDAO:
             result = cursor.fetchone()
             if result:
                 #fetch products related to the invoice
-                product_dao = ProductDAO(self.db_connection)
+                product_dao = ProductDAO()
                 prod_query = """
-                SELECT productID, quantity
-                FROM ProdInv
-                WHERE invoiceID = %s;
+                SELECT "ProductID", "Quantity"
+                FROM "ProdInv"
+                WHERE "InvoiceID" = %s;
                 """
                 cursor.execute(prod_query, (invoice_id,))
                 
@@ -95,7 +91,7 @@ class InvoiceDAO:
                     employeId=result[1],
                     clientId=result[2],
                     invoiceDate=result[3],
-                    totalPrize=result[4],
+                    totalPrice=result[4],
                     products=products
                 )
 
@@ -103,7 +99,7 @@ class InvoiceDAO:
                 return invoice
             else:
                 self.logger.error(f"Invoice with ID {invoice_id} not found.")
-                raise ValueError(f"Invoice with ID {invoice_id} not found.")
+                raise HTTPException(status_code=404, detail="Invoice not found") 
             
     def update_invoice(self, updated_invoice: Invoice) -> bool:
         """
@@ -112,9 +108,9 @@ class InvoiceDAO:
         :return: True if the update was successful, False otherwise.
         """
         query = """
-        UPDATE invoices
-        SET employeId = %s, clientId = %s, invoice_date = %s, totalPrize = %s
-        WHERE invoiceID = %s;
+        UPDATE "Invoices"
+        SET "EmployeId" = %s, "ClientId" = %s, "Date" = %s, "TotalPrice" = %s
+        WHERE "InvoiceID" = %s;
         """
 
         logging.debug(f"Updating invoice: {updated_invoice}")
@@ -123,21 +119,21 @@ class InvoiceDAO:
             cursor.execute(query, (
                 updated_invoice.employeId,
                 updated_invoice.clientId,
-                updated_invoice.invoiceDate,
-                updated_invoice.totalPrize,
+                updated_invoice.date,
+                updated_invoice.totalPrice,
                 updated_invoice.invoiceID
             ))
             
             # Update products in ProdInv table
             delete_query = """
-            DELETE FROM ProdInv
-            WHERE invoiceID = %s;
+            DELETE FROM "ProdInv"
+            WHERE "InvoiceID" = %s;
             """
             cursor.execute(delete_query, (updated_invoice.invoiceID,))
             
             for productTup in updated_invoice.products:
                 prod_query = """
-                INSERT INTO ProdInv (invoiceID, productID, quantity)
+                INSERT INTO "ProdInv" ("InvoiceID", "ProductID", "Quantity")
                 VALUES (%s, %s, %s);
                 """
                 product, quantity = productTup
@@ -164,15 +160,15 @@ class InvoiceDAO:
         with self.db_connection.cursor() as cursor:
             # Delete products from ProdInv table
             delete_query = """
-            DELETE FROM ProdInv
-            WHERE invoiceID = %s;
+            DELETE FROM "ProdInv"
+            WHERE "InvoiceID" = %s;
             """
             cursor.execute(delete_query, (invoice_id,))
             
             # Delete the invoice itself
             query = """
-            DELETE FROM invoices
-            WHERE invoiceID = %s;
+            DELETE FROM "Invoices"
+            WHERE "InvoiceID" = %s;
             """
             cursor.execute(query, (invoice_id,))
 
@@ -187,7 +183,7 @@ class InvoiceDAO:
         :return: A list of Invoice objects.
         """
         query = """
-        SELECT * FROM invoices;
+        SELECT * FROM "Invoices";
         """
 
         logging.debug("Retrieving all invoices")
@@ -201,14 +197,14 @@ class InvoiceDAO:
                 
                 
                 prod_query = """
-                SELECT productID, quantity
-                FROM ProdInv
-                WHERE invoiceID = %s;
+                SELECT "ProductID", "Quantity"
+                FROM "ProdInv"
+                WHERE "InvoiceID" = %s;
                 """
                 cursor.execute(prod_query, (result[0],))
                 
                 products = list[tuple[Product, int]]()
-                product_dao = ProductDAO(self.db_connection)
+                product_dao = ProductDAO()
                 
                 for product_id, quantity in cursor.fetchall():
                     product = product_dao.get_product_by_id(product_id)
@@ -219,10 +215,31 @@ class InvoiceDAO:
                     employeId=result[1],
                     clientId=result[2],
                     invoiceDate=result[3],
-                    totalPrize=result[4],
+                    totalPrice=result[4],
                     products=products
                 ))
             
             logging.info(f"Retrieved all {len(invoices)} invoices")
             return invoices
         
+    def check_invoice_exists(self, invoice_id: str) -> bool:
+        """
+        Check if an invoice exists in the database.
+        :param invoice_id: The ID of the invoice to check.
+        :return: True if the invoice exists, False otherwise.
+        """
+        query = """
+        SELECT COUNT(*)
+        FROM "Invoices"
+        WHERE "InvoiceID" = %s;
+        """
+
+        logging.debug(f"Checking if invoice with ID {invoice_id} exists")
+
+        with self.db_connection.cursor() as cursor:
+            cursor.execute(query, (invoice_id,))
+            result = cursor.fetchone()
+            if result is None:
+                return False
+            else:
+                return result[0] > 0

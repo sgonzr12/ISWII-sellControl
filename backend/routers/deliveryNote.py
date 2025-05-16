@@ -60,7 +60,11 @@ async def create_delivery_note(order_data: dict[str,str], token: dict[str,str] =
     # format the delivery note ID clientID = "cl-xxxxxx" deliveryNoteID = "dn-xxxxxx" with the same xxxxxx
     deliveryNoteID = "dn-" + orderID[3:]
     
-    
+    # Check if the order is already delivered
+    existing_delivery_note = deliveryNoteDAO.check_delivery_note_exists(deliveryNoteID)
+    if existing_delivery_note:
+        logger.error("Delivery note already exists")
+        raise HTTPException(status_code=400, detail="Delivery note already exists")
     # Create a new DeliveryNote object
     delivery_note = DeliveryNote(
         deliveryNoteID=deliveryNoteID,

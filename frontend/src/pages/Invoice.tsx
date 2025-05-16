@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './DeliveryNote.css';
+import './Invoice.css';
 
 interface Product {
   name: string;
@@ -7,8 +7,8 @@ interface Product {
   quantity: string | number;
 }
 
-interface DeliveryNote {
-  DeliveryNoteID: string;
+interface Invoice {
+  invoiceID: string;
   employeID: string;
   employeName: string;
   clientID: string;
@@ -18,77 +18,61 @@ interface DeliveryNote {
   products: Product[];
 }
 
-function DeliveryNoteTable() {
-  const [deliveryNotes, setDeliveryNotes] = useState<DeliveryNote[]>([]);
-  const [filteredDeliveryNotes, setFilteredDeliveryNotes] = useState<DeliveryNote[]>([]);
+function InvoiceTable() {
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [filterStart, setFilterStart] = useState('');
   const [filterEnd, setFilterEnd] = useState('');
-  const [selectedDeliveryNote, setSelectedDeliveryNote] = useState<DeliveryNote | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
-  // Llamada GET al backend para obtener los albaranes
+  // Llamada GET al backend para obtener las facturas
   useEffect(() => {
-    const fetchDeliveryNotes = async () => {
+    const fetchInvoices = async () => {
       try {
         const credential = localStorage.getItem('credential');
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/deliverynote`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/invoice/`, {
           headers: {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener los albaranes');
-        const data: DeliveryNote[] = await response.json();
+        if (!response.ok) throw new Error('Error al obtener las facturas');
+        const data: Invoice[] = await response.json();
         console.log(data);
-        setDeliveryNotes(data);
-        setFilteredDeliveryNotes(data);
+        setInvoices(data);
+        setFilteredInvoices(data);
       } catch {
-        setDeliveryNotes([]);
-        setFilteredDeliveryNotes([]);
+        setInvoices([]);
+        setFilteredInvoices([]);
       }
     };
-    fetchDeliveryNotes();
+    fetchInvoices();
   }, []);
 
   // Filtrado por fecha
   useEffect(() => {
-    let filtered = deliveryNotes;
+    let filtered = invoices;
     if (filterStart) {
       filtered = filtered.filter(o => o.date >= filterStart);
     }
     if (filterEnd) {
       filtered = filtered.filter(o => o.date <= filterEnd);
     }
-    setFilteredDeliveryNotes(filtered);
-  }, [filterStart, filterEnd, deliveryNotes]);
+    setFilteredInvoices(filtered);
+  }, [filterStart, filterEnd, invoices]);
 
-  // Convertir a factura
-  const handleConvertToInvoice = async () => {
-    if (!selectedDeliveryNote) return;
-    try {
-      const credential = localStorage.getItem('credential');
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/invoice/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${credential}`,
-        },
-        body: JSON.stringify({ DeliveryNoteID: selectedDeliveryNote.DeliveryNoteID }),
-      });
-      if (!response.ok) {
-        alert('Error al convertir el albarán en factura');
-        return;
-      }
-      alert('Albarán convertido en factura correctamente');
-    } catch {
-      alert('Error al convertir el albarán en factura');
-    }
+  // Generar factura (deja el hueco para la llamada al backend)
+  const handleGenerateInvoice = async () => {
+    if (!selectedInvoice) return;
+    // TODO: Implementar la llamada al backend para generar factura
+    alert('Funcionalidad de generar factura pendiente de implementar.');
   };
 
   return (
-    <div className="DeliveryNoteTable">
-      <h1 className="deliverynote-title">Tabla de Albaranes</h1>
-      <div className="deliverynote-filters">
+    <div className="InvoiceTable">
+      <h1 className="invoice-title">Tabla de Facturas</h1>
+      <div className="invoice-filters">
         <label>
           Fecha inicial:
           <input type="date" value={filterStart} onChange={e => setFilterStart(e.target.value)} />
@@ -98,8 +82,8 @@ function DeliveryNoteTable() {
           <input type="date" value={filterEnd} onChange={e => setFilterEnd(e.target.value)} />
         </label>
       </div>
-      <div className="deliverynotes-table-container">
-        <table className="deliverynote-table">
+      <div className="invoices-table-container">
+        <table className="invoice-table">
           <thead>
             <tr>
               <th>Empleado</th>
@@ -110,23 +94,23 @@ function DeliveryNoteTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredDeliveryNotes.map(note => (
+            {filteredInvoices.map(invoice => (
               <tr
-                key={note.DeliveryNoteID}
-                className={selectedDeliveryNote?.DeliveryNoteID === note.DeliveryNoteID ? 'selected' : ''}
-                onClick={() => setSelectedDeliveryNote(note)}
+                key={invoice.invoiceID}
+                className={selectedInvoice?.invoiceID === invoice.invoiceID ? 'selected' : ''}
+                onClick={() => setSelectedInvoice(invoice)}
                 style={{ cursor: 'pointer' }}
               >
-                <td>{note.employeName}</td>
-                <td>{note.clientName}</td>
-                <td>{note.date}</td>
-                <td>{note.totalPrice}</td>
+                <td>{invoice.employeName}</td>
+                <td>{invoice.clientName}</td>
+                <td>{invoice.date}</td>
+                <td>{invoice.totalPrice}</td>
                 <td>
                   <button
                     type="button"
                     onClick={e => {
                       e.stopPropagation();
-                      setProductsToShow(note.products);
+                      setProductsToShow(invoice.products);
                       setIsProductsModalOpen(true);
                     }}
                   >
@@ -140,16 +124,16 @@ function DeliveryNoteTable() {
       </div>
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
         <button
-          onClick={handleConvertToInvoice}
-          disabled={!selectedDeliveryNote}
+          onClick={handleGenerateInvoice}
+          disabled={!selectedInvoice}
         >
-          Convertir a factura
+          Generar factura
         </button>
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">
           <div className="modal">
-            <h2>Productos del albarán</h2>
+            <h2>Productos de la factura</h2>
             <div className="products-table-container">
               <table className="products-table">
                 <thead>
@@ -178,4 +162,4 @@ function DeliveryNoteTable() {
   );
 }
 
-export default DeliveryNoteTable;
+export default InvoiceTable;

@@ -13,6 +13,7 @@ import routers.product as product
 import routers.offer as offer
 import routers.order as order
 import routers.deliveryNote as deliveryNote
+import routers.invoice as invoice
 
 env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
 load_dotenv(env_path)
@@ -53,6 +54,7 @@ if __name__ == "__main__":
     app.include_router(offer.router, prefix="/offer", tags=["offer"])
     app.include_router(order.router, prefix="/order", tags=["order"])
     app.include_router(deliveryNote.router, prefix="/deliverynote", tags=["deliveryNote"])
+    app.include_router(invoice.router, prefix="/invoice", tags=["invoice"])
     logging.info("Routers included in FastAPI app")
     
     #change PORT to int

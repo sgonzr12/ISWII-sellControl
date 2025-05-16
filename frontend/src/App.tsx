@@ -9,6 +9,8 @@ import Offer from './pages/offer/Offer';
 import CreateOffer from './pages/offer/CreateOffer';
 import EditOffer from './pages/offer/EditOffer';
 import Order from './pages/Order';
+// import DeliveryNote from './pages/DeliveryNote';
+import Invoice from './pages/invoice';
 import DeliveryNote from './pages/DeliveryNote';
 // import Invoice from './pages/Invoice';
 import NotFound from './pages/NotFound'; // Importa el componente NotFound
@@ -97,6 +99,12 @@ function App() {
           <Route path="/createoffer" element={<CreateOffer />} />
           <Route path="/editoffer" element={<EditOffer />} />
           <Route path="/order" element={<Order />} />
+          <Route path="/invoice" element={<Invoice />} />
+
+          {/* <Route path="/product" element={<Product />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/deliverynote" element={<DeliveryNote />} />
+           */}
           <Route path="/deliverynote" element={<DeliveryNote />} />
 
           {/* <Route path="/product" element={<Product />} />

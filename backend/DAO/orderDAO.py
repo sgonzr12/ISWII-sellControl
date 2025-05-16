@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import logging
 
 from connect import get_db_connection
@@ -89,7 +90,7 @@ class OrderDAO:
                         products.append((product, quantity))
                     else:
                         logging.error(f"Product with ID {product_id} not found.")
-                        raise ValueError(f"Product with ID {product_id} not found.")
+                        raise HTTPException(status_code=404, detail=f"Product with ID {product_id} not found.")
                 # Create and return the Order object
                 order = Order(
                     orderID=result[0],
@@ -104,7 +105,7 @@ class OrderDAO:
                 return order
             else:
                 self.logger.error(f"Order with ID {order_id} not found.")
-                raise ValueError(f"No order found with ID {order_id}.")
+                raise HTTPException(status_code=404, detail="Order not found")
             
     def update_order(self, updated_order: Order) -> bool:
         """
@@ -213,7 +214,7 @@ class OrderDAO:
                         products.append((product, quantity))
                     else:
                         logging.error(f"Product with ID {product_id} not found.")
-                        raise ValueError(f"Product with ID {product_id} not found.")
+                        raise HTTPException(status_code=404, detail=f"Product with ID {product_id} not found.")
                 
                 # Create and append the Order object to the list
                 order = Order(
@@ -229,3 +230,25 @@ class OrderDAO:
             
             logging.info(f"Retrieved all {len(orders)} orders")
             return orders
+        
+    def check_order_exists(self, order_id: str) -> bool:
+        """
+        Check if an order exists in the database.
+        :param order_id: The ID of the order to check.
+        :return: True if the order exists, False otherwise.
+        """
+        query = """
+        SELECT COUNT(*)
+        FROM "Orders"
+        WHERE "OrderID" = %s;
+        """
+
+        logging.debug(f"Checking if order exists with ID: {order_id}")
+
+        with self.db_connection.cursor() as cursor:
+            cursor.execute(query, (order_id,))
+            result = cursor.fetchone()
+            if result is None:
+                return False
+            else:
+                return result[0] > 0
