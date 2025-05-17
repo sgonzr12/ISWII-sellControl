@@ -5,7 +5,7 @@ const ROLES: { [key: string]: number } = {
   Ninguno: 0,
   Administrador: 1,
   Manager: 2,
-  Ventas: 3,
+  Comercial: 3,
   "Jefe de almacen": 4,
 };
 

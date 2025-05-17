@@ -27,6 +27,10 @@ function DeliveryNoteTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
+  // Obtener el rol del usuario
+  const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  const rol = Number(backendData.rol) || -1;
+
   // Llamada GET al backend para obtener los albaranes
   useEffect(() => {
     const fetchDeliveryNotes = async () => {
@@ -152,12 +156,14 @@ function DeliveryNoteTable() {
         >
           Convertir a factura
         </button>
-        <button
-          onClick={handleGeneratePDF}
-          disabled={!selectedDeliveryNote}
-        >
-          Generar PDF Albaran
-        </button>
+        {(rol === 1 || rol === 3 || rol === 4) && (
+          <button
+            onClick={handleGeneratePDF}
+            disabled={!selectedDeliveryNote}
+          >
+            Generar PDF Albaran
+          </button>
+        )}
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">
