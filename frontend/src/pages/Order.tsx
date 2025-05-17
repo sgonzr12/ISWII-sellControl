@@ -90,9 +90,29 @@ function OrderTable() {
 
   // Generar PDF Pedido (deja la función preparada para la llamada al backend)
   const handleGeneratePDF = async () => {
-    if (!selectedOrder) return;
-    // TODO: Implementar la llamada al backend para generar el PDF del pedido
-    alert('Funcionalidad de generación de PDF pendiente de implementar.');
+  if (!selectedOrder) return;
+    const credential = localStorage.getItem('credential');
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/order/pdf?orderID=${selectedOrder.orderID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      alert('Error al generar el PDF del pedido');
+      return;
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pedido_${selectedOrder.orderID}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
