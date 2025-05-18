@@ -34,5 +34,5 @@ jobs:
       - name: Run tests 
         run: |
           # Run tests
-          uv run backend/tests.py
+          uv run backend/*.py
 
