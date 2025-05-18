@@ -92,8 +92,28 @@ function DeliveryNoteTable() {
   // Generar PDF Albarán (deja la función preparada para la llamada al backend)
   const handleGeneratePDF = async () => {
     if (!selectedDeliveryNote) return;
-    // TODO: Implementar la llamada al backend para generar el PDF del albarán
-    alert('Funcionalidad de generación de PDF pendiente de implementar.');
+    const credential = localStorage.getItem('credential');
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/deliverynote/pdf?deliveryNoteID=${selectedDeliveryNote.DeliveryNoteID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      alert('Error al generar el PDF del albarán');
+      return;
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `albaran_${selectedDeliveryNote.DeliveryNoteID}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (

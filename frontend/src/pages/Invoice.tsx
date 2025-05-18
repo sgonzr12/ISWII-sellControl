@@ -69,8 +69,28 @@ function InvoiceTable() {
   // Generar factura (deja el hueco para la llamada al backend)
   const handleGenerateInvoice = async () => {
     if (!selectedInvoice) return;
-    // TODO: Implementar la llamada al backend para generar factura
-    alert('Funcionalidad de generar factura pendiente de implementar.');
+    const credential = localStorage.getItem('credential');
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/invoice/pdf?invoiceID=${selectedInvoice.invoiceID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      alert('Error al generar el PDF de la factura');
+      return;
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `factura_${selectedInvoice.invoiceID}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (

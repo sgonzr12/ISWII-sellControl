@@ -30,6 +30,10 @@ function OfferTable() {
 
   const navigate = useNavigate();
 
+  // Obtener el rol del usuario (si lo necesitas para el botón PDF)
+  //const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  //const rol = Number(backendData.rol) || -1;
+
   // Fetch real de ofertas desde el backend
   useEffect(() => {
     const fetchOffers = async () => {
@@ -84,6 +88,33 @@ function OfferTable() {
     } catch {
       alert('Error al convertir la oferta en pedido');
     }
+  };
+
+  // Generar PDF de la oferta seleccionada
+  const handleGenerateOfferPDF = async () => {
+    if (!selectedOffer) return;
+    const credential = localStorage.getItem('credential');
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/offer/pdf?offerID=${selectedOffer.offerID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      alert('Error al generar el PDF de la oferta');
+      return;
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `oferta_${selectedOffer.offerID}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -153,6 +184,12 @@ function OfferTable() {
         </button>
         <button onClick={handleConvertToOrder} disabled={!selectedOffer}>
           Convertir a pedido
+        </button>
+        <button
+          onClick={handleGenerateOfferPDF}
+          disabled={!selectedOffer}
+        >
+          Generar PDF oferta
         </button>
       </div>
       {isProductsModalOpen && (

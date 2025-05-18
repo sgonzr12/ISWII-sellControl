@@ -1,13 +1,15 @@
 from fastapi import Depends, APIRouter, HTTPException
 from verificator import verifyTokenEmployee
+from fastapi.responses import FileResponse
+import os
 import logging
-
 
 from DAO.offerDAO import OfferDAO
 from DAO.productDAO import ProductDAO
 from DAO.orderDAO import OrderDAO
 from DAO.order import Order
 from DAO.order import OrderModel
+import pdf.orderPDF  as orderPDF
 
 router = APIRouter()
 orderDAO = OrderDAO()
@@ -68,4 +70,32 @@ async def create_order(orfer_data: dict[str,str], token: dict[str,str] = Depends
     order = Order(orderID=orderID, employeId=employee_id, clientId=offer.clientID, products=offer.products)
     orderDAO.create_order(order)
     logger.debug(f"Order created: {order.get_json()}")
+
+@router.get("/pdf", tags=["order"], dependencies=[Depends(verifyTokenEmployee)])
+async def get_order_pdf(orderID: str, token: dict[str,str] = Depends(verifyTokenEmployee)):
+    """
+    Get the PDF of an order
+    """
+    logger.debug("Get order PDF requested")
+
+    if not orderID:
+        logger.error("Missing order ID")
+        raise HTTPException(status_code=400, detail="Missing order ID")
+
+    # Generate the PDF
+    pdf_path = orderPDF.create_order_pdf(orderID)
+
+    #extract the filename from the path
+    filename = os.path.basename(pdf_path)
+    
+    if not pdf_path or not os.path.exists(pdf_path):
+        logger.error("Failed to generate PDF")
+        raise HTTPException(status_code=500, detail="Failed to generate PDF")
+    
+    return FileResponse(
+        path=pdf_path, 
+        filename=filename,
+        media_type="application/pdf"
+    )
+
     
