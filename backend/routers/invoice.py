@@ -1,13 +1,15 @@
 from fastapi import Depends, APIRouter, HTTPException
 from verificator import verifyTokenEmployee
+from fastapi.responses import FileResponse
+import os
 import logging
-
 
 from DAO.deliveryNoteDAO import DeliveryNoteDAO
 from DAO.productDAO import ProductDAO
 from DAO.invoiceDAO import InvoiceDAO
 from DAO.invoice import Invoice
 from DAO.invoice import InvoiceModel
+import pdf.invoicePDF  as invoicePDF
 
 router = APIRouter()
 invoiceDAO = InvoiceDAO()
@@ -76,4 +78,31 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
     # Create the invoice in the database
     invoiceDAO.create_invoice(invoice)
     logger.debug(f"Invoice created: {invoice.get_json()}")
+    
+@router.get("/pdf", tags=["invoice"], dependencies=[Depends(verifyTokenEmployee)])
+async def get_invoice_pdf(invoiceID: str, token: dict[str,str] = Depends(verifyTokenEmployee)):
+    """
+    Get the PDF of an invoice
+    """
+    logger.debug("Get invoice PDF requested")
+
+    if not invoiceID:
+        logger.error("Missing invoice ID")
+        raise HTTPException(status_code=400, detail="Missing invoice ID")
+
+    # Generate the PDF
+    pdf_path = invoicePDF.create_invoice_pdf(invoiceID)
+
+    #extract the filename from the path
+    filename = os.path.basename(pdf_path)
+    
+    if not pdf_path or not os.path.exists(pdf_path):
+        logger.error("Failed to generate PDF")
+        raise HTTPException(status_code=500, detail="Failed to generate PDF")
+    
+    return FileResponse(
+        path=pdf_path, 
+        filename=filename,
+        media_type="application/pdf"
+    )
     
