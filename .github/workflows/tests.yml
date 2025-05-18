@@ -30,3 +30,9 @@ jobs:
 
       - name: Create requirements.txt
         run: uv pip freeze > requirements.txt
+
+      - name: Run tests 
+        run: |
+          # Run tests
+          uv test --all-extras --dev
+
