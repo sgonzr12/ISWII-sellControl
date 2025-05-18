@@ -149,6 +149,55 @@ class TestInvoiceDAO(unittest.TestCase):
                 self.assertEqual(result[0].invoiceID, invoice_obj.invoiceID)
 
         asyncio.run(_async_test())
+    
+    def test_create_invoice_missing_fields(self):
+        async def _async_test():
+            # Simulate a token
+            invoice_data = {
+                "DeliveryNoteID": "",
+                "clientId": ""
+            }
+
+            with self.assertRaises(invoice.HTTPException) as context:
+                await self.invoice_module.create_invoice(invoice_data, token={"sub": "1"})
+            
+            self.assertEqual(context.exception.status_code, 400)
+            self.assertEqual(context.exception.detail, "Missing required fields")
+
+        asyncio.run(_async_test())
+
+    def test_create_invoice_unauthorized(self):
+        async def _async_test():
+            # Simulate a token
+            invoice_data = {
+                "DeliveryNoteID": "72747",
+                "clientId": "72747"
+            }
+
+            with self.assertRaises(invoice.HTTPException) as context:
+                await self.invoice_module.create_invoice(invoice_data, token={"sub": ""})
+            
+            self.assertEqual(context.exception.status_code, 401)
+            self.assertEqual(context.exception.detail, "Unauthorized")
+
+        asyncio.run(_async_test())
+
+    def test_create_invoice_delivery_note_not_found(self):
+        async def _async_test():
+            # Simulate a token
+            invoice_data = {
+                "DeliveryNoteID": "72747",
+                "clientId": "72747"
+            }
+
+            with patch("routers.invoice.deliveryNoteDAO.get_delivery_note_by_id", return_value=None):
+                with self.assertRaises(invoice.HTTPException) as context:
+                    await self.invoice_module.create_invoice(invoice_data, token={"sub": "1"})
+                
+                self.assertEqual(context.exception.status_code, 404)
+                self.assertEqual(context.exception.detail, "Delivery note not found")
+
+        asyncio.run(_async_test())
 
 if __name__ == "__main__":
     unittest.main()
