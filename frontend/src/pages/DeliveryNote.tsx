@@ -27,6 +27,10 @@ function DeliveryNoteTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
+  // Obtener el rol del usuario
+  const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  const rol = Number(backendData.rol) || -1;
+
   // Llamada GET al backend para obtener los albaranes
   useEffect(() => {
     const fetchDeliveryNotes = async () => {
@@ -83,6 +87,33 @@ function DeliveryNoteTable() {
     } catch {
       alert('Error al convertir el albarán en factura');
     }
+  };
+
+  // Generar PDF Albarán (deja la función preparada para la llamada al backend)
+  const handleGeneratePDF = async () => {
+    if (!selectedDeliveryNote) return;
+    const credential = localStorage.getItem('credential');
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/deliverynote/pdf?deliveryNoteID=${selectedDeliveryNote.DeliveryNoteID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      alert('Error al generar el PDF del albarán');
+      return;
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `albaran_${selectedDeliveryNote.DeliveryNoteID}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -145,6 +176,14 @@ function DeliveryNoteTable() {
         >
           Convertir a factura
         </button>
+        {(rol === 1 || rol === 3 || rol === 4) && (
+          <button
+            onClick={handleGeneratePDF}
+            disabled={!selectedDeliveryNote}
+          >
+            Generar PDF Albaran
+          </button>
+        )}
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">

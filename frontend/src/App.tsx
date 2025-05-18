@@ -9,11 +9,10 @@ import Offer from './pages/offer/Offer';
 import CreateOffer from './pages/offer/CreateOffer';
 import EditOffer from './pages/offer/EditOffer';
 import Order from './pages/Order';
-// import DeliveryNote from './pages/DeliveryNote';
+
 import Invoice from './pages/Invoice';
 import DeliveryNote from './pages/DeliveryNote';
-// import Invoice from './pages/Invoice';
-import NotFound from './pages/NotFound'; // Importa el componente NotFound
+import NotFound from './pages/NotFound';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
@@ -91,26 +90,27 @@ function App() {
   
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated} />}>
-        <Route path="/product" element={<Product />} />
+
           <Route path="/home" element={<Home />} />
-          {rol === 1 && <Route path="/administrator" element={<Administrator />} />}
-          <Route path="/client" element={<Client />} />
-          <Route path="/offer" element={<Offer />} />
-          <Route path="/createoffer" element={<CreateOffer />} />
-          <Route path="/editoffer" element={<EditOffer />} />
-          <Route path="/order" element={<Order />} />
-          <Route path="/invoice" element={<Invoice />} />
 
-          {/* <Route path="/product" element={<Product />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/deliverynote" element={<DeliveryNote />} />
-           */}
-          <Route path="/deliverynote" element={<DeliveryNote />} />
+          {(rol === 1 || rol === 2 || rol === 3 || rol === 4) && <Route path="/product" element={<Product />} />}
 
-          {/* <Route path="/product" element={<Product />} />
-          <Route path="/product" element={<Product />} />
+          {(rol === 1 || rol === 2 || rol === 3) && <Route path="/offer" element={<Offer />} />}
+
+          {(rol === 1 || rol === 2 || rol === 3) && <Route path="/createoffer" element={<CreateOffer />} />}
           
-          <Route path="/invoice" element={<Invoice />} /> */}
+          {(rol === 1 || rol === 2 || rol === 3) && <Route path="/editoffer" element={<EditOffer />} />}
+          
+          {(rol === 1 || rol === 2 || rol === 3 || rol === 4) && <Route path="/order" element={<Order />} />}
+
+          {(rol === 1 || rol === 2 || rol === 4) && <Route path="/deliverynote" element={<DeliveryNote />} />}
+
+          {(rol === 1 || rol === 2 || rol === 3) && <Route path="/invoice" element={<Invoice />} />}
+
+          {(rol === 1 || rol === 2 || rol === 3) && <Route path="/client" element={<Client />} />}
+
+          {(rol === 1) && <Route path="/administrator" element={<Administrator />} />}
+
         </Route>
         
         {/* Ruta 404 para manejar todas las rutas no definidas - debe ser la última */}

@@ -1,5 +1,5 @@
 import './Product.css';
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 function Product() {
     const [products, setProducts] = useState<{productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; purchasePrice: number; sellPrice: number }[]>([]);
@@ -21,6 +21,12 @@ function Product() {
     const [editPurchasePrice, setEditPurchasePrice] = useState('');
     const [editSellPrice, setEditSellPrice] = useState('');
 
+    const [search, setSearch] = useState('');
+
+    // Obtener el rol del usuario
+    const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+    const rol = Number(backendData.rol) || -1;
+
     const fetchProducts = async () => {
         try {
             const credential = localStorage.getItem('credential');
@@ -35,7 +41,6 @@ function Product() {
             }
 
             const data = await response.json();
-            console.log('Fetched products:', data);
             setProducts(data);
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -44,7 +49,7 @@ function Product() {
 
     useEffect(() => {
         fetchProducts();
-    } , []);
+    }, []);
 
     const handleSelectProduct = (product: {productId: string; name: string; description: string; stock: number; maxStock: number; minStock: number; purchasePrice: number; sellPrice: number }) => {
         setSelectedProduct(product);
@@ -62,15 +67,13 @@ function Product() {
     }
 
     const handleAddClick = () => {
-        if (selectedProduct){
-            setAddName(selectedProduct.name);
-            setAddDescription(selectedProduct.description);
-            setAddStock(selectedProduct.stock.toString());
-            setAddMaxStock(selectedProduct.maxStock.toString());
-            setAddMinStock(selectedProduct.minStock.toString());
-            setAddPurchasePrice(selectedProduct.purchasePrice.toString());
-            setAddSellPrice(selectedProduct.sellPrice.toString());
-        }
+        setAddName('');
+        setAddDescription('');
+        setAddStock('');
+        setAddMaxStock('');
+        setAddMinStock('');
+        setAddPurchasePrice('');
+        setAddSellPrice('');
         setIsAddModalOpen(true);
     }
 
@@ -91,7 +94,6 @@ function Product() {
                     stock: editStock,
                     maxStock: editMaxStock,
                     minStock: editMinStock,
-
                     purchasePrice: editPurchasePrice,
                     sellPrice: editSellPrice,
                 }),
@@ -102,7 +104,6 @@ function Product() {
             }
 
             const data = await response.json();
-            console.log('Updated product:', data);
             setProducts(products.map(products => products.productId === selectedProduct.productId ? data : products));
             setIsUpdateModalOpen(false);
             fetchProducts();
@@ -137,7 +138,6 @@ function Product() {
             }
 
             const data = await response.json();
-            console.log('Added product:', data);
             setProducts([...products, data]);
             setIsAddModalOpen(false);
             fetchProducts();
@@ -147,54 +147,86 @@ function Product() {
         }
     }
 
+    // Filtrado por nombre de producto
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
         <div className="Product">
             <main className="main-content">
                 <div className="product">
                     <h1>Productos</h1>
-                    
-                    <ul className="product-list">
-                        {products.map(product => (
-                            <li 
-                                key={product.productId} 
-                                className={selectedProduct?.productId === product.productId ? 'selected' : ''}
-                                onClick={() => handleSelectProduct(product)}>
-                                
-                                <h2>{product.name}</h2>
-                                <p>{product.description}</p>
-                                <p>Stock: {product.stock}</p>
-                                <p>Stock máximo: {product.maxStock}</p>
-                                <p>Stock mínimo: {product.minStock}</p>
-                                <p>Precio de compra: {product.purchasePrice}</p>
-                                <p>Precio de venta: {product.sellPrice}</p>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <button 
-                        className="update-product-button"
-                        onClick={handleEditClick}
-                        disabled={!selectedProduct}>
-                        
-                        Modificar producto
-                    </button>
-                    
-                    <button
-                        className="add-product-button"
-                        onClick={handleAddClick}>
-
-                        Añadir producto
-                    </button>
+                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        <input
+                            type="text"
+                            placeholder="Buscar producto..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            style={{ padding: '0.5rem', width: '250px' }}
+                        />
+                    </div>
+                    <div className="product-table-container">
+                        <table className="product-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Stock</th>
+                                    <th>Stock máximo</th>
+                                    <th>Stock mínimo</th>
+                                    <th>Precio compra</th>
+                                    <th>Precio venta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredProducts.map(product => (
+                                    <tr
+                                        key={product.productId}
+                                        className={selectedProduct?.productId === product.productId ? 'selected' : ''}
+                                        onClick={() => handleSelectProduct(product)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <td>{product.name}</td>
+                                        <td>{product.description}</td>
+                                        <td>{product.stock}</td>
+                                        <td>{product.maxStock}</td>
+                                        <td>{product.minStock}</td>
+                                        <td>{product.purchasePrice}</td>
+                                        <td>{product.sellPrice}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="product-buttons-row">
+                        {/* Solo admin, manager y warehouseManager pueden crear o editar productos */}
+                        {(rol === 1 || rol === 2 || rol === 4) && (
+                            <button
+                                className="add-product-button"
+                                onClick={handleAddClick}>
+                                Añadir producto
+                            </button>
+                        )}
+                        {(rol === 1 || rol === 2 || rol === 4) && (
+                            <button
+                                className="update-product-button"
+                                onClick={handleEditClick}
+                                disabled={!selectedProduct}>
+                                Modificar producto
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {isUpdateModalOpen && (
-                    <div className= "modal-backdrop">
+                    <div className="modal-backdrop">
                         <div className="modal">
                             <h2>Modificar producto</h2>
                             <label>Nombre: &nbsp; {selectedProduct?.name}</label>
                             <label>Descripción: &nbsp; {selectedProduct?.description}</label>
                             <label>Stock: &nbsp;</label>
-                            <input type="number" value={editStock} onChange={e => setEditStock(e.target.value)}/>
+                            <input type="number" value={editStock} onChange={e => setEditStock(e.target.value)} />
                             <label>Stock máximo: &nbsp;</label>
                             <input type="number" value={editMaxStock} onChange={e => setEditMaxStock(e.target.value)} />
                             <label>Stock mínimo: &nbsp;</label>
@@ -203,7 +235,7 @@ function Product() {
                             <input type="number" value={editPurchasePrice} step="0.01" onChange={e => setEditPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
                             <input type="number" value={editSellPrice} step="0.01" onChange={e => setEditSellPrice(e.target.value)} />
-                            
+
                             <div className="modal-buttons">
                                 <button onClick={handleSave}>Guardar</button>
                                 <button onClick={() => setIsUpdateModalOpen(false)}>Cancelar</button>
@@ -217,19 +249,19 @@ function Product() {
                         <div className="modal">
                             <h2>Añadir producto</h2>
                             <label>Nombre: &nbsp;</label>
-                            <input type="text" onChange={e => setAddName(e.target.value)} />
+                            <input type="text" value={addName} onChange={e => setAddName(e.target.value)} />
                             <label>Descripción: &nbsp;</label>
-                            <input type="text" onChange={e => setAddDescription(e.target.value)} />
+                            <input type="text" value={addDescription} onChange={e => setAddDescription(e.target.value)} />
                             <label>Stock: &nbsp;</label>
-                            <input type="number" onChange={e => setAddStock(e.target.value)} />
+                            <input type="number" value={addStock} onChange={e => setAddStock(e.target.value)} />
                             <label>Stock máximo: &nbsp;</label>
-                            <input type="number" onChange={e => setAddMaxStock(e.target.value)} />
+                            <input type="number" value={addMaxStock} onChange={e => setAddMaxStock(e.target.value)} />
                             <label>Stock mínimo: &nbsp;</label>
-                            <input type="number" onChange={e => setAddMinStock(e.target.value)} />
+                            <input type="number" value={addMinStock} onChange={e => setAddMinStock(e.target.value)} />
                             <label>Precio de compra: &nbsp;</label>
-                            <input type="number" onChange={e => setAddPurchasePrice(e.target.value)} />
+                            <input type="number" value={addPurchasePrice} onChange={e => setAddPurchasePrice(e.target.value)} />
                             <label>Precio de venta: &nbsp;</label>
-                            <input type="number" onChange={e => setAddSellPrice(e.target.value)} />
+                            <input type="number" value={addSellPrice} onChange={e => setAddSellPrice(e.target.value)} />
 
                             <div className="modal-buttons">
                                 <button onClick={handleAdd}>Guardar</button>
@@ -238,11 +270,10 @@ function Product() {
                         </div>
                     </div>
                 )}
-                    
+
             </main>
         </div>
     );
-}   
+}
 
 export default Product;
-

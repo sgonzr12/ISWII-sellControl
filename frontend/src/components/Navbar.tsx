@@ -40,14 +40,27 @@ function Navbar({ setIsAuthenticated }: NavbarProps) {
         <h2>SellControl</h2>
       </div>
       <ul className="nav-links">
-        <li><Link to="/product">Producto</Link></li>
-        <li><Link to="/offer">Oferta</Link></li>
-        <li><Link to="/order">Pedido</Link></li>
-        <li><Link to="/deliverynote">Albarán</Link></li>
-        <li><Link to="/invoice">Factura</Link></li>
-        <li><Link to="/client">Clientes</Link></li>
-        {rol === 1 && (<li><Link to="/administrator">Administración</Link></li>)}
-        
+        {(rol === 1 || rol === 2 || rol === 3 || rol === 4) && (
+          <li><Link to="/product">Producto</Link></li>
+        )}
+        {(rol === 1 || rol === 2 || rol === 3) && (
+          <li><Link to="/offer">Oferta</Link></li>
+        )}
+        {(rol === 1 || rol === 2 || rol === 3 || rol === 4) && (
+          <li><Link to="/order">Pedido</Link></li>
+        )}
+        {(rol === 1 || rol === 2 || rol === 4) && (
+          <li><Link to="/deliverynote">Albarán</Link></li>
+        )}
+        {(rol === 1 || rol === 2 || rol === 3) && (
+          <li><Link to="/invoice">Factura</Link></li>
+        )}
+        {(rol === 1 || rol === 2 || rol === 3) && (
+          <li><Link to="/client">Clientes</Link></li>
+        )}
+        {rol === 1 && (
+          <li><Link to="/administrator">Administración</Link></li>
+        )}
       </ul>
       <button className="login-button" onClick={handleLogout}>
         Cerrar sesión

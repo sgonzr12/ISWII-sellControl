@@ -75,3 +75,30 @@
     gap: 1rem;
     justify-content: flex-end;
   }
+
+  .admin-table-container {
+  max-width: 500px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000;
+}
+
+.admin-table th, .admin-table td {
+  border: 1px solid #000;
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+.admin-table tr.selected {
+  background: #e364f4;
+  color: #fff;
+}
+
+.admin-table th:first-child,
+.admin-table td:first-child {
+  text-align: left;
+}

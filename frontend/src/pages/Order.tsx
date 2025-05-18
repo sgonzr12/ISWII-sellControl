@@ -27,6 +27,10 @@ function OrderTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
+  // Obtener el rol del usuario
+  const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
+  const rol = Number(backendData.rol) || -1;
+
   // Llamada GET al backend para obtener los pedidos
   useEffect(() => {
     const fetchOrders = async () => {
@@ -39,7 +43,6 @@ function OrderTable() {
         });
         if (!response.ok) throw new Error('Error al obtener los pedidos');
         const data: Order[] = await response.json();
-        console.log(data);
         setOrders(data);
         setFilteredOrders(data);
       } catch {
@@ -83,6 +86,33 @@ function OrderTable() {
     } catch {
       alert('Error al convertir el pedido en albarán');
     }
+  };
+
+  // Generar PDF Pedido (deja la función preparada para la llamada al backend)
+  const handleGeneratePDF = async () => {
+  if (!selectedOrder) return;
+    const credential = localStorage.getItem('credential');
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/order/pdf?orderID=${selectedOrder.orderID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      alert('Error al generar el PDF del pedido');
+      return;
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pedido_${selectedOrder.orderID}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -145,6 +175,14 @@ function OrderTable() {
         >
           Convertir a albarán
         </button>
+        {(rol === 1 || rol === 3 || rol === 4) && (
+          <button
+            onClick={handleGeneratePDF}
+            disabled={!selectedOrder}
+          >
+            Generar PDF Pedido
+          </button>
+        )}
       </div>
       {isProductsModalOpen && (
         <div className="modal-backdrop">
