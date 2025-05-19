@@ -71,3 +71,15 @@ class Product:
             self.sellPrice >= 0
 
         ])
+        
+    def substract_stock(self, quantity: int) -> bool:
+        """
+        Subtract stock from the product.
+        :param quantity: The quantity to subtract.
+        :return: True if the stock was successfully subtracted, False otherwise.
+        """
+        if self.stock - quantity < self.minStock:
+            print(f"Stock cannot be less than minStock ({self.minStock})")
+            return False
+        self.stock -= quantity
+        return True

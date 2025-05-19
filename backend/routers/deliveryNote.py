@@ -10,7 +10,9 @@ from DAO.productDAO import ProductDAO
 from DAO.orderDAO import OrderDAO
 from DAO.deliveryNote import DeliveryNote
 from DAO.deliveryNote import DeliveryNoteModel
+from DAO.product import Product
 import pdf.deliveryNotePDF  as deliveryNotePDF
+
 
 router = APIRouter()
 orderDAO = OrderDAO()
@@ -58,8 +60,20 @@ async def create_delivery_note(order_data: dict[str,str], token: dict[str,str] =
         logger.error("Order not found")
         raise HTTPException(status_code=404, detail="Order not found")
     
+    updated_products: list[tuple[Product, int]] = []
+    # Check if the products are in stock
+    for product_tup in order.products:
+        product = product_tup[0]
+        quantity = product_tup[1]
+        
+        updated = product.substract_stock(quantity)
+        
+        if not updated:
+            logger.error(f"Product {product.name} not in stock")
+            raise HTTPException(status_code=400, detail=f"Product {product.name} not in stock")
 
-    
+        updated_products.append((product, quantity))
+
     # format the delivery note ID clientID = "cl-xxxxxx" deliveryNoteID = "dn-xxxxxx" with the same xxxxxx
     deliveryNoteID = "dn-" + orderID[3:]
     
