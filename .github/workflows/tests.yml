@@ -38,5 +38,6 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest discover -s backend/tests -p "*_test.py" -v
+        PYTHONPATH=backend python -m unittest discover -s backend/tests -p "*_test.py" -v
+
 
