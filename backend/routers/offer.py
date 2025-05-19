@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
-from verificator import verifyTokenEmployee
+from verificator import verifyTokenOffer
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 import os
@@ -23,8 +23,8 @@ offerDAO = OfferDAO()
 productDAO = ProductDAO()
 logger = logging.getLogger("appLogger")
 
-@router.get("/", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
-async def get_all_offers(token: str = Depends(verifyTokenEmployee)) -> list[OfferModel]:
+@router.get("/", tags=["offer"], dependencies=[Depends(verifyTokenOffer)])
+async def get_all_offers(token: str = Depends(verifyTokenOffer)) -> list[OfferModel]:
     """
     Get all offers
     """
@@ -40,8 +40,8 @@ class createOfferModel(BaseModel):
     clientID: str
     products: list[dict[str, str]]
 
-@router.post("/", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
-async def create_offer(offer: createOfferModel, token: dict[str,str] = Depends(verifyTokenEmployee)) -> None:
+@router.post("/", tags=["offer"], dependencies=[Depends(verifyTokenOffer)])
+async def create_offer(offer: createOfferModel, token: dict[str,str] = Depends(verifyTokenOffer)) -> None:
     """
     Create a new offer
     """
@@ -105,8 +105,8 @@ class updateOfferModel(BaseModel):
     products: list[dict[str, str]]
     
 
-@router.put("/", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
-async def update_offer(offer: updateOfferModel, token: dict[str,str] = Depends(verifyTokenEmployee)) -> None:
+@router.put("/", tags=["offer"], dependencies=[Depends(verifyTokenOffer)])
+async def update_offer(offer: updateOfferModel, token: dict[str,str] = Depends(verifyTokenOffer)) -> None:
     """
     Update an existing offer
     """
@@ -176,8 +176,8 @@ async def update_offer(offer: updateOfferModel, token: dict[str,str] = Depends(v
     
     logger.debug(f"Offer {offer_id} updated successfully")
 
-@router.get("/pdf", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
-async def get_offer_pdf(offerID: str, token: dict[str,str] = Depends(verifyTokenEmployee)):
+@router.get("/pdf", tags=["offer"], dependencies=[Depends(verifyTokenOffer)])
+async def get_offer_pdf(offerID: str, token: dict[str,str] = Depends(verifyTokenOffer)):
     """
     Get the PDF of an offer
     """

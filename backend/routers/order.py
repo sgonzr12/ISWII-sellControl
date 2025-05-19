@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
-from verificator import verifyTokenEmployee
+from verificator import  verifyTokenEmployee, verifyTokenCreateOrder
 from fastapi.responses import FileResponse
 import os
 import logging
@@ -30,8 +30,8 @@ async def get_all_orders(token: str = Depends(verifyTokenEmployee)) -> list[Orde
     logger.debug(f"Orders retrieved: {order_json}")
     return order_json
 
-@router.post("/", tags=["order"], dependencies=[Depends(verifyTokenEmployee)])
-async def create_order(orfer_data: dict[str,str], token: dict[str,str] = Depends(verifyTokenEmployee)) -> None:
+@router.post("/", tags=["order"], dependencies=[Depends(verifyTokenCreateOrder)])
+async def create_order(offer_data: dict[str,str], token: dict[str,str] = Depends(verifyTokenEmployee)) -> None:
     """
     Create a new order
     """
@@ -39,8 +39,8 @@ async def create_order(orfer_data: dict[str,str], token: dict[str,str] = Depends
     logger.debug("Create order requested")
     
     # Extract data from the request
-    offerID = orfer_data["offerID"]
-    
+    offerID = offer_data["offerID"]
+
     if not offerID:
         logger.error("Missing required fields")
         raise HTTPException(status_code=400, detail="Missing required fields")

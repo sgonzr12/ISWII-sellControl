@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
-from verificator import verifyTokenEmployee
+from verificator import verifyTokenInvoice
 from fastapi.responses import FileResponse
 import os
 import logging
@@ -17,8 +17,8 @@ deliveryNoteDAO = DeliveryNoteDAO()
 productDAO = ProductDAO()
 logger = logging.getLogger("appLogger")
 
-@router.get("/", tags=["invoice"], dependencies=[Depends(verifyTokenEmployee)])
-async def get_all_invoices(token: str = Depends(verifyTokenEmployee)) -> list[InvoiceModel]:
+@router.get("/", tags=["invoice"], dependencies=[Depends(verifyTokenInvoice)])
+async def get_all_invoices(token: str = Depends(verifyTokenInvoice)) -> list[InvoiceModel]:
     """
     Get all invoices
     """
@@ -30,8 +30,8 @@ async def get_all_invoices(token: str = Depends(verifyTokenEmployee)) -> list[In
     logger.debug(f"Invoices retrieved: {invoice_json}")
     return invoice_json
 
-@router.post("/", tags=["invoice"], dependencies=[Depends(verifyTokenEmployee)])
-async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Depends(verifyTokenEmployee)) -> None:
+@router.post("/", tags=["invoice"], dependencies=[Depends(verifyTokenInvoice)])
+async def create_invoice(deliveryNote_data: dict[str,str], token: dict[str,str] = Depends(verifyTokenInvoice)) -> None:
     """
     Create a new invoice
     """
@@ -39,8 +39,8 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
     logger.debug("Create invoice requested")
     
     # Extract data from the request
-    deliveryNoteID = invoice_data["DeliveryNoteID"]
-        
+    deliveryNoteID = deliveryNote_data["DeliveryNoteID"]
+
     if not deliveryNoteID:
         logger.error("Missing required fields")
         raise HTTPException(status_code=400, detail="Missing required fields")
@@ -78,9 +78,9 @@ async def create_invoice(invoice_data: dict[str,str], token: dict[str,str] = Dep
     # Create the invoice in the database
     invoiceDAO.create_invoice(invoice)
     logger.debug(f"Invoice created: {invoice.get_json()}")
-    
-@router.get("/pdf", tags=["invoice"], dependencies=[Depends(verifyTokenEmployee)])
-async def get_invoice_pdf(invoiceID: str, token: dict[str,str] = Depends(verifyTokenEmployee)):
+
+@router.get("/pdf", tags=["invoice"], dependencies=[Depends(verifyTokenInvoice)])
+async def get_invoice_pdf(invoiceID: str, token: dict[str,str] = Depends(verifyTokenInvoice)):
     """
     Get the PDF of an invoice
     """

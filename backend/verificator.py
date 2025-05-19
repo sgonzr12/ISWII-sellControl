@@ -168,3 +168,112 @@ def verifyTokenCURProduct(token: HTTPAuthorizationCredentials = Depends(security
         raise HTTPException(status_code=401, detail="Invalid token")
     except ValueError:
         raise ValueError("Employee not found")
+    
+def verifyTokenOffer(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
+    """
+    Verify the token and check if the user have the permission to create offers
+    """
+    
+    print("Verifying token Create Offer")  # TODO: REMOVE WHEN LOGGER IS READY
+
+    credentials = token.credentials  # Extract the actual token string
+
+    # Verify loaded environment variables
+    if CLIENT_ID is None or CLIENT_SECRET is None:
+        raise HTTPException(status_code=500, detail="Missing environment variables")
+
+    # Verify the token
+    try:
+        decoded_token = id_token.verify_oauth2_token( #type: ignore
+            credentials,
+            request=google_requests.Request(),
+            audience=CLIENT_ID
+        )
+        
+        employe = employeDAO.get_employee_by_id(decoded_token["sub"])
+        
+        # Check if the user has the permission to create offers
+        # 0 = none, 1 = admin, 2 = manager, 3 = sales
+        if employe.rol == 0 or employe.rol == 4:
+            raise HTTPException(status_code=403, detail="User is not allowed to create offers")
+
+    
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except ValueError:
+        raise ValueError("Employee not found")
+    
+def verifyTokenCreateOrder(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
+    """
+    Verify the token and check if the user have the permission to create orders
+    """
+    
+    print("Verifying token Create Order")  # TODO: REMOVE WHEN LOGGER IS READY
+
+    credentials = token.credentials  # Extract the actual token string
+
+    # Verify loaded environment variables
+    if CLIENT_ID is None or CLIENT_SECRET is None:
+        raise HTTPException(status_code=500, detail="Missing environment variables")
+
+    # Verify the token
+    try:
+        decoded_token = id_token.verify_oauth2_token( #type: ignore
+            credentials,
+            request=google_requests.Request(),
+            audience=CLIENT_ID
+        )
+        
+        employe = employeDAO.get_employee_by_id(decoded_token["sub"])
+        
+        # Check if the user has the permission to create orders
+        # 0 = none, 1 = admin, 2 = manager, 3 = sales
+        if employe.rol == 0 or employe.rol == 4:
+            raise HTTPException(status_code=403, detail="User is not allowed to create orders")
+
+    
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except ValueError:
+        raise ValueError("Employee not found")
+    
+def verifyTokenInvoice(token: HTTPAuthorizationCredentials = Depends(security)) -> None:
+    """
+    Verify the token and check if the user have the permission to manage invoices
+    """
+
+    print("Verifying token Manage Invoice")  # TODO: REMOVE WHEN LOGGER IS READY
+
+    credentials = token.credentials  # Extract the actual token string
+
+    # Verify loaded environment variables
+    if CLIENT_ID is None or CLIENT_SECRET is None:
+        raise HTTPException(status_code=500, detail="Missing environment variables")
+
+    # Verify the token
+    try:
+        decoded_token = id_token.verify_oauth2_token( #type: ignore
+            credentials,
+            request=google_requests.Request(),
+            audience=CLIENT_ID
+        )
+        
+        employe = employeDAO.get_employee_by_id(decoded_token["sub"])
+
+        # Check if the user has the permission to manage invoices
+        # 0 = none, 1 = admin, 2 = manager, 3 = sales
+        if employe.rol == 0 or employe.rol == 4:
+            raise HTTPException(status_code=403, detail="User is not allowed to manage invoices")
+
+    
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except ValueError:
+        raise ValueError("Employee not found")
+    
