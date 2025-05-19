@@ -30,7 +30,7 @@ jobs:
 
     - name: Compile requirements.txt
       run: |
-        uv pip compile pyproject.toml --output requirements.txt
+        uv pip compile pyproject.toml --output-file requirements.txt
 
     - name: Install dependencies
       run: |
