@@ -39,7 +39,6 @@ class TestOrderDAO(unittest.TestCase):
             # Simulate a token
             order_data = {
                 "offerID": "72747"
-
             }
 
             # Create a order object to return
@@ -68,7 +67,7 @@ class TestOrderDAO(unittest.TestCase):
 
             with patch("routers.order.offerDAO.get_offer_by_id") as mock_get_offer, \
                 patch("routers.order.Order.get_json") as mock_get_json, \
-                patch("routers.order.orderDAO.get_order_by_id", return_value=False), \
+                patch("routers.order.orderDAO.check_order_exists", return_value=False), \
                 patch("routers.order.verifyTokenEmployee") as mock_verify_token:
 
                 mock_verify_token.return_value = {"sub": "1"}
@@ -150,10 +149,13 @@ class TestOrderDAO(unittest.TestCase):
                 "offerID": ""
             }
 
-            with self.assertRaises(order.HTTPException) as context:
-                await self.order_module.create_order(order_data, token={"sub": "1"})
-            self.assertEqual(context.exception.status_code, 400)
-            self.assertEqual(context.exception.detail, "Missing required fields")
+            with patch("routers.order.verifyTokenEmployee") as mock_verify_token:
+                mock_verify_token.return_value = {"sub": "1"}
+
+                with self.assertRaises(order.HTTPException) as context:
+                    await self.order_module.create_order(order_data, token={"sub": "1"})
+                self.assertEqual(context.exception.status_code, 400)
+                self.assertEqual(context.exception.detail, "Missing required fields")
 
         asyncio.run(_async_test())
 
@@ -162,11 +164,14 @@ class TestOrderDAO(unittest.TestCase):
             order_data = {
                 "offerID": "72747"
             }
+            
+            with patch("routers.order.verifyTokenEmployee") as mock_verify_token:
+                mock_verify_token.return_value = {"sub": "1"}            
 
-            with self.assertRaises(order.HTTPException) as context:
-                await self.order_module.create_order(order_data, token={"sub": ""})
-            self.assertEqual(context.exception.status_code, 401)
-            self.assertEqual(context.exception.detail, "Unauthorized")
+                with self.assertRaises(order.HTTPException) as context:
+                    await self.order_module.create_order(order_data, token={"sub": ""})
+                self.assertEqual(context.exception.status_code, 401)
+                self.assertEqual(context.exception.detail, "Unauthorized")
 
         asyncio.run(_async_test())
 
@@ -176,7 +181,10 @@ class TestOrderDAO(unittest.TestCase):
                 "offerID": "72747"
             }
 
-            with patch("routers.order.offerDAO.get_offer_by_id", return_value=None):
+            with patch("routers.order.offerDAO.get_offer_by_id", return_value=None), \
+                patch("routers.order.verifyTokenEmployee") as mock_verify_token:
+                mock_verify_token.return_value = {"sub": "1"}
+
                 with self.assertRaises(order.HTTPException) as context:
                     await self.order_module.create_order(order_data, token={"sub": "1"})
                 self.assertEqual(context.exception.status_code, 404)
@@ -191,7 +199,10 @@ class TestOrderDAO(unittest.TestCase):
             }
 
             with patch("routers.order.orderDAO.get_order_by_id", return_value=True), \
-                patch("routers.order.offerDAO.get_offer_by_id") as mock_get_offer:
+                patch("routers.order.offerDAO.get_offer_by_id") as mock_get_offer, \
+                patch("routers.order.verifyTokenEmployee") as mock_verify_token:
+                mock_verify_token.return_value = {"sub": "1"}
+
                 mock_offer = MagicMock(spec=Offer)
                 mock_offer.clientID = "82345"
                 mock_offer.products = [(Product(productId=1, name="Test Product", description="Test Description", stock=100, minStock=1, maxStock=10, purchasePrice=5.0, sellPrice=10.0), 2)]
