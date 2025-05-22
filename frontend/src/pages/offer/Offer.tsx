@@ -110,7 +110,7 @@ function OfferTable() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `oferta_${selectedOffer.offerID}.pdf`;
+    a.download = `${selectedOffer.offerID}_${selectedOffer.date}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();

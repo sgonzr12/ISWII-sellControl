@@ -109,7 +109,7 @@ function DeliveryNoteTable() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `albaran_${selectedDeliveryNote.DeliveryNoteID}.pdf`;
+    a.download = `${selectedDeliveryNote.DeliveryNoteID}_${selectedDeliveryNote.date}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();

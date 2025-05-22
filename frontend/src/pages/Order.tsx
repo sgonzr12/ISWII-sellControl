@@ -108,7 +108,7 @@ function OrderTable() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `pedido_${selectedOrder.orderID}.pdf`;
+    a.download = `${selectedOrder.orderID}_${selectedOrder.date}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();
