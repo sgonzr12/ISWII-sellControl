@@ -2,20 +2,25 @@ import unittest
 from unittest.mock import MagicMock, patch
 import asyncio
 import datetime
-
 import sys
 
 sys.path.append("../")
-from DAO.deliveryNoteDAO import DeliveryNoteDAO
-from DAO.product import Product
 
-from DAO.order import Order
-from DAO.deliveryNote import DeliveryNote, DeliveryNoteModel, ProductInDeliveryNote
-from DAO.client import Client
-from DAO.employe import Employe
-from DAO.clientDAO import ClientDAO
+with patch('connect.get_db_connection') as mock_db_conn:
+    # Create a mock connection
+    mock_connection = MagicMock()
+    mock_db_conn.return_value = mock_connection
 
-from routers import deliveryNote
+    from DAO.deliveryNoteDAO import DeliveryNoteDAO
+    from DAO.deliveryNote import DeliveryNote, DeliveryNoteModel, ProductInDeliveryNote
+
+    from DAO.order import Order
+    from DAO.product import Product
+    from DAO.client import Client
+    from DAO.employe import Employe
+    from DAO.clientDAO import ClientDAO
+
+    from routers import deliveryNote
 
 class TestDeliveryNoteDAO(unittest.TestCase):
     def setUp(self):
@@ -46,7 +51,8 @@ class TestDeliveryNoteDAO(unittest.TestCase):
                 "orderID": "72747"
             }
             
-            with patch("routers.order.OrderDAO.get_order_by_id") as mock_get_order:
+            with patch("routers.order.OrderDAO.get_order_by_id") as mock_get_order, \
+                patch("routers.deliveryNote.deliveryNoteDAO.check_delivery_note_exists", return_value=False):
                 mock_order = MagicMock(spec=Order)
                 mock_order.clientId = "72747"
                 mock_order.products = [(product, 2)]

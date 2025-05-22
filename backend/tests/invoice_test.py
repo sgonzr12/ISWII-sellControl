@@ -2,21 +2,26 @@ import unittest
 from unittest.mock import MagicMock, patch
 import asyncio
 import datetime
-
 import sys
 
 sys.path.append("../")
-from DAO.invoiceDAO import InvoiceDAO
-from DAO.invoice import Invoice, InvoiceModel, ProductInInvoice
-from DAO.product import Product
 
-from DAO.employe import Employe
-import DAO.employeDAO 
-from DAO.client import Client
-import DAO.clientDAO
-from DAO.deliveryNote import DeliveryNote
+with patch('connect.get_db_connection') as mock_db_conn:
+    # Create a mock connection
+    mock_connection = MagicMock()
+    mock_db_conn.return_value = mock_connection
 
-from routers import invoice
+    from DAO.invoiceDAO import InvoiceDAO
+    from DAO.invoice import Invoice, InvoiceModel, ProductInInvoice
+    
+    from DAO.employe import Employe
+    import DAO.employeDAO 
+    from DAO.client import Client
+    import DAO.clientDAO
+    from DAO.deliveryNote import DeliveryNote
+    from DAO.product import Product
+
+    from routers import invoice
 
 class TestInvoiceDAO(unittest.TestCase):
     def setUp(self):

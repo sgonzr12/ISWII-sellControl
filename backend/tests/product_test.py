@@ -1,13 +1,19 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import asyncio
-
 import sys
-sys.path.append('../')
-from DAO.productDAO import ProductDAO
-from DAO.product import Product
 
-from routers import product
+sys.path.append('../')
+
+with patch('connect.get_db_connection') as mock_db_conn:
+    # Create a mock connection
+    mock_connection = MagicMock()
+    mock_db_conn.return_value = mock_connection
+
+    from DAO.productDAO import ProductDAO
+    from DAO.product import Product
+
+    from routers import product
 
 class TestProductRouter(unittest.TestCase):
     def setUp(self):
