@@ -1,6 +1,8 @@
 from fastapi import Depends, APIRouter, HTTPException
 from verificator import verifyTokenEmployee
 from pydantic import BaseModel
+from fastapi.responses import FileResponse
+import os
 import logging
 
 
@@ -9,6 +11,8 @@ from DAO.productDAO import ProductDAO
 from DAO.product import Product
 from DAO.offer import Offer
 from DAO.offer import OfferModel
+
+import pdf.offerPDF  as offerPDF
 
 
 
@@ -172,3 +176,29 @@ async def update_offer(offer: updateOfferModel, token: dict[str,str] = Depends(v
     
     logger.debug(f"Offer {offer_id} updated successfully")
 
+@router.get("/pdf", tags=["offer"], dependencies=[Depends(verifyTokenEmployee)])
+async def get_offer_pdf(offerID: str, token: dict[str,str] = Depends(verifyTokenEmployee)):
+    """
+    Get the PDF of an offer
+    """
+    logger.debug("Get offer PDF requested")
+
+    if not offerID:
+        logger.error("Missing offer ID")
+        raise HTTPException(status_code=400, detail="Missing offer ID")
+    
+    # Generate the PDF
+    pdf_path = offerPDF.create_offer_pdf(offerID)
+    
+    #extract the filename from the path
+    filename = os.path.basename(pdf_path)
+    
+    if not pdf_path or not os.path.exists(pdf_path):
+        logger.error("Failed to generate PDF")
+        raise HTTPException(status_code=500, detail="Failed to generate PDF")
+    
+    return FileResponse(
+        path=pdf_path, 
+        filename=filename,
+        media_type="application/pdf"
+    )
