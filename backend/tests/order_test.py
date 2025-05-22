@@ -2,21 +2,26 @@ import unittest
 from unittest.mock import MagicMock, patch
 import asyncio
 import datetime
-
 import sys
 
 sys.path.append("../")
-from DAO.orderDAO import OrderDAO
-from DAO.order import Order, OrderModel, ProductInOrder
 
-from DAO.product import Product
-from DAO.offer import Offer
-from DAO.employe import Employe
-import DAO.employeDAO
-from DAO.client import Client
-import DAO.clientDAO
+with patch('connect.get_db_connection') as mock_db_conn:
+    # Create a mock connection
+    mock_connection = MagicMock()
+    mock_db_conn.return_value = mock_connection
 
-from routers import order
+    from DAO.orderDAO import OrderDAO
+    from DAO.order import Order, OrderModel, ProductInOrder
+
+    from DAO.product import Product
+    from DAO.offer import Offer
+    from DAO.employe import Employe
+    import DAO.employeDAO
+    from DAO.client import Client
+    import DAO.clientDAO
+
+    from routers import order
 
 class TestOrderDAO(unittest.TestCase):
 
@@ -67,10 +72,7 @@ class TestOrderDAO(unittest.TestCase):
 
             with patch("routers.order.offerDAO.get_offer_by_id") as mock_get_offer, \
                 patch("routers.order.Order.get_json") as mock_get_json, \
-                patch("routers.order.orderDAO.check_order_exists", return_value=False), \
-                patch("routers.order.verifyTokenEmployee") as mock_verify_token:
-
-                mock_verify_token.return_value = {"sub": "1"}
+                patch("routers.order.orderDAO.check_order_exists", return_value=False):
 
                 mock_offer = MagicMock(spec=Offer)
                 mock_offer.clientID = "82345"
@@ -127,10 +129,7 @@ class TestOrderDAO(unittest.TestCase):
             # Mock the DAO method
             self.mock_order_dao.get_all_orders.return_value = [order_obj]
 
-            with patch("routers.order.orderDAO.get_all_orders") as mock_get_all_orders, \
-                patch("routers.order.verifyTokenEmployee") as mock_verify_token:
-
-                mock_verify_token.return_value = {"sub": "1"}
+            with patch("routers.order.orderDAO.get_all_orders") as mock_get_all_orders:
                 mock_get_all_orders.return_value = [order_obj]
                 
                 # Call the function
@@ -149,13 +148,10 @@ class TestOrderDAO(unittest.TestCase):
                 "offerID": ""
             }
 
-            with patch("routers.order.verifyTokenEmployee") as mock_verify_token:
-                mock_verify_token.return_value = {"sub": "1"}
-
-                with self.assertRaises(order.HTTPException) as context:
-                    await self.order_module.create_order(order_data, token={"sub": "1"})
-                self.assertEqual(context.exception.status_code, 400)
-                self.assertEqual(context.exception.detail, "Missing required fields")
+            with self.assertRaises(order.HTTPException) as context:
+                await self.order_module.create_order(order_data, token={"sub": "1"})
+            self.assertEqual(context.exception.status_code, 400)
+            self.assertEqual(context.exception.detail, "Missing required fields")
 
         asyncio.run(_async_test())
 
@@ -163,15 +159,12 @@ class TestOrderDAO(unittest.TestCase):
         async def _async_test():
             order_data = {
                 "offerID": "72747"
-            }
-            
-            with patch("routers.order.verifyTokenEmployee") as mock_verify_token:
-                mock_verify_token.return_value = {"sub": "1"}            
+            }      
 
-                with self.assertRaises(order.HTTPException) as context:
-                    await self.order_module.create_order(order_data, token={"sub": ""})
-                self.assertEqual(context.exception.status_code, 401)
-                self.assertEqual(context.exception.detail, "Unauthorized")
+            with self.assertRaises(order.HTTPException) as context:
+                await self.order_module.create_order(order_data, token={"sub": ""})
+            self.assertEqual(context.exception.status_code, 401)
+            self.assertEqual(context.exception.detail, "Unauthorized")
 
         asyncio.run(_async_test())
 
@@ -181,12 +174,10 @@ class TestOrderDAO(unittest.TestCase):
                 "offerID": "72747"
             }
 
-            with patch("routers.order.offerDAO.get_offer_by_id", return_value=None), \
-                patch("routers.order.verifyTokenEmployee") as mock_verify_token:
-                mock_verify_token.return_value = {"sub": "1"}
-
+            with patch("routers.order.offerDAO.get_offer_by_id", return_value=None):
                 with self.assertRaises(order.HTTPException) as context:
                     await self.order_module.create_order(order_data, token={"sub": "1"})
+
                 self.assertEqual(context.exception.status_code, 404)
                 self.assertEqual(context.exception.detail, "Offer not found")
 
@@ -199,10 +190,7 @@ class TestOrderDAO(unittest.TestCase):
             }
 
             with patch("routers.order.orderDAO.get_order_by_id", return_value=True), \
-                patch("routers.order.offerDAO.get_offer_by_id") as mock_get_offer, \
-                patch("routers.order.verifyTokenEmployee") as mock_verify_token:
-                mock_verify_token.return_value = {"sub": "1"}
-
+                patch("routers.order.offerDAO.get_offer_by_id") as mock_get_offer:
                 mock_offer = MagicMock(spec=Offer)
                 mock_offer.clientID = "82345"
                 mock_offer.products = [(Product(productId=1, name="Test Product", description="Test Description", stock=100, minStock=1, maxStock=10, purchasePrice=5.0, sellPrice=10.0), 2)]
