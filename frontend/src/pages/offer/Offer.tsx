@@ -152,7 +152,7 @@ function OfferTable() {
                 <td>{offer.employeName}</td>
                 <td>{offer.clientName}</td>
                 <td>{offer.date}</td>
-                <td>{offer.totalPrice}</td>
+                <td>{offer.totalPrice} €</td>
                 <td>
                   <button
                     type="button"

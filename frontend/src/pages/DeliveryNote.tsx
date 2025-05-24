@@ -151,7 +151,7 @@ function DeliveryNoteTable() {
                 <td>{note.employeName}</td>
                 <td>{note.clientName}</td>
                 <td>{note.date}</td>
-                <td>{note.totalPrice}</td>
+                <td>{note.totalPrice} €</td>
                 <td>
                   <button
                     type="button"

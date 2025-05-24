@@ -128,7 +128,7 @@ function InvoiceTable() {
                 <td>{invoice.employeName}</td>
                 <td>{invoice.clientName}</td>
                 <td>{invoice.date}</td>
-                <td>{invoice.totalPrice}</td>
+                <td>{invoice.totalPrice} €</td>
                 <td>
                   <button
                     type="button"

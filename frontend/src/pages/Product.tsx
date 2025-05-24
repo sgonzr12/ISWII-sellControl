@@ -195,8 +195,8 @@ function Product() {
                                         <td>{product.stock}</td>
                                         <td>{product.maxStock}</td>
                                         <td>{product.minStock}</td>
-                                        <td>{product.purchasePrice}</td>
-                                        <td>{product.sellPrice}</td>
+                                        <td>{product.purchasePrice} €</td>
+                                        <td>{product.sellPrice} €</td>
                                     </tr>
                                 ))}
                             </tbody>

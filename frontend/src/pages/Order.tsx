@@ -150,7 +150,7 @@ function OrderTable() {
                 <td>{order.employeName}</td>
                 <td>{order.clientName}</td>
                 <td>{order.date}</td>
-                <td>{order.totalPrice}</td>
+                <td>{order.totalPrice} €</td>
                 <td>
                   <button
                     type="button"

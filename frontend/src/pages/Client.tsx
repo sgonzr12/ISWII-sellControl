@@ -201,35 +201,37 @@ function ClientTable() {
               />
             </label>
           </div>
-          <table className="client-table">
-            <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>CIF</th>
-                <th>Dirección</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Contacto</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredClients.map(client => (
-                <tr
-                  key={client.clientID}
-                  className={selectedClient?.clientID === client.clientID ? 'selected' : ''}
-                  onClick={() => setSelectedClient(client)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <td>{client.CompanyName}</td>
-                  <td>{client.CIF}</td>
-                  <td>{client.address}</td>
-                  <td>{client.email}</td>
-                  <td>{client.phone}</td>
-                  <td>{client.contact}</td>
+          <div className='clients-table-container'>
+            <table className="client-table">
+              <thead>
+                <tr>
+                  <th>Empresa</th>
+                  <th>CIF</th>
+                  <th>Dirección</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Contacto</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredClients.map(client => (
+                  <tr
+                    key={client.clientID}
+                    className={selectedClient?.clientID === client.clientID ? 'selected' : ''}
+                    onClick={() => setSelectedClient(client)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td>{client.CompanyName}</td>
+                    <td>{client.CIF}</td>
+                    <td>{client.address}</td>
+                    <td>{client.email}</td>
+                    <td>{client.phone}</td>
+                    <td>{client.contact}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="client-actions">
             <button onClick={handleCreate}>Crear cliente</button>
             <button onClick={handleEdit} disabled={!selectedClient}>Editar cliente</button>
