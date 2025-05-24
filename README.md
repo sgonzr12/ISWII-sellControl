@@ -60,7 +60,7 @@ Create a `.env` file in the frontend directory with:
 # frontend/.env file
 VITE_GOOGLE_ID=your_google_client_id
 ```
-
+```
 ## Features
 - Inventory management
 - Sales tracking
