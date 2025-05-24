@@ -61,9 +61,6 @@ Create a `.env` file in the frontend directory with:
 VITE_GOOGLE_ID=your_google_client_id
 ```
 
-This is required for Google authentication integration with the frontend application.
-```
-
 ## Features
 - Inventory management
 - Sales tracking
