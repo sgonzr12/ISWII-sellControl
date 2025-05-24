@@ -52,15 +52,17 @@ password=your_database_password
 # ps.env file
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secretç
+```
 
-# Frontend Environment
+### Frontend Environment
 Create a `.env` file in the frontend directory with:
 
 ```
 # frontend/.env file
+
 VITE_GOOGLE_ID=your_google_client_id
 ```
-```
+
 ## Features
 - Inventory management
 - Sales tracking
