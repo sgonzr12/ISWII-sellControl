@@ -147,7 +147,7 @@ function InvoiceTable() {
         </table>
       </div>
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
-        {(rol === 1 || rol === 3) && (
+        {(rol === 1 || rol === 3 || rol === 2) && (
           <button
             onClick={handleGenerateInvoice}
             disabled={!selectedInvoice}

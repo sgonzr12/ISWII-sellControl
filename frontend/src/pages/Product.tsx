@@ -110,6 +110,7 @@ function Product() {
         }
         catch (error) {
             console.error('Error updating product:', error);
+            alert('Error al actualizar el producto. Revise los datos.');
         }
     };
 
@@ -144,6 +145,8 @@ function Product() {
         }
         catch (error) {
             console.error('Error adding product:', error);
+            alert('Error al añadir el producto. Revise los datos.');
+
         }
     }
 

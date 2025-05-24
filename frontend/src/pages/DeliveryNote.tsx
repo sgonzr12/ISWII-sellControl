@@ -176,7 +176,7 @@ function DeliveryNoteTable() {
         >
           Convertir a factura
         </button>
-        {(rol === 1 || rol === 3 || rol === 4) && (
+        {(rol === 1 || rol === 2 || rol === 3 || rol === 4) && (
           <button
             onClick={handleGeneratePDF}
             disabled={!selectedDeliveryNote}
