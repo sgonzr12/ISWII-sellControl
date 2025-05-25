@@ -1,8 +1,25 @@
 import psycopg2
-from config import load_config
+import os
+from dotenv import load_dotenv
 
 from typing import Optional
 import psycopg2.extensions
+
+env_path = os.path.join(os.path.dirname(__file__), "../ps.env")
+load_dotenv(env_path)
+
+DATABASE = os.getenv("DATABASE_NAME")
+if not DATABASE:
+    raise ValueError("DATABASE_NAME environment variable not set")
+USER = os.getenv("DATABASE_USER")
+if not USER:
+    raise ValueError("DATABASE_USER environment variable not set")
+PASSWORD = os.getenv("DATABASE_PASSWORD")
+if not PASSWORD:
+    raise ValueError("DATABASE_PASSWORD environment variable not set")
+HOST = os.getenv("DATABASE_URL")
+if not HOST:
+    raise ValueError("DATABASE_HOST environment variable not set")
 
 class DatabaseConnection:
     _instance: Optional[psycopg2.extensions.connection] = None
@@ -10,12 +27,11 @@ class DatabaseConnection:
     @classmethod
     def get_instance(cls) -> psycopg2.extensions.connection:
         if cls._instance is None:
-            config = load_config()
             cls._instance = psycopg2.connect(
-                dbname=config['database'],
-                user=config['user'],
-                password=config['password'],
-                host=config['host']
+                dbname=DATABASE,
+                user=USER,
+                password=PASSWORD,
+                host=HOST
             )
         return cls._instance
     
