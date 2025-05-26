@@ -35,15 +35,6 @@ The application is deployed using Docker Compose with the following services:
 ## Environment Variables
 Configure the application by setting environment variables in a `.env` file:
 
-### Database Configuration
-The application uses a `database.ini` file for database connection details. Create this file in the root directory with the following format:
-
-```ini
-[postgresql]
-host=your_database_host
-database=your_database_name
-user=your_database_username
-password=your_database_password
 ```
 
 ### Authentication Variables

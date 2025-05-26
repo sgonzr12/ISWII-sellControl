@@ -1,0 +1,66 @@
+services:
+  # BACKEND
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Asegúrate de que esté en backend/
+    image: sellcontrol-backend
+    container_name: backend
+    ports:
+      - "8000:8000"  # Ajusta según tu puerto expuesto
+    environment:
+      - FRONTEND_URL=*
+      - DATABASE_URL=db
+      - DATABASE_NAME=sellcontrol
+      - DATABASE_USER=pi
+      - DATABASE_PASSWORD=changeme!
+      - PORT=8000
+    depends_on:
+      - db
+
+  # FRONTEND (Build)
+  build-frontend:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8000
+    command: >
+      sh -c "npm install && npm run build"
+
+  # FRONTEND (Nginx serve)
+  serve-frontend:
+    image: nginx:stable-alpine
+    depends_on:
+      - build-frontend
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8000
+    ports:
+      - "3000:80"
+    container_name: frontend
+
+  # BASE DE DATOS
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: pi
+      POSTGRES_PASSWORD: changeme!
+      POSTGRES_DB: sellcontrol
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+      
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  pgdata:
