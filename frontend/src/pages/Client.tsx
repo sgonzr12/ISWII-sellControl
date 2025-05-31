@@ -38,7 +38,7 @@ function ClientTable() {
           },
         });
         if (!response.ok) {
-          throw new Error('Error al obtener los clientes');
+          throw new Error('Error obtain clients');
         }
         const data = await response.json();
         setClients(data);
@@ -115,7 +115,7 @@ function ClientTable() {
           }),
         });
         if (!response.ok) {
-          throw new Error('Error al actualizar el cliente');
+          throw new Error('Error update client');
         }
         const updatedClient = await response.json();
         setClients(clients.map(c =>
@@ -125,7 +125,7 @@ function ClientTable() {
           c.clientID === selectedClient.clientID ? updatedClient : c
         ));
       } catch (error) {
-        console.error('Error actualizando cliente:', error);
+        console.error('Error updating client:', error);
         alert('No se pudo actualizar el cliente');
       }
     } else {
@@ -147,13 +147,13 @@ function ClientTable() {
           }),
         });
         if (!response.ok) {
-          throw new Error('Error al crear el cliente');
+          throw new Error('Error create client');
         }
         const newClient = await response.json();
         setClients([...clients, newClient]);
         setFilteredClients([...clients, newClient]);
       } catch (error) {
-        console.error('Error creando cliente:', error);
+        console.error('Error create client:', error);
         alert('No se pudo crear el cliente');
       }
     }

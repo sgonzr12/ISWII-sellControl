@@ -29,7 +29,7 @@ function Administrator() {
         },
       });
       if (!response.ok) {
-        throw new Error('Error al obtener los usuarios');
+        throw new Error('Error fetching users.');
       }
       const data = await response.json();
       setUsers(data);
@@ -69,7 +69,7 @@ function Administrator() {
         }),
       });
       if (!response.ok) {
-        throw new Error('Error al actualizar el rol');
+        throw new Error('Error updating role');
       }
       setIsModalOpen(false);
       fetchUsers();

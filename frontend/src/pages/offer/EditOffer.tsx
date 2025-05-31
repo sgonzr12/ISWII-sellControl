@@ -35,7 +35,7 @@ function EditOffer() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener productos');
+        if (!response.ok) throw new Error('error fetch products');
         const backendProducts = await response.json();
         type BackendProduct = { productId: string; name: string };
         setProductsOptions(
@@ -95,7 +95,7 @@ function EditOffer() {
         };
       });
       const payload = { offerID, products: productsWithIds };
-      console.log('PUT payload:', JSON.stringify(payload));
+      //console.log('PUT payload:', JSON.stringify(payload));
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/offer/`, {
         method: 'PUT',
         headers: {

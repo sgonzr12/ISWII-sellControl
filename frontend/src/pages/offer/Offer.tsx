@@ -39,7 +39,7 @@ function OfferTable() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener las ofertas');
+        if (!response.ok) throw new Error('Error fetch offer');
         const data: Offer[] = await response.json();
         setOffers(data);
         setFilteredOffers(data);

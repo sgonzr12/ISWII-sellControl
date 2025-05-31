@@ -41,9 +41,9 @@ function InvoiceTable() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener las facturas');
+        if (!response.ok) throw new Error('Error fetching invoices.');
         const data: Invoice[] = await response.json();
-        console.log(data);
+        //console.log(data);
         setInvoices(data);
         setFilteredInvoices(data);
       } catch {

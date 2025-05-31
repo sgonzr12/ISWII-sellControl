@@ -60,7 +60,7 @@ function CreateOffer() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener los clientes');
+        if (!response.ok) throw new Error('Error fetching clients');
         const backendClients: BackendClient[] = await response.json();
         setClients(
           backendClients.map((cli) => ({
@@ -85,7 +85,7 @@ function CreateOffer() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener productos');
+        if (!response.ok) throw new Error('Error fetching products');
         const backendProducts: BackendProduct[] = await response.json();
         setProductsOptions(
           backendProducts.map((prod) => ({
@@ -137,7 +137,7 @@ function CreateOffer() {
     };
 
     try {
-      console.log('Payload:', offerPayload);
+      //console.log('Payload:', offerPayload);
       const credential = localStorage.getItem('credential');
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/offer/`, {
         method: 'POST',
@@ -147,7 +147,7 @@ function CreateOffer() {
         },
         body: JSON.stringify(offerPayload),
       });
-      if (!response.ok) throw new Error('Error al crear la oferta');
+      if (!response.ok) throw new Error('Error create offer');
       navigate('/offer');
     } catch {
       setError('Error al crear la oferta');

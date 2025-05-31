@@ -44,12 +44,12 @@ function App() {
               setIsAuthenticated(true);
             } else {
               // Expired token
-              console.log('Token expirado');
+              //console.log('Expired token');
               localStorage.removeItem('credential');
               setIsAuthenticated(false);
             }
           } catch (error) {
-            console.error('Error al decodificar el token:', error);
+            console.error('Error decoding the token:', error);
             localStorage.removeItem('credential');
             setIsAuthenticated(false);
           }

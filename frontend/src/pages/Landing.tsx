@@ -23,7 +23,7 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
             onSuccess={async (credentialResponse) => {
               if (credentialResponse.credential) {
                 const token = jwtDecode(credentialResponse.credential);
-                console.log('Decoded token:', token);
+                //console.log('Decoded token:', token);
 
                 if (token) {
                   try {
@@ -40,14 +40,14 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
                     localStorage.setItem('credential', credentialResponse.credential);
                     setIsAuthenticated(true);
                     localStorage.setItem('backendData', JSON.stringify(data));
-                    console.log('Data from backend:', data);
+                    //console.log('Data from backend:', data);
                     navigate('/home');
                   } catch (error) {
                     console.error('Error fetching data from backend:', error);
                     alert('No se pudo autenticar con el backend.');
                   }
                 } else {
-                  alert('Login failed. Please try again.');
+                  alert('Error de login. Vuelva a intentarlo.');
                 }
               }
             }}

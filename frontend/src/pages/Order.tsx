@@ -41,7 +41,7 @@ function OrderTable() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener los pedidos');
+        if (!response.ok) throw new Error('Error fetching orders.');
         const data: Order[] = await response.json();
         setOrders(data);
         setFilteredOrders(data);

@@ -41,9 +41,9 @@ function DeliveryNoteTable() {
             Authorization: `Bearer ${credential}`,
           },
         });
-        if (!response.ok) throw new Error('Error al obtener los albaranes');
+        if (!response.ok) throw new Error('Error fetching delivery notes.');
         const data: DeliveryNote[] = await response.json();
-        console.log(data);
+        //console.log(data);
         setDeliveryNotes(data);
         setFilteredDeliveryNotes(data);
       } catch {
