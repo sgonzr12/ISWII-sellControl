@@ -27,11 +27,11 @@ function InvoiceTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
-  // Obtener el rol del usuario
+
   const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
   const rol = Number(backendData.rol) || -1;
 
-  // Llamada GET al backend para obtener las facturas
+
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
@@ -54,7 +54,7 @@ function InvoiceTable() {
     fetchInvoices();
   }, []);
 
-  // Filtrado por fecha
+
   useEffect(() => {
     let filtered = invoices;
     if (filterStart) {
@@ -66,7 +66,7 @@ function InvoiceTable() {
     setFilteredInvoices(filtered);
   }, [filterStart, filterEnd, invoices]);
 
-  // Generar factura (deja el hueco para la llamada al backend)
+
   const handleGenerateInvoice = async () => {
     if (!selectedInvoice) return;
     const credential = localStorage.getItem('credential');

@@ -36,7 +36,7 @@ export default function Landing({ setIsAuthenticated }: LandingProps) {
                       throw new Error('Network response was not ok');
                     }
                     const data = await response.json();
-                    // Solo aquí almacena la credencial y autentica
+                    //Store the credential
                     localStorage.setItem('credential', credentialResponse.credential);
                     setIsAuthenticated(true);
                     localStorage.setItem('backendData', JSON.stringify(data));

@@ -25,7 +25,7 @@ function EditOffer() {
   const [productQuantity, setProductQuantity] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch productos disponibles para añadir
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -81,19 +81,17 @@ function EditOffer() {
   };
 
   const handleSave = async () => {
-    // Validar que ninguna cantidad sea 0 o menor
     if (products.some(p => Number(p.quantity) <= 0)) {
       setError('No puede haber productos con cantidad 0 o menor.');
       return;
     }
     try {
       const credential = localStorage.getItem('credential');
-      // Buscar los ids reales de los productos por el nombre
       const productsWithIds = products.map(prod => {
         const prodOption = productsOptions.find(opt => opt.name === prod.name);
         return {
           id: prodOption ? prodOption.id : '',
-          quantity: String(prod.quantity), // <-- Mandar como string
+          quantity: String(prod.quantity),
         };
       });
       const payload = { offerID, products: productsWithIds };

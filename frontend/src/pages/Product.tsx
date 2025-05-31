@@ -23,7 +23,7 @@ function Product() {
 
     const [search, setSearch] = useState('');
 
-    // Obtener el rol del usuario
+
     const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
     const rol = Number(backendData.rol) || -1;
 
@@ -150,7 +150,7 @@ function Product() {
         }
     }
 
-    // Filtrado por nombre de producto
+
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -203,7 +203,7 @@ function Product() {
                         </table>
                     </div>
                     <div className="product-buttons-row">
-                        {/* Solo admin, manager y warehouseManager pueden crear o editar productos */}
+                        
                         {(rol === 1 || rol === 2 || rol === 4) && (
                             <button
                                 className="add-product-button"

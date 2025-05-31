@@ -2,11 +2,11 @@
     list-style: none;
     padding: 0;
     margin-bottom: 1rem;
-    border: 2px solid #000; /* Borde negro */
+    border: 2px solid #000; 
     border-radius: 6px;
     max-width: 400px;
     margin-left: auto;
-    margin-right: auto; /* Centra la tabla */
+    margin-right: auto; 
   }
   
   .user-list li {

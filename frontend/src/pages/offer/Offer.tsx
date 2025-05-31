@@ -30,11 +30,6 @@ function OfferTable() {
 
   const navigate = useNavigate();
 
-  // Obtener el rol del usuario (si lo necesitas para el botón PDF)
-  //const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
-  //const rol = Number(backendData.rol) || -1;
-
-  // Fetch real de ofertas desde el backend
   useEffect(() => {
     const fetchOffers = async () => {
       try {
@@ -56,7 +51,7 @@ function OfferTable() {
     fetchOffers();
   }, []);
 
-  // Filtrado por fecha
+  // Date filtering
   useEffect(() => {
     let filtered = offers;
     if (filterStart) {

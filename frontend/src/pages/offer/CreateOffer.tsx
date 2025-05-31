@@ -50,7 +50,7 @@ function CreateOffer() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Fetch real de clientes desde el backend y mapea solo id y name
+  //Client fetch
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -75,7 +75,7 @@ function CreateOffer() {
     fetchClients();
   }, []);
 
-  // Fetch real de productos desde el backend y mapea solo id y name
+  // Product fetch
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -128,7 +128,6 @@ function CreateOffer() {
     const offerPayload = {
       clientID: client.id,
       products: products.map(prod => {
-        // Buscar el id real del producto por el nombre
         const prodOption = productsOptions.find(opt => opt.name === prod.name);
         return {
           id: prodOption ? prodOption.id : '',

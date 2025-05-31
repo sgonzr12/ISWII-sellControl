@@ -17,7 +17,7 @@ function ClientTable() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Campos para crear/editar
+  // Editable fields
   const [editCompanyName, setEditCompanyName] = useState('');
   const [editCIF, setEditCIF] = useState('');
   const [editAddress, setEditAddress] = useState('');
@@ -25,7 +25,7 @@ function ClientTable() {
   const [editPhone, setEditPhone] = useState('');
   const [editContact, setEditContact] = useState('');
 
-  // Filtros
+  // Filters
   const [filterCompanyName, setFilterCompanyName] = useState('');
 
   useEffect(() => {
@@ -83,31 +83,6 @@ function ClientTable() {
     }
   };
 
-  // const handleDelete = async () => {
-  //   if (selectedClient) {
-  //     try {
-  //       const credential = localStorage.getItem('credential');
-  //       const response = await fetch(
-  //         `${import.meta.env.VITE_BACKEND_URL}/client/${selectedClient.clientID}`,
-  //         {
-  //           method: 'DELETE',
-  //           headers: {
-  //             Authorization: `Bearer ${credential}`,
-  //           },
-  //         }
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error('Error al eliminar el cliente');
-  //       }
-  //       setClients(clients.filter(c => c.clientID !== selectedClient.clientID));
-  //       setFilteredClients(filteredClients.filter(c => c.clientID !== selectedClient.clientID));
-  //       setSelectedClient(null);
-  //     } catch (error) {
-  //       console.error('Error eliminando cliente:', error);
-  //       alert('No se pudo eliminar el cliente');
-  //     }
-  //   }
-  // };
 
   const handleSave = async () => {
     if (
@@ -235,14 +210,13 @@ function ClientTable() {
           <div className="client-actions">
             <button onClick={handleCreate}>Crear cliente</button>
             <button onClick={handleEdit} disabled={!selectedClient}>Editar cliente</button>
-            {/* <button onClick={handleDelete} disabled={!selectedClient}>Eliminar cliente</button> */}
           </div>
         </div>
         {isModalOpen && (
           <div className="modal-backdrop">
             <div className="modal">
               <h2>{selectedClient ? 'Editar cliente' : 'Crear cliente'}</h2>
-              {/* Menú de crear: todos los campos editables */}
+              {/* Create menu */}
               {!selectedClient && (
                 <>
                   <label>
@@ -271,7 +245,7 @@ function ClientTable() {
                   </label>
                 </>
               )}
-              {/* Menú de editar: solo los campos editables */}
+              {/* Edit menu */}
               {selectedClient && (
                 <>
                   <label>

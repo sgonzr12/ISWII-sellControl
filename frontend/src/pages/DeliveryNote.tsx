@@ -27,11 +27,11 @@ function DeliveryNoteTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
-  // Obtener el rol del usuario
+
   const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
   const rol = Number(backendData.rol) || -1;
 
-  // Llamada GET al backend para obtener los albaranes
+
   useEffect(() => {
     const fetchDeliveryNotes = async () => {
       try {
@@ -54,7 +54,7 @@ function DeliveryNoteTable() {
     fetchDeliveryNotes();
   }, []);
 
-  // Filtrado por fecha
+
   useEffect(() => {
     let filtered = deliveryNotes;
     if (filterStart) {
@@ -66,7 +66,7 @@ function DeliveryNoteTable() {
     setFilteredDeliveryNotes(filtered);
   }, [filterStart, filterEnd, deliveryNotes]);
 
-  // Convertir a factura
+
   const handleConvertToInvoice = async () => {
     if (!selectedDeliveryNote) return;
     try {
@@ -89,7 +89,7 @@ function DeliveryNoteTable() {
     }
   };
 
-  // Generar PDF Albarán (deja la función preparada para la llamada al backend)
+
   const handleGeneratePDF = async () => {
     if (!selectedDeliveryNote) return;
     const credential = localStorage.getItem('credential');

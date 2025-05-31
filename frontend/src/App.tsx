@@ -22,19 +22,19 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Verificar si hay credenciales almacenadas al cargar la aplicación
+  // Check if there are stored credentials when the application loads.
   useEffect(() => {
     const checkAuthStatus = () => {
       try {
         const credential = localStorage.getItem('credential');
         if (credential) {
-          // Opcionalmente, validar el token
+          // Optionally, validate the token.
           try {
             const decoded = jwtDecode(credential);
-            // Verificar si el token está expirado
+            // Verify if token has expired
             const currentTime = Date.now() / 1000;
 
-            // Si exp es una cadena de fecha ISO, conviértela a timestamp
+            // Convert iso to timestamp
             let expTime = decoded.exp;
             if (typeof decoded.exp === 'string') {
               expTime = new Date(decoded.exp).getTime() / 1000;
@@ -43,7 +43,7 @@ function App() {
             if (expTime && expTime > currentTime) {
               setIsAuthenticated(true);
             } else {
-              // Token expirado
+              // Expired token
               console.log('Token expirado');
               localStorage.removeItem('credential');
               setIsAuthenticated(false);
@@ -62,7 +62,7 @@ function App() {
     checkAuthStatus();
   }, []);
 
-  // Mostrar un indicador de carga mientras se verifica la autenticación
+  // Show charging indicator
   if (isLoading) {
     return <div>Cargando...</div>;
   }
@@ -78,7 +78,7 @@ function App() {
     <BrowserRouter>
       {isAuthenticated && <Navbar setIsAuthenticated={setIsAuthenticated} />}
       <Routes>
-        {/* Ruta pública - con redirección si ya está autenticado */}
+        {/* Public route – with redirect if already authenticated. */}
         <Route 
           path="/" 
           element={
@@ -88,7 +88,7 @@ function App() {
           } 
         />
   
-        {/* Rutas protegidas */}
+        {/* Protected routes */}
         <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated} />}>
 
           <Route path="/home" element={<Home />} />
@@ -113,7 +113,7 @@ function App() {
 
         </Route>
         
-        {/* Ruta 404 para manejar todas las rutas no definidas - debe ser la última */}
+        {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

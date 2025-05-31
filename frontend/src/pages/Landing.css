@@ -71,13 +71,13 @@
 .landing-container p {
   font-size: 1.3rem;
   line-height: 1.6;
-  margin: 0 auto 2.5rem auto; /* Auto margins para centrar */
+  margin: 0 auto 2.5rem auto; 
   color: #5d6778;
   max-width: 400px;
-  text-align: center; /* Garantiza que el texto esté centrado */
+  text-align: center; 
 }
 
-.landing-logo { /* Renombrado de .logo a .landing-logo */
+.landing-logo { 
   width: 120px;
   height: 120px; 
   object-fit: contain;

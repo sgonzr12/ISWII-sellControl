@@ -41,7 +41,7 @@
   width: 100%;
 }
 
-/* Alinea label y campo cantidad en fila y centra verticalmente */
+
 .form-group label {
   display: flex;
   align-items: center;
@@ -50,7 +50,7 @@
   font-weight: 500;
 }
 
-/* Opcional: quita el margin-top/bottom del input para mejor alineación */
+
 .form-group input[type="number"] {
   height: 3.5rem;
   padding: 0 0.75rem;

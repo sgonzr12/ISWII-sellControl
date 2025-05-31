@@ -27,11 +27,11 @@ function OrderTable() {
   const [isProductsModalOpen, setIsProductsModalOpen] = useState(false);
   const [productsToShow, setProductsToShow] = useState<Product[]>([]);
 
-  // Obtener el rol del usuario
+
   const backendData = JSON.parse(localStorage.getItem('backendData') || '{}');
   const rol = Number(backendData.rol) || -1;
 
-  // Llamada GET al backend para obtener los pedidos
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -88,7 +88,7 @@ function OrderTable() {
     }
   };
 
-  // Generar PDF Pedido (deja la función preparada para la llamada al backend)
+
   const handleGeneratePDF = async () => {
   if (!selectedOrder) return;
     const credential = localStorage.getItem('credential');
